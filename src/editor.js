@@ -4,6 +4,7 @@
 	var currentNote = {};
 
 	var $editor = document.querySelector('#editor');
+	var $preview = document.querySelector('#preview');
 	var saveTimer,saveInterval=5000;
 
 	$editor.addEventListener('input',function(){
@@ -67,6 +68,22 @@
 			selection.addRange(range);
 		}
 	});
+
+	// 图片出错处理
+	$preview.addEventListener('error',function(e){
+		var $target = e.target;
+		if($target.tagName === 'IMG'){
+			$target.src = './images/404.jpg';
+		}
+	},true);
+
+	// 链接
+	$preview.addEventListener('click',function(e){
+		var $target = e.target;
+		if($target.tagName === 'A'){
+			e.preventDefault();
+		}
+	},true);
 
 	function newNote(){
 		var id = Date.now();

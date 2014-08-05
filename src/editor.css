@@ -142,19 +142,21 @@ body,html{
 	padding:10px;
 	margin:10px 0;
 }
+#preview p code,
+#preview ul code,
+#preview ol code{
+	background: rgb(247,247,236);
+	padding:3px;
+	vertical-align: middle;
+	border:1px solid rgb(230,230,210);
+	border-radius: 3px;
+}
 #preview pre code{
 	line-height: 1.0em;
 	font-size:12px;
 	word-wrap: break-word;
-}
-#preview p code,
-#preview ul code,
-#preview ol code{
-	display: inline-block;
-	background: rgb(247,247,236);
-	padding: 2px;
-	vertical-align: middle;
-	border-radius: 2px;
+	border:0 none;
+	padding:0;
 }
 #preview ul,#preview ol{
 	list-style-position: inside;
@@ -166,4 +168,10 @@ body,html{
 }
 #preview ol{
 	list-style-type: decimal;
+}
+#preview img{
+	max-width: 100%;
+	border: 1px solid rgb(230,230,210);
+	padding: 1px;
+}
 }
