@@ -1,0 +1,7 @@
+{
+	"strict":false,
+	"node":true,
+	"unused":false,
+	"loopfunc":true,
+	"globals":[]
+}
