@@ -52,6 +52,22 @@
 		return false;
 	});
 
+	$editor.addEventListener('keydown',function(e){
+		if(e.keyCode === 9){
+			// TAB
+			e.preventDefault();
+			var selection = window.getSelection();
+			var range = selection.getRangeAt(0);
+
+			var node = document.createTextNode('\t');
+			range.insertNode(node);
+			range.setEndAfter(node);
+			range.setStartAfter(node);
+			selection.removeAllRanges();
+			selection.addRange(range);
+		}
+	});
+
 	function newNote(){
 		var id = Date.now();
 		var thisNoteIndex = {};
@@ -86,7 +102,7 @@
 		var html = '';
 
 		for(var id in noteIndex){
-			html += '<li><a href="#" data-id="'+id.replace('note_','')+'">'+noteIndex[id]+'</a><i class="delete">X</i></li>';
+			html += '<li><a href="#" title="'+noteIndex[id]+'" data-id="'+id.replace('note_','')+'">'+noteIndex[id]+'</a><i class="delete">X</i></li>';
 		}
 
 		document.querySelector('#noteList').innerHTML = html;
@@ -129,8 +145,7 @@
 				.replace(/ /g,'&nbsp;')
 				.replace(/>/g,'&gt;')
 				.replace(/"/g,'&quot;')
-				.replace(/'/g,'&apos;')
-				.replace(/\t/g,'&nbsp;&nbsp;&nbsp;&nbsp;');
+				.replace(/'/g,'&apos;');
 	}
 
 	// 获取当前笔记
@@ -175,9 +190,4 @@ observer.observe(document.querySelector('#editor'),{
 	characterData: true
 });*/
 
-/*var selection = window.getSelection();
-var range = selection.getRangeAt(0);
 
-if(selection.archorNode.data.indexOf('# ') > -1){
-
-}*/
