@@ -119,7 +119,6 @@ body,html{
 	margin:10px 0;
 	background:rgb(247,247,236);
 	border-left:5px solid rgb(230,230,210);
-	font-size: 12px;
 	word-wrap: break-word;
 }
 #preview blockquote p{
@@ -135,10 +134,13 @@ body,html{
 #preview code{
 	font-family: consolas;
 }
+#preview code *{
+	font-family: consolas;
+}
 #preview pre{
 	display: block;
-	background:rgb(247,247,236);
-	border:1px solid rgb(230,230,210);
+	/*background:rgb(247,247,236);*/
+	/*border:1px solid rgb(230,230,210);*/
 	padding:10px;
 	margin:10px 0;
 }
@@ -153,10 +155,13 @@ body,html{
 }
 #preview pre code{
 	line-height: 1.0em;
-	font-size:12px;
+	font-size:14px;
 	word-wrap: break-word;
 	border:0 none;
 	padding:0;
+	background: initial;
+	border-radius: initial;
+	vertical-align: initial;
 }
 #preview ul,#preview ol{
 	list-style-position: inside;

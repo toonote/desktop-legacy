@@ -1,3 +1,4 @@
+/*global hljs*/
 (function(){
 
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
@@ -5,7 +6,7 @@
 
 	var $editor = document.querySelector('#editor');
 	var $preview = document.querySelector('#preview');
-	var saveTimer,saveInterval=5000;
+	var saveTimer,saveInterval=1000;
 
 	$editor.addEventListener('input',function(){
 
@@ -17,11 +18,19 @@
 			},saveInterval);
 		}
 		currentNote.content = $editor.innerText;
-		var title = currentNote.content.split('\n',2)[0].replace(/^[# ]/g,'');
+		var title = currentNote.content.split('\n',2)[0].replace(/^[# ]*/g,'');
 		updateNoteIndex(title);
 
 
 	},false);
+
+	$editor.addEventListener('paste',function(e){
+		e.preventDefault();
+		var text = e.clipboardData.getData('text/plain');
+		// var temp = document.createElement('div');
+		// temp.innerHTML = text;
+		document.execCommand('insertHTML', false, text);
+	});
 
 	/*// 定时保存
 	setInterval(function(){
@@ -132,7 +141,10 @@
 	function updatePreview(){
 		var marked = require('marked');
 		var html = marked(currentNote.content);
-		document.querySelector('#preview').innerHTML = html;
+		$preview.innerHTML = html;
+		Array.prototype.forEach.call($preview.querySelectorAll('pre code'),function(code){
+			hljs.highlightBlock(code.parentNode);
+		});
 	}
 
 	// 切换各栏显示状态
@@ -146,7 +158,7 @@
 				$ele = $editor;
 				break;
 			case 'preview':
-				$ele = document.querySelector('#preview');
+				$ele = $preview;
 				break;
 		}
 		if($ele.classList.contains('hide')){
