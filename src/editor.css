@@ -13,7 +13,9 @@ body,html{
 	/*display: flex;*/
 	/*-webkit-box-orient: horizontal;*/
 }
-.hide{
+#sidebar.hide,
+#editor.hide,
+#preview.hide{
 	display: none;
 }
 #background{
@@ -88,6 +90,15 @@ body,html{
 	white-space: pre;
 	line-height: 1.8em;
 }
+#editor.noSidebar{
+	width:50%;
+}
+#editor.alone{
+	width:100%;
+}
+#editor.aloneWithSidebar{
+	width:-webkit-calc(100% - 200px);
+}
 #editor:focus{
 	outline: 0 none;
 }
@@ -103,6 +114,15 @@ body,html{
 	padding:20px;
 	color: #333;
 	font-size: 14px;
+}
+#preview.noSidebar{
+	width:50%;
+}
+#preview.alone{
+	width:100%;
+}
+#preview.aloneWithSidebar{
+	width:-webkit-calc(100% - 200px);
 }
 #preview h1{
 	margin-bottom: 10px;

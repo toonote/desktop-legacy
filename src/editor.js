@@ -150,9 +150,10 @@
 	// 切换各栏显示状态
 	function switchVisible(eleName){
 		var $ele;
+		var $sidebar = document.querySelector('#sidebar');
 		switch(eleName){
 			case 'sidebar':
-				$ele = document.querySelector('#sidebar');
+				$ele = $sidebar;
 				break;
 			case 'editor':
 				$ele = $editor;
@@ -166,6 +167,27 @@
 		}else{
 			$ele.classList.add('hide');
 		}
+
+		var sidebarVisible = !$sidebar.classList.contains('hide');
+		var editorVisible = !$editor.classList.contains('hide');
+		var previewVisible = !$preview.classList.contains('hide');
+
+		var editorStatus = sidebarVisible?
+			(previewVisible?'normal':'aloneWithSidebar'):
+			(previewVisible?'noSidebar':'alone');
+		var previewStatus = sidebarVisible?
+			(editorVisible?'normal':'aloneWithSidebar'):
+			(editorVisible?'noSidebar':'alone');
+
+		if(editorVisible){
+			$editor.classList.remove('aloneWithSidebar','noSidebar','alone');
+			$editor.classList.add(editorStatus);
+		}
+		if(previewVisible){
+			$preview.classList.remove('aloneWithSidebar','noSidebar','alone');
+			$preview.classList.add(previewStatus);
+		}
+
 	}
 
 	// HTML编码
