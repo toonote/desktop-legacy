@@ -6,7 +6,7 @@
 
 	var $editor = document.querySelector('#editor');
 	var $preview = document.querySelector('#preview');
-	var saveTimer,saveInterval=1000;
+	var saveTimer,saveInterval=5000;
 
 	$editor.addEventListener('input',function(){
 
@@ -18,7 +18,7 @@
 			},saveInterval);
 		}
 		currentNote.content = $editor.innerText;
-		var title = currentNote.content.split('\n',2)[0].replace(/^[# ]*/g,'');
+		var title = currentNote.content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
 		updateNoteIndex(title);
 
 
