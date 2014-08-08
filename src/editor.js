@@ -116,13 +116,8 @@
 			}
 		}
 		if(!found){
-			var $firstNode = $preview.firstChild;
-			var range = document.createRange();
-			range.setStartBefore($firstNode);
-			range.setEndBefore($firstNode);
 			selection = window.getSelection();
 			selection.removeAllRanges();
-			selection.addRange(range);
 			console.log('not found');
 		}
 	});
@@ -259,8 +254,7 @@
 			},0);
 		}else{
 			var selection = window.getSelection();
-			var range = selection.getRangeAt(0);
-			range.collapse();
+			selection.removeAllRanges();
 		}
 	}
 
