@@ -6,7 +6,7 @@
 
 	var $editor = document.querySelector('#editor');
 	var $preview = document.querySelector('#preview');
-	var saveTimer,saveInterval=5000;
+	var saveTimer,saveInterval=1000;
 
 	$editor.addEventListener('input',function(){
 
