@@ -103,10 +103,14 @@
 		thisNoteIndex[id] = 'Untitled';
 		updateNoteIndex(thisNoteIndex);
 		currentNote.id = id;
-		currentNote.content = '';
+		currentNote.content = '# Untitled';
 		updateNote(currentNote);
 		$editor.innerHTML = '';
 		updateNoteList();
+		setTimeout(function(){
+			$editor.focus();
+			document.execCommand('insertHTML', false, '# Untitled');
+		},0);
 	}
 
 	function updateNoteIndex(obj){
