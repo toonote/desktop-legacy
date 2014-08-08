@@ -42,8 +42,17 @@
 
 	document.addEventListener('keydown',function(e){
 		var ctrlOrCmd = e.metaKey || e.ctrlKey;
+		// ESC
+		if(e.keyCode === 27){
+			switchSearch(false);
+			return;
+		}
 		if(!ctrlOrCmd) return;
 		switch(e.keyCode){
+			case 70:
+				// F
+				switchSearch();
+				break;
 			case 78:
 				// N
 				newNote();
@@ -195,6 +204,16 @@
 			$preview.classList.add(previewStatus);
 		}
 
+	}
+
+	// 搜索框
+	function switchSearch(isShow){
+		var $search = document.querySelector('#search');
+		var isVisible = $search.style.display !== 'none';
+		if(typeof isShow !== 'undefined'){
+			isVisible = !isShow;
+		}
+		$search.style.display = isVisible?'none':'block';
 	}
 
 	// HTML编码

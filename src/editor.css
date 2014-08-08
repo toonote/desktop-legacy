@@ -205,4 +205,81 @@ body,html{
 	border: 1px solid rgb(230,230,210);
 	padding: 1px;
 }
+
+#search{
+	display: none;
+	position: absolute;
+	z-index: 1;
+	right: 10px;
+	top: 10px;
+	background: #333;
+	box-shadow: 0 0 5px rgba(128,128,128,.7);
+	padding: 5px;
+	border-radius: 3px;
+	line-height: 24px;
+	padding: 8px 10px 5px;
+}
+
+#search [class^=controlIcon]{
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+	position: relative;
+	vertical-align: top;
+}
+#search [class^=controlIcon] input[type=checkbox]{
+	/*opacity:.4;*/
+	width:20px;
+	height:20px;
+}
+#search [class^=controlIcon] span{
+	font-size: 14px;
+	color: white;
+	pointer-events: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	display: inline-block;
+	width:20px;
+	text-align: center;
+	line-height: 20px;
+	border:1px solid #ccc;
+	border-radius:2px;
+	background:-webkit-linear-gradient(top,#888,#666);
+	box-shadow: inset 1px 1px 3px #aaa;
+}
+#search [class^=controlIcon] input[type=checkbox]:checked + span{
+	background:-webkit-linear-gradient(top,#333,#555);
+	box-shadow: inset 1px 1px 3px #111;
+}
+#search .input-wrapper{
+	display: inline-block;
+	margin-left:10px;
+	line-height: 24px;
+	/*vertical-align: middle;*/
+}
+#search .input-wrapper input{
+	height: 22px;
+	background: #eee;
+	border: 0 none;
+	border-radius: 2px;
+	padding:0 5px;
+}
+#search .input-wrapper input:focus{
+	outline:0 none;
+}
+#search .searchBtn{
+	display: inline-block;
+	margin-left:10px;
+	line-height: 24px;
+	/*vertical-align: middle;*/
+}
+#search .searchBtn button{
+	height: 22px;
+	padding: 0 5px;
+	color: #FFF;
+	font-size: 14px;
+	border-radius: 2px;
+	background: #333;
+	border: 1px solid #aaa;
 }
