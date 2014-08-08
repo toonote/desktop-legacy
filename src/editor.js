@@ -47,6 +47,12 @@
 			switchSearch(false);
 			return;
 		}
+		// Enter(当搜索框可见的时候回车继续搜索)
+		if(e.keyCode === 13){
+			if(getComputedStyle(document.querySelector('#search')).display !== 'none'){
+				document.querySelector('#search .searchBtn').click();
+			}
+		}
 		if(!ctrlOrCmd) return;
 		switch(e.keyCode){
 			case 70:
@@ -86,6 +92,38 @@
 			range.setStartAfter(node);
 			selection.removeAllRanges();
 			selection.addRange(range);
+		}
+	});
+
+	document.querySelector('#search .searchBtn').addEventListener('click',function(){
+		// this.parentNode.parentNode.querySelector('button').click();
+		var input = document.querySelector('#keyword');
+		var keyword = input.value;
+		var caseSensitive = false;
+		var back = false;
+		var wrap = false;
+		var found = false;
+		var selection;
+		while(!found && window.find(keyword,caseSensitive,back,wrap)){
+			selection = window.getSelection();
+			var currNode = selection.baseNode.parentNode;
+			while(!found && currNode.parentNode){
+				if(currNode === $preview){
+					found = true;
+				}else{
+					currNode = currNode.parentNode;
+				}
+			}
+		}
+		if(!found){
+			var $firstNode = $preview.firstChild;
+			var range = document.createRange();
+			range.setStartBefore($firstNode);
+			range.setEndBefore($firstNode);
+			selection = window.getSelection();
+			selection.removeAllRanges();
+			selection.addRange(range);
+			console.log('not found');
 		}
 	});
 
@@ -209,11 +247,21 @@
 	// 搜索框
 	function switchSearch(isShow){
 		var $search = document.querySelector('#search');
-		var isVisible = $search.style.display !== 'none';
+		var isVisible = getComputedStyle($search).display !== 'none';
 		if(typeof isShow !== 'undefined'){
 			isVisible = !isShow;
 		}
 		$search.style.display = isVisible?'none':'block';
+		if(!isVisible){
+			$search.querySelector('#keyword').value = '';
+			setTimeout(function(){
+				$search.querySelector('#keyword').focus();
+			},0);
+		}else{
+			var selection = window.getSelection();
+			var range = selection.getRangeAt(0);
+			range.collapse();
+		}
 	}
 
 	// HTML编码

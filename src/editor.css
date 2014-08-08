@@ -254,7 +254,7 @@ body,html{
 }
 #search .input-wrapper{
 	display: inline-block;
-	margin-left:10px;
+	/*margin-left:10px;*/
 	line-height: 24px;
 	/*vertical-align: middle;*/
 }
@@ -272,6 +272,7 @@ body,html{
 	display: inline-block;
 	margin-left:10px;
 	line-height: 24px;
+	cursor: pointer;
 	/*vertical-align: middle;*/
 }
 #search .searchBtn button{
