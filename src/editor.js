@@ -1,6 +1,8 @@
 /*global hljs*/
 (function(){
 
+	var open = require('open');
+
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
 	var currentNote = {};
 
@@ -90,6 +92,7 @@
 	$preview.addEventListener('click',function(e){
 		var $target = e.target;
 		if($target.tagName === 'A'){
+			open($target.href);
 			e.preventDefault();
 		}
 	},true);
