@@ -47,29 +47,6 @@
 				document.querySelector('#search .searchBtn').click();
 			}
 		}
-		if(!ctrlOrCmd) return;
-		switch(e.keyCode){
-			case 70:
-				// F
-				switchSearch();
-				break;
-			case 78:
-				// N
-				newNote();
-				break;
-			case 49:
-				// 1
-				switchVisible('sidebar');
-				break;
-			case 50:
-				// 2
-				switchVisible('editor');
-				break;
-			case 51:
-				// 3
-				switchVisible('preview');
-				break;
-		}
 		return false;
 	});
 
@@ -213,6 +190,13 @@
 		},0);
 	}
 
+	// 保存
+	function save(){
+		currentNote.content = $editor.innerText;
+		updateNote(currentNote);
+		renderPreview();
+	}
+
 	// 更新笔记内容
 	function updateNote(obj){
 		localStorage.setItem('note_'+obj.id,obj.content);
@@ -326,10 +310,81 @@
 				.replace(/'/g,'&apos;');
 	}
 
+	// 设置菜单
+	function buildAppMenu(){
+		var remote = require('remote');
+		var Menu = remote.require('menu');
+		// var MenuItem = remote.require('menu-item');
+		var template = [{
+			label:'TooNote',
+			submenu:[,{
+				label:'关于',
+				click:function(){
+					alert('TooNote\nTooBug荣誉出品');
+				}
+			},{
+				type: 'separator'
+			},{
+				label:'退出',
+				accelerator:'Command+Q',
+				click:function(){
+					window.close();
+				}
+			}]
+		},{
+			label:'文件',
+			submenu: [{
+				label:'新建笔记',
+				accelerator:'Command+N',
+				click:newNote
+			},{
+				label:'保存',
+				accelerator:'Command+S',
+				click:save
+			}]
+		},{
+			label:'编辑',
+			submenu:[{
+				label:'查找',
+				accelerator:'Command+F',
+				click:function(){
+					switchSearch();
+				}
+			}]
+		},{
+			label:'视图',
+			submenu:[{
+				label:'切换列表',
+				accelerator:'Command+1',
+				click:function(){
+					switchVisible('sidebar');
+				}
+			},{
+				label:'切换编辑',
+				accelerator:'Command+2',
+				click:function(){
+					switchVisible('editor');
+				}
+			},{
+				label:'切换预览',
+				accelerator:'Command+3',
+				click:function(){
+					switchVisible('preview');
+				}
+			}]
+		}];
+
+		var menu = Menu.buildFromTemplate(template);
+		Menu.setApplicationMenu(menu);
+	}
+
 	// 初始化
 	renderNoteList();
 	document.querySelector('#noteList li a').click();
 	renderPreview();
+
+	// 设置菜单
+	buildAppMenu();
 
 })();
 
