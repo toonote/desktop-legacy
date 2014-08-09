@@ -1,4 +1,4 @@
-/*global hljs*/
+/*global hljs,confirm*/
 (function(){
 
 	var open = require('open');
@@ -15,7 +15,7 @@
 		if(!saveTimer){
 			saveTimer = setTimeout(function(){
 				updateNote(currentNote);
-				updatePreview();
+				renderPreview();
 				saveTimer = 0;
 			},saveInterval);
 		}
@@ -33,12 +33,6 @@
 		// temp.innerHTML = text;
 		document.execCommand('insertHTML', false, text);
 	});
-
-	/*// 定时保存
-	setInterval(function(){
-		updateNote(currentNote);
-		updatePreview();
-	},saveInterval);*/
 
 	document.addEventListener('keydown',function(e){
 		var ctrlOrCmd = e.metaKey || e.ctrlKey;
@@ -95,6 +89,7 @@
 		}
 	});
 
+	// 搜索
 	document.querySelector('#search .searchBtn').addEventListener('click',function(){
 		// this.parentNode.parentNode.querySelector('button').click();
 		var input = document.querySelector('#keyword');
@@ -139,6 +134,33 @@
 		}
 	},true);
 
+
+	// 获取当前笔记
+	document.querySelector('#noteList').addEventListener('click',function(e){
+		if(e.target.tagName !== 'A') return false;
+		var id = e.target.dataset.id;
+		currentNote.id = id;
+		currentNote.content = localStorage.getItem('note_'+id);
+		document.querySelector('#editor').innerHTML = htmlEncode(currentNote.content).split('\n').map(function(line){
+			return '<div>' + (line||'<br />') + '</div>';
+		}).join('');
+		renderPreview();
+	},false);
+
+	// 删除当前笔记
+	document.querySelector('#noteList').addEventListener('click',function(e){
+		if(!e.target.classList.contains('delete')) return false;
+		if(!confirm('确定要删除该笔记吗？')) return false;
+		var id = e.target.parentNode.querySelector('a').dataset.id;
+		delete noteIndex[id];
+		localStorage.removeItem('note_'+id);
+		updateNoteIndex();
+		renderNoteList();
+		document.querySelector('#noteList li a').click();
+		renderPreview();
+	},false);
+
+	// 新建笔记
 	function newNote(){
 		var id = Date.now();
 		var thisNoteIndex = {};
@@ -148,13 +170,19 @@
 		currentNote.content = '# Untitled';
 		updateNote(currentNote);
 		$editor.innerHTML = '';
-		updateNoteList();
+		renderNoteList();
 		setTimeout(function(){
 			$editor.focus();
 			document.execCommand('insertHTML', false, '# Untitled');
 		},0);
 	}
 
+	// 更新笔记内容
+	function updateNote(obj){
+		localStorage.setItem('note_'+obj.id,obj.content);
+	}
+
+	// 更新笔记索引
 	function updateNoteIndex(obj){
 		if(typeof obj === 'string'){
 			noteIndex[currentNote.id] = obj;
@@ -164,16 +192,11 @@
 			}
 		}
 		localStorage.setItem('noteIndex',JSON.stringify(noteIndex));
-		updateNoteList();
+		renderNoteList();
 	}
-
-	function updateNote(obj){
-		localStorage.setItem('note_'+obj.id,obj.content);
-	}
-
 
 	// 渲染笔记列表
-	function updateNoteList(){
+	function renderNoteList(){
 		var html = '';
 
 		for(var id in noteIndex){
@@ -187,7 +210,7 @@
 	}
 
 	// 转换成markdown显示
-	function updatePreview(){
+	function renderPreview(){
 		var marked = require('marked');
 		var html = marked(currentNote.content);
 		$preview.innerHTML = html;
@@ -267,34 +290,10 @@
 				.replace(/'/g,'&apos;');
 	}
 
-	// 获取当前笔记
-	document.querySelector('#noteList').addEventListener('click',function(e){
-		if(e.target.tagName !== 'A') return false;
-		var id = e.target.dataset.id;
-		currentNote.id = id;
-		currentNote.content = localStorage.getItem('note_'+id);
-		document.querySelector('#editor').innerHTML = htmlEncode(currentNote.content).split('\n').map(function(line){
-			return '<div>' + (line||'<br />') + '</div>';
-		}).join('');
-		updatePreview();
-	},false);
-
-	// 删除当前笔记
-	document.querySelector('#noteList').addEventListener('click',function(e){
-		if(!e.target.classList.contains('delete')) return false;
-		if(!confirm('确定要删除该笔记吗？')) return false;
-		var id = e.target.parentNode.querySelector('a').dataset.id;
-		delete noteIndex[id];
-		localStorage.removeItem('note_'+id);
-		updateNoteIndex();
-		updateNoteList();
-		document.querySelector('#noteList li a').click();
-		updatePreview();
-	},false);
-
-	updateNoteList();
+	// 初始化
+	renderNoteList();
 	document.querySelector('#noteList li a').click();
-	updatePreview();
+	renderPreview();
 
 })();
 
