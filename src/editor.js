@@ -1,4 +1,4 @@
-/*global hljs,confirm*/
+/*global hljs,alert,confirm*/
 (function(){
 
 	var open = require('open');
@@ -154,6 +154,11 @@
 	document.querySelector('#noteList').addEventListener('click',function(e){
 		if(e.target.tagName !== 'A') return false;
 		var id = e.target.dataset.id;
+		if(+id === 0){
+			// 展开
+			e.target.parentNode.click();
+			return false;
+		}
 		currentNote.id = id;
 		currentNote.content = localStorage.getItem('note_'+id);
 		document.querySelector('#editor').innerHTML = htmlEncode(currentNote.content).split('\n').map(function(line){
@@ -174,6 +179,19 @@
 		renderNoteList();
 		document.querySelector('#noteList li a').click();
 		renderPreview();
+	},false);
+
+	// 折叠笔记
+	document.querySelector('#noteList').addEventListener('click',function(e){
+		if(e.target.tagName !== 'LI') return false;
+		var $childrenUl = e.target.querySelector('ul');
+		if(!$childrenUl) return false;
+		var isVisible = getComputedStyle($childrenUl).display !== 'none';
+		if(isVisible){
+			$childrenUl.style.display = 'none';
+		}else{
+			$childrenUl.style.display = 'block';
+		}
 	},false);
 
 	// 新建笔记
@@ -220,16 +238,77 @@
 
 	// 渲染笔记列表
 	function renderNoteList(){
-		var html = '';
+
+		/*
+		 * [{
+		 * 		id:1,
+		 * 		title:'hello',
+		 * 		children:[{
+		 * 			id:1,
+		 * 			title:'world'
+		 * 		}]
+		 * }] 
+		 * @type {Array}
+		 */
+		var indexObj = [];
 
 		for(var id in noteIndex){
-			html += '<li><a href="#" title="'+noteIndex[id]+'" data-id="'+id.replace('note_','')+'">'+noteIndex[id]+'</a><i class="delete">X</i></li>';
+			var titleArr = noteIndex[id].split('\\');
+			var tmpPartParent = indexObj;
+			var i = 0;
+			while(titleArr[i]){
+				var part = titleArr[i];
+				var partObj;
+				var samePart = tmpPartParent.filter(function(existPart){
+					return existPart.title === part;
+				});
+				if(!samePart.length){
+					partObj = {
+						title:part,
+						children:[]
+					};
+					// 如果是文章，填充ID
+					if(i === titleArr.length - 1){
+						partObj.id = id;
+					}
+					tmpPartParent.push(partObj);
+				}else{
+					partObj = samePart[0];
+				}
+				tmpPartParent = partObj.children;
+				i++;
+			}
 		}
 
+		// var html = '';
+		var level = 0;
+		var html = genHtml(indexObj);
+
 		document.querySelector('#noteList').innerHTML = html;
-		if(!html){
+
+		if(!indexObj.length){
 			newNote();
 		}
+
+		function genHtml(arr){
+			var tmpHtml = '';
+			tmpHtml = arr.map(function(arrItem){
+				var tmpHtml = '<li class="level'+level+'">';
+				tmpHtml += '<a href="#" title="'+arrItem.title+'" data-id="'+(arrItem.id || 0)+'">'+arrItem.title+'</a>';
+				tmpHtml += '<i class="delete">X</i>';
+				if(arrItem.children.length){
+					level++;
+					tmpHtml += '<ul>';
+					tmpHtml += genHtml(arrItem.children);
+					tmpHtml += '</ul>';
+					level--;
+				}
+				tmpHtml += '</li>';
+				return tmpHtml;
+			}).join('');
+			return tmpHtml;
+		}		
+
 	}
 
 	function setActiveNote(id){
