@@ -134,6 +134,42 @@
 		}
 	},true);
 
+	// 拖拽插图
+	$editor.addEventListener('dragover',function(e){
+		e.stopPropagation();
+		e.preventDefault();
+	});
+	$editor.addEventListener('drop',function(e){
+		e.stopPropagation();
+		e.preventDefault();
+		var img = e.dataTransfer.files[0];
+		if(!img || !/^image/.test(img.type)) return;
+
+		var $currNode = e.target;
+		if(/\S+/.test($currNode.innerText)){
+			// 如果当前元素非空，插入下方
+			var $nextNode = $currNode.nextSibling;
+			var $parent = $currNode.parentNode;
+			var $newNode = document.createElement('div');
+			var $blankNode = document.createElement('div');
+			$blankNode.innerHTML = '<br />';
+			$newNode.innerText = '![' + img.name + '](' + img.path + ')';
+			if($nextNode){
+				$parent.insertBefore($newNode,$nextNode);
+			}else{
+				$parent.appendChild($newNode);
+			}
+			$parent.insertBefore($blankNode,$newNode);
+		}else{
+			// 如果当前元素为空，插入当前元素
+			$currNode.innerText = '![' + img.name + '](' + img.path + ')';
+		}
+		currentNote.content = $editor.innerText;
+		updateNote(currentNote);
+		renderPreview();
+		console.log(e.target);
+	});
+
 
 	// 获取当前笔记
 	document.querySelector('#noteList').addEventListener('click',function(e){
