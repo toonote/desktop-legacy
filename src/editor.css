@@ -47,7 +47,7 @@ body,html{
 	text-align: center;
 }
 #sidebar #noteList{
-	margin:10px;
+	margin:10px 0;
 	/*padding-top:20px;*/
 	font-size:14px;
 	line-height: 1.6em;
@@ -56,8 +56,10 @@ body,html{
 #sidebar #noteList li{
 	padding:0 10px;
 	white-space: nowrap;
-	/*overflow: hidden;*/
-	/*text-overflow:ellipsis;*/
+}
+#sidebar #noteList li.active,
+#sidebar #noteList li:hover{
+	background: #555;
 }
 #sidebar #noteList li i{
 	color:#ccc;
@@ -73,7 +75,7 @@ body,html{
 	text-decoration: none;
 	color:#f0f0f0;
 }
-#sidebar #noteList li a:hover{
+#sidebar #noteList li:hover a{
 	color:#ccc;
 }
 #editor{

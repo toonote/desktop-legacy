@@ -2,6 +2,8 @@
 (function(){
 
 	var open = require('open');
+	var packageJson = require('./package.json');
+	var version = packageJson.version;
 
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
 	var currentNote = {};
@@ -158,6 +160,7 @@
 			return '<div>' + (line||'<br />') + '</div>';
 		}).join('');
 		renderPreview();
+		setActiveNote(id);
 	},false);
 
 	// 删除当前笔记
@@ -227,6 +230,14 @@
 		if(!html){
 			newNote();
 		}
+	}
+
+	function setActiveNote(id){
+		var activeLi = document.querySelector('#noteList li.active');
+		if(activeLi){
+			activeLi.classList.remove('active');
+		}
+		document.querySelector('#noteList li a[data-id="'+id+'"]').parentNode.classList.add('active');
 	}
 
 	// 转换成markdown显示
@@ -320,7 +331,7 @@
 			submenu:[,{
 				label:'关于',
 				click:function(){
-					alert('TooNote\nTooBug荣誉出品');
+					alert('TooNote '+version+'\n\nTooBug荣誉出品');
 				}
 			},{
 				type: 'separator'
