@@ -222,6 +222,62 @@
 		renderPreview();
 	}
 
+	// 打开markdown文件
+	function openFile(){
+		var remote = require('remote');
+		var dialog = remote.require('dialog');
+		var filePath = dialog.showOpenDialog({
+			filters: [{
+				name: 'Markdown文件',
+				extensions: ['md', 'markdown']
+			},{
+				name: '纯文本文件',
+				extensions: ['txt']
+			}],
+			properties: ['openFile']
+		});
+		if(!filePath || !filePath.length) return;
+		filePath = filePath[0];
+
+		var fs = require('fs');
+		fs.readFile(filePath,'utf8',function(err,fileContent){
+			if(err){
+				alert('打开文件出错：\n'+err.message);
+				return;
+			}else{
+				newNote();
+				currentNote.content = fileContent;
+				updateNote(currentNote);
+				$editor.innerHTML = htmlEncode(currentNote.content).split('\n').map(function(line){
+					return '<div>' + (line||'<br />') + '</div>';
+				}).join('');
+				renderPreview();
+				renderNoteList();
+			}
+		});
+	}
+
+	// 保存为markdown文件
+	function saveAs(){
+		var remote = require('remote');
+		var dialog = remote.require('dialog');
+		var filePath = dialog.showSaveDialog({
+			filters: [{
+				name: 'Markdown文件',
+				extensions: ['md', 'markdown']
+			}],
+			properties: ['createDirectory']
+		});
+		if(!filePath) return;
+
+		var fs = require('fs');
+		fs.writeFile(filePath,currentNote.content.substr(0,currentNote.content.length-1),function(err){
+			if(err){
+				alert('保存失败：\n' + err.message);
+			}
+		});
+	}
+
 	// 更新笔记内容
 	function updateNote(obj){
 		localStorage.setItem('note_'+obj.id,obj.content);
@@ -439,6 +495,10 @@
 				label:'导入Markdown',
 				accelerator:'Command+O',
 				click:openFile
+			},{
+				label:'导出Markdown',
+				accelerator:'Command+Shift+S',
+				click:saveAs
 			}]
 		},{
 			label:'编辑',
