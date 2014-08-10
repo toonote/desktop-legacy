@@ -57,25 +57,28 @@ body,html{
 	padding:0 10px;
 	white-space: nowrap;
 }
+/*#sidebar #noteList li.noHover{
+	background: transparent;
+}*/
 #sidebar #noteList li.active,
 #sidebar #noteList li:hover{
 	background: #555;
 }
-#sidebar #noteList li i{
+#sidebar #noteList li > i{
 	color:#ccc;
 	display: none;
 	cursor: pointer;
 	padding:0 5px;
 	font-style: normal;
 }
-#sidebar #noteList li:hover i{
+#sidebar #noteList li:hover > i{
 	display: inline-block;
 }
 #sidebar #noteList li a{
 	text-decoration: none;
 	color:#f0f0f0;
 }
-#sidebar #noteList li:hover a{
+#sidebar #noteList li:hover > a{
 	color:#ccc;
 }
 #editor{
