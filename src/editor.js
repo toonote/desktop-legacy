@@ -185,6 +185,7 @@
 	document.querySelector('#noteList').addEventListener('click',function(e){
 		if(e.target.tagName !== 'LI') return false;
 		var $tmpNode = e.target.nextSibling;
+		if(!$tmpNode) return;
 		var thisLevel = +e.target.dataset.level;
 		var isVisible = getComputedStyle($tmpNode).display !== 'none';
 		while($tmpNode && +$tmpNode.dataset.level > thisLevel){
@@ -208,9 +209,9 @@
 		updateNote(currentNote);
 		$editor.innerHTML = '';
 		renderNoteList();
+		document.execCommand('insertHTML', false, '# Untitled');
 		setTimeout(function(){
 			$editor.focus();
-			document.execCommand('insertHTML', false, '# Untitled');
 		},0);
 	}
 
@@ -259,7 +260,7 @@
 			var titleArr = noteIndex[id].split('\\');
 			var tmpPartParent = indexObj;
 			var i = 0;
-			while(titleArr[i]){
+			while(typeof titleArr[i] !== 'undefined'){
 				var part = titleArr[i];
 				var partObj;
 				var samePart = tmpPartParent.filter(function(existPart){
@@ -297,7 +298,7 @@
 			var tmpHtml = '';
 			tmpHtml = arr.map(function(arrItem){
 				var tmpHtml = '<li class="level'+level+'" data-level="'+level+'">';
-				tmpHtml += '<a href="#" title="'+arrItem.title+'" data-id="'+(arrItem.id || 0)+'">'+arrItem.title+'</a>';
+				tmpHtml += '<a href="#" title="'+(arrItem.title || 'Untitled')+'" data-id="'+(arrItem.id || 0)+'">'+(arrItem.title || 'Untitled')+'</a>';
 				tmpHtml += '<i class="delete">X</i>';
 				if(arrItem.children.length){
 					level++;
