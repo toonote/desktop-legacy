@@ -435,6 +435,10 @@
 				label:'保存',
 				accelerator:'Command+S',
 				click:save
+			},{
+				label:'导入Markdown',
+				accelerator:'Command+O',
+				click:openFile
 			}]
 		},{
 			label:'编辑',
