@@ -258,20 +258,43 @@
 	}
 
 	// 保存为markdown文件
-	function saveAs(){
+	function saveAs(format){
+		var filters = [];
+		if(format === 'markdown'){
+			filters.push({
+				name: 'Markdown文件',
+				extensions: ['md', 'markdown']
+			});
+		}else{
+			filters.push({
+				name: 'HTML文件',
+				extensions: ['html', 'htm']
+			});
+		}
 		var remote = require('remote');
 		var dialog = remote.require('dialog');
 		var filePath = dialog.showSaveDialog({
-			filters: [{
-				name: 'Markdown文件',
-				extensions: ['md', 'markdown']
-			}],
+			filters: filters,
 			properties: ['createDirectory']
 		});
 		if(!filePath) return;
 
 		var fs = require('fs');
-		fs.writeFile(filePath,currentNote.content.substr(0,currentNote.content.length-1),function(err){
+
+		var content = currentNote.content;
+		if(format !== 'markdown'){
+			content = $preview.innerHTML;
+		}
+		if(format === 'htmlfile'){
+			content = '<!doctype html><html>\n' +
+					'<head>\n' + 
+					'<meta charset="utf-8" />\n' +
+					'<title>' + noteIndex[currentNote.id] + '</title>\n' +
+					'<style>\n' + fs.readFileSync(__dirname + '/render.css','utf8') + '</style>\n' +
+					'</head>\n' +
+					'<body>\n' + content + '</body>\n</html>';
+		}
+		fs.writeFile(filePath,content.substr(0,content.length-1),function(err){
 			if(err){
 				alert('保存失败：\n' + err.message);
 			}
@@ -498,7 +521,19 @@
 			},{
 				label:'导出Markdown',
 				accelerator:'Command+Shift+S',
-				click:saveAs
+				click:function(){
+					saveAs('markdown');
+				}
+			},{
+				label:'导出HTML(Body)',
+				click:function(){
+					saveAs('htmlbody');
+				}
+			},{
+				label:'导出HTML(完整)',
+				click:function(){
+					saveAs('htmlfile');
+				}
 			}]
 		},{
 			label:'编辑',
