@@ -470,8 +470,11 @@
 
 	// 初始化
 	renderNoteList();
-	document.querySelector('#noteList li a').click();
-	renderPreview();
+	// renderPreview();
+	var $firstNoteIndex = document.querySelector('#noteList li a[data-id^="1"]');
+	if($firstNoteIndex){
+		$firstNoteIndex.click();
+	}
 
 	// 设置菜单
 	buildAppMenu();
