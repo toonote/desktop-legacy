@@ -184,13 +184,16 @@
 	// 折叠笔记
 	document.querySelector('#noteList').addEventListener('click',function(e){
 		if(e.target.tagName !== 'LI') return false;
-		var $childrenUl = e.target.querySelector('ul');
-		if(!$childrenUl) return false;
-		var isVisible = getComputedStyle($childrenUl).display !== 'none';
-		if(isVisible){
-			$childrenUl.style.display = 'none';
-		}else{
-			$childrenUl.style.display = 'block';
+		var $tmpNode = e.target.nextSibling;
+		var thisLevel = +e.target.dataset.level;
+		var isVisible = getComputedStyle($tmpNode).display !== 'none';
+		while($tmpNode && +$tmpNode.dataset.level > thisLevel){
+			if(isVisible){
+				$tmpNode.style.display = 'none';
+			}else{
+				$tmpNode.style.display = '';
+			}
+			$tmpNode = $tmpNode.nextSibling;
 		}
 	},false);
 
@@ -293,14 +296,14 @@
 		function genHtml(arr){
 			var tmpHtml = '';
 			tmpHtml = arr.map(function(arrItem){
-				var tmpHtml = '<li class="level'+level+'">';
+				var tmpHtml = '<li class="level'+level+'" data-level="'+level+'">';
 				tmpHtml += '<a href="#" title="'+arrItem.title+'" data-id="'+(arrItem.id || 0)+'">'+arrItem.title+'</a>';
 				tmpHtml += '<i class="delete">X</i>';
 				if(arrItem.children.length){
 					level++;
-					tmpHtml += '<ul>';
+					// tmpHtml += '<ul>';
 					tmpHtml += genHtml(arrItem.children);
-					tmpHtml += '</ul>';
+					// tmpHtml += '</ul>';
 					level--;
 				}
 				tmpHtml += '</li>';

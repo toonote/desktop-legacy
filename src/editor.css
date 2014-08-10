@@ -10,8 +10,6 @@ body,html{
 	height: 100%;
 	width:100%;
 	font-size:0;
-	/*display: flex;*/
-	/*-webkit-box-orient: horizontal;*/
 }
 #sidebar.hide,
 #editor.hide,
@@ -48,7 +46,6 @@ body,html{
 }
 #sidebar #noteList{
 	margin:10px 0;
-	/*padding-top:20px;*/
 	font-size:14px;
 	line-height: 1.6em;
 	list-style-position: inside;
@@ -56,10 +53,19 @@ body,html{
 #sidebar #noteList li{
 	padding:0 10px;
 	white-space: nowrap;
+	list-style-type: square;
 }
-/*#sidebar #noteList li.noHover{
-	background: transparent;
-}*/
+#sidebar #noteList li.level0{
+	list-style-type: disc;
+}
+#sidebar #noteList li.level1{
+	list-style-type: circle;
+	padding-left: 20px;
+}
+#sidebar #noteList li.level2{
+	list-style-type: square;
+	padding-left: 30px;
+}
 #sidebar #noteList li.active,
 #sidebar #noteList li:hover{
 	background: #555;
@@ -73,6 +79,7 @@ body,html{
 }
 #sidebar #noteList li:hover > i{
 	display: inline-block;
+	float: right;
 }
 #sidebar #noteList li a{
 	text-decoration: none;
