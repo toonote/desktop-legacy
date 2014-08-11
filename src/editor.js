@@ -1,7 +1,6 @@
 /*global hljs,alert,confirm*/
 (function(){
 
-	var open = require('open');
 	var packageJson = require('./package.json');
 	var version = packageJson.version;
 
@@ -108,7 +107,8 @@
 	$preview.addEventListener('click',function(e){
 		var $target = e.target;
 		if($target.tagName === 'A'){
-			open($target.href);
+			var shell = require('shell');
+			shell.openExternal($target.href);
 			e.preventDefault();
 		}
 	},true);
