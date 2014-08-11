@@ -29,6 +29,7 @@ body,html{
 	color:#ddd;
 	background:#f0f0f0;
 	z-index: -1;
+	overflow: hidden;
 }
 #sidebar{
 	display: inline-block;
