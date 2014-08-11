@@ -176,7 +176,6 @@
 		delete noteIndex[id];
 		localStorage.removeItem('note_'+id);
 		updateNoteIndex();
-		renderNoteList();
 		document.querySelector('#noteList li a').click();
 		renderPreview();
 	},false);
@@ -202,14 +201,15 @@
 	function newNote(){
 		var id = Date.now();
 		var thisNoteIndex = {};
-		thisNoteIndex[id] = 'Untitled';
+		var random = (Math.random()+'').substr(2,4);
+		thisNoteIndex[id] = 'Untitled\\'+random;
 		updateNoteIndex(thisNoteIndex);
 		currentNote.id = id;
-		currentNote.content = '# Untitled';
+		currentNote.content = '# Untitled\\'+random;
 		updateNote(currentNote);
 		$editor.innerHTML = '';
 		renderNoteList();
-		document.execCommand('insertHTML', false, '# Untitled');
+		document.execCommand('insertHTML', false, '# Untitled\\'+random);
 		setTimeout(function(){
 			$editor.focus();
 		},0);
@@ -247,6 +247,8 @@
 			}else{
 				newNote();
 				currentNote.content = fileContent;
+				var title = currentNote.content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
+				updateNoteIndex(title);
 				updateNote(currentNote);
 				$editor.innerHTML = htmlEncode(currentNote.content).split('\n').map(function(line){
 					return '<div>' + (line||'<br />') + '</div>';
