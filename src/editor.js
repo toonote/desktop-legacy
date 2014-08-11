@@ -487,6 +487,14 @@
 	function buildAppMenu(){
 		var remote = require('remote');
 		var Menu = remote.require('menu');
+
+		var withCtrlOrCmd = function(str){
+			var prefix = 'Ctrl';
+			if(process.platform === 'darwin'){
+				prefix = 'Command';
+			}
+			return prefix + '+' + str;
+		}
 		// var MenuItem = remote.require('menu-item');
 		var template = [{
 			label:'TooNote',
@@ -499,7 +507,7 @@
 				type: 'separator'
 			},{
 				label:'退出',
-				accelerator:'Command+Q',
+				accelerator:withCtrlOrCmd('Q'),
 				click:function(){
 					window.close();
 				}
@@ -508,19 +516,19 @@
 			label:'文件',
 			submenu: [{
 				label:'新建笔记',
-				accelerator:'Command+N',
+				accelerator:withCtrlOrCmd('N'),
 				click:newNote
 			},{
 				label:'保存',
-				accelerator:'Command+S',
+				accelerator:withCtrlOrCmd('S'),
 				click:save
 			},{
 				label:'导入Markdown',
-				accelerator:'Command+O',
+				accelerator:withCtrlOrCmd('O'),
 				click:openFile
 			},{
 				label:'导出Markdown',
-				accelerator:'Command+Shift+S',
+				accelerator:withCtrlOrCmd('Shift+S'),
 				click:function(){
 					saveAs('markdown');
 				}
@@ -539,7 +547,7 @@
 			label:'编辑',
 			submenu:[{
 				label:'查找',
-				accelerator:'Command+F',
+				accelerator:withCtrlOrCmd('F'),
 				click:function(){
 					switchSearch();
 				}
@@ -548,19 +556,19 @@
 			label:'视图',
 			submenu:[{
 				label:'切换列表',
-				accelerator:'Command+1',
+				accelerator:withCtrlOrCmd('1'),
 				click:function(){
 					switchVisible('sidebar');
 				}
 			},{
 				label:'切换编辑',
-				accelerator:'Command+2',
+				accelerator:withCtrlOrCmd('2'),
 				click:function(){
 					switchVisible('editor');
 				}
 			},{
 				label:'切换预览',
-				accelerator:'Command+3',
+				accelerator:withCtrlOrCmd('3'),
 				click:function(){
 					switchVisible('preview');
 				}
