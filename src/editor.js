@@ -515,6 +515,8 @@
 				accelerator:'Command+S',
 				click:save
 			},{
+				type: 'separator'
+			},{
 				label:'导入Markdown',
 				accelerator:'Command+O',
 				click:openFile
@@ -524,6 +526,8 @@
 				click:function(){
 					saveAs('markdown');
 				}
+			},{
+				type: 'separator'
 			},{
 				label:'导出HTML(Body)',
 				click:function(){
@@ -543,6 +547,17 @@
 				click:function(){
 					switchSearch();
 				}
+			},{
+				type: 'separator'
+			},{
+				label:'剪切',
+				accelerator:'Command+X'
+			},{
+				label:'复制',
+				accelerator:'Command+C'
+			},{
+				label:'粘贴',
+				accelerator:'Command+V'
 			}]
 		},{
 			label:'视图',
