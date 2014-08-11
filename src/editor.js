@@ -561,13 +561,13 @@
 				type: 'separator'
 			},{
 				label:'剪切',
-				accelerator:'Command+X'
+				accelerator:withCtrlOrCmd('X')
 			},{
 				label:'复制',
-				accelerator:'Command+C'
+				accelerator:withCtrlOrCmd('C')
 			},{
 				label:'粘贴',
-				accelerator:'Command+V'
+				accelerator:withCtrlOrCmd('V')
 			}]
 		},{
 			label:'视图',
