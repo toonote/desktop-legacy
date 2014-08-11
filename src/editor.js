@@ -1,7 +1,6 @@
 /*global hljs,alert,confirm*/
 (function(){
 
-	var open = require('open');
 	var packageJson = require('./package.json');
 	var version = packageJson.version;
 
@@ -108,7 +107,8 @@
 	$preview.addEventListener('click',function(e){
 		var $target = e.target;
 		if($target.tagName === 'A'){
-			open($target.href);
+			var shell = require('shell');
+			shell.openExternal($target.href);
 			e.preventDefault();
 		}
 	},true);
@@ -176,7 +176,6 @@
 		delete noteIndex[id];
 		localStorage.removeItem('note_'+id);
 		updateNoteIndex();
-		renderNoteList();
 		document.querySelector('#noteList li a').click();
 		renderPreview();
 	},false);
@@ -202,14 +201,15 @@
 	function newNote(){
 		var id = Date.now();
 		var thisNoteIndex = {};
-		thisNoteIndex[id] = 'Untitled';
+		var random = (Math.random()+'').substr(2,4);
+		thisNoteIndex[id] = 'Untitled\\'+random;
 		updateNoteIndex(thisNoteIndex);
 		currentNote.id = id;
-		currentNote.content = '# Untitled';
+		currentNote.content = '# Untitled\\'+random;
 		updateNote(currentNote);
 		$editor.innerHTML = '';
 		renderNoteList();
-		document.execCommand('insertHTML', false, '# Untitled');
+		document.execCommand('insertHTML', false, '# Untitled\\'+random);
 		setTimeout(function(){
 			$editor.focus();
 		},0);
@@ -247,6 +247,8 @@
 			}else{
 				newNote();
 				currentNote.content = fileContent;
+				var title = currentNote.content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
+				updateNoteIndex(title);
 				updateNote(currentNote);
 				$editor.innerHTML = htmlEncode(currentNote.content).split('\n').map(function(line){
 					return '<div>' + (line||'<br />') + '</div>';
@@ -487,6 +489,14 @@
 	function buildAppMenu(){
 		var remote = require('remote');
 		var Menu = remote.require('menu');
+
+		var withCtrlOrCmd = function(str){
+			var prefix = 'Ctrl';
+			if(process.platform === 'darwin'){
+				prefix = 'Command';
+			}
+			return prefix + '+' + str;
+		}
 		// var MenuItem = remote.require('menu-item');
 		var template = [{
 			label:'TooNote',
@@ -499,7 +509,7 @@
 				type: 'separator'
 			},{
 				label:'退出',
-				accelerator:'Command+Q',
+				accelerator:withCtrlOrCmd('Q'),
 				click:function(){
 					window.close();
 				}
@@ -508,21 +518,21 @@
 			label:'文件',
 			submenu: [{
 				label:'新建笔记',
-				accelerator:'Command+N',
+				accelerator:withCtrlOrCmd('N'),
 				click:newNote
 			},{
 				label:'保存',
-				accelerator:'Command+S',
+				accelerator:withCtrlOrCmd('S'),
 				click:save
 			},{
 				type: 'separator'
 			},{
 				label:'导入Markdown',
-				accelerator:'Command+O',
+				accelerator:withCtrlOrCmd('O'),
 				click:openFile
 			},{
 				label:'导出Markdown',
-				accelerator:'Command+Shift+S',
+				accelerator:withCtrlOrCmd('Shift+S'),
 				click:function(){
 					saveAs('markdown');
 				}
@@ -543,7 +553,7 @@
 			label:'编辑',
 			submenu:[{
 				label:'查找',
-				accelerator:'Command+F',
+				accelerator:withCtrlOrCmd('F'),
 				click:function(){
 					switchSearch();
 				}
@@ -563,19 +573,19 @@
 			label:'视图',
 			submenu:[{
 				label:'切换列表',
-				accelerator:'Command+1',
+				accelerator:withCtrlOrCmd('1'),
 				click:function(){
 					switchVisible('sidebar');
 				}
 			},{
 				label:'切换编辑',
-				accelerator:'Command+2',
+				accelerator:withCtrlOrCmd('2'),
 				click:function(){
 					switchVisible('editor');
 				}
 			},{
 				label:'切换预览',
-				accelerator:'Command+3',
+				accelerator:withCtrlOrCmd('3'),
 				click:function(){
 					switchVisible('preview');
 				}
