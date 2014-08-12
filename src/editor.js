@@ -267,10 +267,15 @@
 				name: 'Markdown文件',
 				extensions: ['md', 'markdown']
 			});
-		}else{
+		}else if(format === 'htmlbody' || format === 'htmlfile'){
 			filters.push({
 				name: 'HTML文件',
 				extensions: ['html', 'htm']
+			});
+		}else if(format === 'pdf'){
+			filters.push({
+				name: 'PDF文件',
+				extensions: ['pdf']
 			});
 		}
 		var remote = require('remote');
@@ -287,7 +292,7 @@
 		if(format !== 'markdown'){
 			content = $preview.innerHTML;
 		}
-		if(format === 'htmlfile'){
+		if(format === 'htmlfile' || format === 'pdf'){
 			content = '<!doctype html><html>\n' +
 					'<head>\n' + 
 					'<meta charset="utf-8" />\n' +
@@ -296,9 +301,40 @@
 					'</head>\n' +
 					'<body>\n' + content + '</body>\n</html>';
 		}
+
+		if(format === 'pdf'){
+			var pdfPath = filePath;
+			var path = require('path');
+			var cwd = path.dirname(filePath);
+			// 如果是pdf，先生成一个临时HTML文件
+			filePath = path.join(cwd,'tmp.htm');
+		}
 		fs.writeFile(filePath,content.substr(0,content.length-1),function(err){
 			if(err){
 				alert('保存失败：\n' + err.message);
+			}else if(format === 'pdf'){
+				// 生成pdf
+				var spawn = require('child_process').spawn;
+				var pdfprocess = spawn(__dirname + '/lib/phantomjs',[
+					__dirname + '/html2pdf.js',
+					filePath,
+					pdfPath
+				],{
+					cwd:cwd
+				});
+				pdfprocess.stdout.on('data',function(data){
+					console.log(data);
+				});
+				pdfprocess.stderr.on('data',function(data){
+					console.log(data);
+				});
+				pdfprocess.on('close',function(){
+					console.log('closed');
+					// 删除HTML文件
+					fs.unlink(filePath,function(){
+						console.log('htm deleted');
+					});
+				});
 			}
 		});
 	}
@@ -540,6 +576,13 @@
 				label:'导出HTML(完整)',
 				click:function(){
 					saveAs('htmlfile');
+				}
+			},{
+				type: 'separator'
+			},{
+				label:'导出PDF',
+				click:function(){
+					saveAs('pdf');
 				}
 			}]
 		},{
