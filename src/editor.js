@@ -490,13 +490,6 @@
 		var remote = require('remote');
 		var Menu = remote.require('menu');
 
-		var withCtrlOrCmd = function(str){
-			var prefix = 'Ctrl';
-			if(process.platform === 'darwin'){
-				prefix = 'Command';
-			}
-			return prefix + '+' + str;
-		}
 		// var MenuItem = remote.require('menu-item');
 		var template = [{
 			label:'TooNote',
@@ -509,7 +502,7 @@
 				type: 'separator'
 			},{
 				label:'退出',
-				accelerator:withCtrlOrCmd('Q'),
+				accelerator:'CommandOrControl+Q',
 				click:function(){
 					window.close();
 				}
@@ -518,21 +511,21 @@
 			label:'文件',
 			submenu: [{
 				label:'新建笔记',
-				accelerator:withCtrlOrCmd('N'),
+				accelerator:'CommandOrControl+N',
 				click:newNote
 			},{
 				label:'保存',
-				accelerator:withCtrlOrCmd('S'),
+				accelerator:'CommandOrControl+S',
 				click:save
 			},{
 				type: 'separator'
 			},{
 				label:'导入Markdown',
-				accelerator:withCtrlOrCmd('O'),
+				accelerator:'CommandOrControl+O',
 				click:openFile
 			},{
 				label:'导出Markdown',
-				accelerator:withCtrlOrCmd('Shift+S'),
+				accelerator:'CommandOrControl+Shift+S',
 				click:function(){
 					saveAs('markdown');
 				}
@@ -553,7 +546,7 @@
 			label:'编辑',
 			submenu:[{
 				label:'查找',
-				accelerator:withCtrlOrCmd('F'),
+				accelerator:'CommandOrControl+F',
 				click:function(){
 					switchSearch();
 				}
@@ -561,31 +554,31 @@
 				type: 'separator'
 			},{
 				label:'剪切',
-				accelerator:withCtrlOrCmd('X')
+				accelerator:'CommandOrControl+X',
 			},{
 				label:'复制',
-				accelerator:withCtrlOrCmd('C')
+				accelerator:'CommandOrControl+C'
 			},{
 				label:'粘贴',
-				accelerator:withCtrlOrCmd('V')
+				accelerator:'CommandOrControl+V'
 			}]
 		},{
 			label:'视图',
 			submenu:[{
 				label:'切换列表',
-				accelerator:withCtrlOrCmd('1'),
+				accelerator:'CommandOrControl+1',
 				click:function(){
 					switchVisible('sidebar');
 				}
 			},{
 				label:'切换编辑',
-				accelerator:withCtrlOrCmd('2'),
+				accelerator:'CommandOrControl+2',
 				click:function(){
 					switchVisible('editor');
 				}
 			},{
 				label:'切换预览',
-				accelerator:withCtrlOrCmd('3'),
+				accelerator:'CommandOrControl+3',
 				click:function(){
 					switchVisible('preview');
 				}
