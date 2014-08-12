@@ -317,16 +317,16 @@
 				var spawn = require('child_process').spawn;
 				var pdfprocess = spawn(__dirname + '/lib/phantomjs',[
 					__dirname + '/html2pdf.js',
-					filePath,
+					encodeURI(filePath),
 					pdfPath
 				],{
 					cwd:cwd
 				});
 				pdfprocess.stdout.on('data',function(data){
-					console.log(data);
+					console.log('stdout'+data);
 				});
 				pdfprocess.stderr.on('data',function(data){
-					console.log(data);
+					console.log('stderr'+data);
 				});
 				pdfprocess.on('close',function(){
 					console.log('closed');
