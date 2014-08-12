@@ -545,22 +545,35 @@
 		},{
 			label:'编辑',
 			submenu:[{
-				label:'查找',
-				accelerator:'CommandOrControl+F',
-				click:function(){
-					switchSearch();
-				}
+				label: '撤销',
+				accelerator: 'CommandOrControl+Z',
+				selector: 'undo:'
+			},{
+				label: '重做',
+				accelerator: 'CommandOrControl+Shift+Z',
+				selector: 'redo:'
 			},{
 				type: 'separator'
 			},{
 				label:'剪切',
 				accelerator:'CommandOrControl+X',
+				selector:'cut:'
 			},{
 				label:'复制',
-				accelerator:'CommandOrControl+C'
+				accelerator:'CommandOrControl+C',
+				selector:'copy:'
 			},{
 				label:'粘贴',
-				accelerator:'CommandOrControl+V'
+				accelerator:'CommandOrControl+V',
+				selector:'paste:'
+			},{
+				type: 'separator'
+			},{
+				label:'查找',
+				accelerator:'CommandOrControl+F',
+				click:function(){
+					switchSearch();
+				}
 			}]
 		},{
 			label:'视图',
