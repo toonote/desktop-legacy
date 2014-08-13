@@ -353,10 +353,10 @@
 			properties: ['createDirectory']
 		});
 		if(!filePath) return;
-		var zip = new require('node-zip')();
+		var zip = new require('jszip')();
 		zip.file('index',JSON.stringify(noteIndex));
 		for(var id in noteIndex){
-			zip.file(id,localStorage.getItem('note_' + id));
+			zip.file(id,localStorage.getItem('note_' + id),{binary:false});
 		}
 		var data = zip.generate({base64:false,compression:'DEFLATE'});
 		var fs = require('fs');
