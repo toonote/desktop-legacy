@@ -260,7 +260,7 @@
 		});
 	}
 
-	// 保存为markdown文件
+	// 导出为各种格式文件
 	function saveAs(format){
 		var filters = [];
 		if(format === 'markdown'){
@@ -598,6 +598,10 @@
 				selector: 'redo:'
 			},{
 				type: 'separator'
+			},{
+				label: '全选',
+				accelerator: 'CommandOrControl+A',
+				selector: 'selectAll:'
 			},{
 				label:'剪切',
 				accelerator:'CommandOrControl+X',
