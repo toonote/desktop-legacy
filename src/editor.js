@@ -30,8 +30,9 @@
 	$editor.addEventListener('paste',function(e){
 		e.preventDefault();
 		var text = e.clipboardData.getData('text/plain');
-		// var temp = document.createElement('div');
-		// temp.innerHTML = text;
+		text = htmlEncode(text).split('\n').map(function(line){
+			return '<div>' + (line||'<br />') + '</div>';
+		}).join('');
 		document.execCommand('insertHTML', false, text);
 	});
 
