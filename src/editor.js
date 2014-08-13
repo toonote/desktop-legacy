@@ -356,7 +356,7 @@
 		var zip = new require('jszip')();
 		zip.file('index',JSON.stringify(noteIndex));
 		for(var id in noteIndex){
-			zip.file(id,localStorage.getItem('note_' + id),{binary:false});
+			zip.file(id,JSON.stringify(localStorage.getItem('note_' + id)),{binary:false});
 		}
 		var data = zip.generate({base64:false,compression:'DEFLATE'});
 		var fs = require('fs');
@@ -393,11 +393,12 @@
 				zip.load(fileContent);
 				var zipNoteIndex = JSON.parse(zip.files.index.asText() || '{}');
 				if(!confirm('备份文件含有'+Object.keys(zipNoteIndex).length+'条笔记，如确认导入将覆盖当前所有笔记，请您再次确认是否要清除当前笔记并导入备份文件？')) return;
+				noteIndex = zipNoteIndex;
 				updateNoteIndex(zipNoteIndex);
 				for(var id in noteIndex){
 					updateNote({
 						id:id,
-						content:zip.files[id].asNodeBuffer().toString()
+						content:JSON.parse(zip.files[id].asText())
 					});
 				}
 				var $firstNoteIndex = document.querySelector('#noteList li a[data-id^="1"]');
