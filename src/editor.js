@@ -260,7 +260,7 @@
 		});
 	}
 
-	// 保存为markdown文件
+	// 导出为各种格式文件
 	function saveAs(format){
 		var filters = [];
 		if(format === 'markdown'){
@@ -336,6 +336,74 @@
 						console.log('htm deleted');
 					});
 				});
+			}
+		});
+	}
+
+	// 创建备份文件
+	function createBackUp(){
+		var filters = [{
+			name: 'TooNote备份文件',
+			extensions: ['tnt']
+		}];
+		var remote = require('remote');
+		var dialog = remote.require('dialog');
+		var filePath = dialog.showSaveDialog({
+			filters: filters,
+			properties: ['createDirectory']
+		});
+		if(!filePath) return;
+		var zip = new require('node-zip')();
+		zip.file('index',JSON.stringify(noteIndex));
+		for(var id in noteIndex){
+			zip.file(id,localStorage.getItem('note_' + id));
+		}
+		var data = zip.generate({base64:false,compression:'DEFLATE'});
+		var fs = require('fs');
+		fs.writeFile(filePath,data,'binary',function(err,result){
+			if(!err){
+				console.log('tnt create successed.');
+			}else{
+				console.log('tnt create fail.' + err.message);
+			}
+		});
+	}
+
+	// 从备份文件恢复
+	function importBackUp(){
+		var remote = require('remote');
+		var dialog = remote.require('dialog');
+		var filePath = dialog.showOpenDialog({
+			filters: [{
+				name: 'TooNote备份文件',
+				extensions: ['tnt']
+			}],
+			properties: ['openFile']
+		});
+		if(!filePath || !filePath.length) return;
+		filePath = filePath[0];
+
+		var fs = require('fs');
+		fs.readFile(filePath,'binary',function(err,fileContent){
+			if(err){
+				alert('打开文件出错：\n'+err.message);
+				return;
+			}else{
+				var zip = new require('jszip')();
+				zip.load(fileContent);
+				var zipNoteIndex = JSON.parse(zip.files.index.asText() || '{}');
+				if(!confirm('备份文件含有'+Object.keys(zipNoteIndex).length+'条笔记，如确认导入将覆盖当前所有笔记，请您再次确认是否要清除当前笔记并导入备份文件？')) return;
+				updateNoteIndex(zipNoteIndex);
+				for(var id in noteIndex){
+					updateNote({
+						id:id,
+						content:zip.files[id].asText()
+					});
+				}
+				var $firstNoteIndex = document.querySelector('#noteList li a[data-id^="1"]');
+				if($firstNoteIndex){
+					$firstNoteIndex.click();
+				}
 			}
 		});
 	}
@@ -585,6 +653,14 @@
 				click:function(){
 					saveAs('pdf');
 				}
+			},{
+				type: 'separator'
+			},{
+				label:'备份所有笔记',
+				click:createBackUp
+			},{
+				label:'从备份恢复',
+				click:importBackUp
 			}]
 		},{
 			label:'编辑',
