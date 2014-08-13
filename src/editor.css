@@ -310,24 +310,43 @@ body,html{
 	border: 1px solid #aaa;
 }
 #toc{
+	width:24px;
+	height:30px;
+	overflow: hidden;
 	font-size: 14px;
 	position: absolute;
 	right: 20px;
 	top: 20px;
 	background: #333;
 	border-radius: 5px;
-	opacity: 0.4;
+	opacity: 0.2;
 	color:#fff;
-	padding:10px 30px 10px 10px;
+	padding:10px 30px 10px 0;
+	-webkit-transition:all .2s;
+	cursor: pointer;
 }
 #toc:hover{
+	width: initial;
+	height: initial;
 	opacity: 0.8;
+	text-indent: initial;
 }
 #toc li{
 	padding-left:10px;
 	list-style-position: inside;
 	white-space: nowrap;
+	color:transparent;
+}
+#toc:hover li{
+	color:#fff;
 }
 #toc a{
+	color:transparent;
+	text-decoration: none;
+}
+#toc:hover a{
 	color:#fff;
+}
+#toc:hover a:hover{
+	color: #ccc;
 }
