@@ -107,7 +107,7 @@
 	// 链接
 	$preview.addEventListener('click',function(e){
 		var $target = e.target;
-		if($target.tagName === 'A'){
+		if($target.tagName === 'A' && /^https?:\/\//.test($target.href)){
 			var shell = require('shell');
 			shell.openExternal($target.href);
 			e.preventDefault();
@@ -513,11 +513,28 @@
 	// 转换成markdown显示
 	function renderPreview(){
 		var marked = require('marked');
-		var html = marked(currentNote.content);
+
+		var previewRenderer = new marked.Renderer();
+		var index = 0;
+		previewRenderer.heading = function (text, level) {
+			return '<h' + level + '><a name="anchor'+(index++)+'">'+ text + '</a></h' + level + '>';
+		};
+		var html = marked(currentNote.content,{renderer:previewRenderer});
 		$preview.innerHTML = html;
+
 		Array.prototype.forEach.call($preview.querySelectorAll('pre code'),function(code){
 			hljs.highlightBlock(code.parentNode);
 		});
+
+		var toc = require('marked-toc');
+		var tocMarkdown = toc(currentNote.content);
+		var tocRenderer = new marked.Renderer();
+		index = 1;
+		tocRenderer.link = function(href,title,text){
+			return '<a href="#anchor'+(index++)+'" title="'+text+'">'+text+'</a>';
+		};
+		var tocHtml = marked(tocMarkdown,{renderer:tocRenderer});
+		document.querySelector('#toc').innerHTML = tocHtml;
 	}
 
 	// 切换各栏显示状态

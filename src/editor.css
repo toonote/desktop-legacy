@@ -151,6 +151,15 @@ body,html{
 #preview h1:first-child{
 	margin-top:0;
 }
+#preview h1 > a,#preview h2 > a,#preview h3 > a,
+#preview h4 > a,#preview h5 > a,#preview h6 > a{
+	color:#333;
+	cursor:normal;
+}
+#preview h1 > a::before,#preview h2 > a::before,#preview h3 > a::before,
+#preview h4 > a::before,#preview h5 > a::before,#preview h6 > a::before{
+	content:'';
+}
 #preview p{
 	font-size: 14px;
 	margin: 1.8em 0;
@@ -299,4 +308,26 @@ body,html{
 	border-radius: 2px;
 	background: #333;
 	border: 1px solid #aaa;
+}
+#toc{
+	font-size: 14px;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	background: #333;
+	border-radius: 5px;
+	opacity: 0.4;
+	color:#fff;
+	padding:10px 30px 10px 10px;
+}
+#toc:hover{
+	opacity: 0.8;
+}
+#toc li{
+	padding-left:10px;
+	list-style-position: inside;
+	white-space: nowrap;
+}
+#toc a{
+	color:#fff;
 }

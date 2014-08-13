@@ -29,6 +29,15 @@ body h4,body h5,body h6{
 body h1:first-child{
 	margin-top:0;
 }
+body h1 > a,body h2 > a,body h3 > a,
+body h4 > a,body h5 > a,body h6 > a{
+	color:#333;
+	cursor:normal;
+}
+body h1 > a::before,body h2 > a::before,body h3 > a::before,
+body h4 > a::before,body h5 > a::before,body h6 > a::before{
+	content:'';
+}
 body p{
 	font-size: 14px;
 	margin: 1.8em 0;
