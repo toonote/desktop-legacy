@@ -4,6 +4,10 @@
 	var packageJson = require('./package.json');
 	var version = packageJson.version;
 
+	var api = require('./api.js');
+
+	window.config = JSON.parse(localStorage.getItem('config') || '{}');
+
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
 	var currentNote = {};
 
@@ -736,6 +740,20 @@
 				accelerator:'CommandOrControl+3',
 				click:function(){
 					switchVisible('preview');
+				}
+			}]
+		},{
+			label:'云',
+			submenu:[{
+				label:'微盘授权',
+				click:function(){
+					api.oauth('vdisk',function(err){
+						if(!err){
+							api.doSync('vdisk');
+						}else{
+							alert('授权出错：'+err.message);
+						}
+					});
 				}
 			}]
 		}];
