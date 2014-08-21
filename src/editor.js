@@ -850,13 +850,13 @@
 									var title = getTitleByContent(content);
 									var newIndex = {};
 									newIndex[id] = title;
+									updateSyncIndex('vdisk',id,true);
 									updateNoteIndex(newIndex);
 									renderNoteList();
 									if(+id === currentNote.id){
 										document.querySelector('#editor').innerHTML = getEditorContent(content);
 										renderPreview();
 									}
-									syncIndex.vdisk[id].localUpdateTime = remoteUpdateTime;
 								}
 							});
 						}else{
