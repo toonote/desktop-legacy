@@ -82,7 +82,10 @@ body,html{
 	display: inline-block;
 	float: right;
 }
-#sidebar #noteList li:hover a[data-id="0"] + i{
+#sidebar #noteList li > i.vdisk.ok{
+	color:lime;
+}
+#sidebar #noteList li:hover a[data-id="0"] ~ i{
 	display: none;
 }
 #sidebar #noteList li a{

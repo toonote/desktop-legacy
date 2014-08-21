@@ -9,12 +9,18 @@
 	window.config = JSON.parse(localStorage.getItem('config') || '{}');
 
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
+	var syncIndex = JSON.parse(localStorage.getItem('syncIndex') || '{}');
+	if(!syncIndex.vdisk){
+		syncIndex.vdisk = {};
+		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
+	}
 	var currentNote = {};
 
 	var $editor = document.querySelector('#editor');
 	var $preview = document.querySelector('#preview');
 	var saveTimer,saveInterval=1000;
 
+	// 输入响应
 	$editor.addEventListener('input',function(){
 
 		if(!saveTimer){
@@ -25,37 +31,22 @@
 			},saveInterval);
 		}
 		currentNote.content = $editor.innerText;
-		var title = currentNote.content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
+		var title = getTitleByContent(currentNote.content);
 		updateNoteIndex(title);
-
+		updateSyncIndex('vdisk');
 
 	},false);
 
+	// 粘贴响应
 	$editor.addEventListener('paste',function(e){
 		e.preventDefault();
 		var text = e.clipboardData.getData('text/plain');
-		text = htmlEncode(text).split('\n').map(function(line){
-			return '<div>' + (line||'<br />') + '</div>';
-		}).join('');
+		text = getEditorContent(text);
 		document.execCommand('insertHTML', false, text);
+		updateSyncIndex('vdisk');
 	});
 
-	document.addEventListener('keydown',function(e){
-		var ctrlOrCmd = e.metaKey || e.ctrlKey;
-		// ESC
-		if(e.keyCode === 27){
-			switchSearch(false);
-			return;
-		}
-		// Enter(当搜索框可见的时候回车继续搜索)
-		if(e.keyCode === 13){
-			if(getComputedStyle(document.querySelector('#search')).display !== 'none'){
-				document.querySelector('#search .searchBtn').click();
-			}
-		}
-		return false;
-	});
-
+	// 编辑体验优化 - 响应TAB
 	$editor.addEventListener('keydown',function(e){
 		if(e.keyCode === 9){
 			// TAB
@@ -70,6 +61,59 @@
 			selection.removeAllRanges();
 			selection.addRange(range);
 		}
+	});
+
+	// 拖拽插图
+	$editor.addEventListener('dragover',function(e){
+		e.stopPropagation();
+		e.preventDefault();
+	});
+	$editor.addEventListener('drop',function(e){
+		e.stopPropagation();
+		e.preventDefault();
+		var img = e.dataTransfer.files[0];
+		if(!img || !/^image/.test(img.type)) return;
+
+		var $currNode = e.target;
+		if(/\S+/.test($currNode.innerText)){
+			// 如果当前元素非空，插入下方
+			var $nextNode = $currNode.nextSibling;
+			var $parent = $currNode.parentNode;
+			var $newNode = document.createElement('div');
+			var $blankNode = document.createElement('div');
+			$blankNode.innerHTML = '<br />';
+			$newNode.innerText = '![' + img.name + '](' + img.path + ')';
+			if($nextNode){
+				$parent.insertBefore($newNode,$nextNode);
+			}else{
+				$parent.appendChild($newNode);
+			}
+			$parent.insertBefore($blankNode,$newNode);
+		}else{
+			// 如果当前元素为空，插入当前元素
+			$currNode.innerText = '![' + img.name + '](' + img.path + ')';
+		}
+		currentNote.content = $editor.innerText;
+		updateNote(currentNote);
+		renderPreview();
+		console.log(e.target);
+	});
+
+	// 搜索快捷键
+	document.addEventListener('keydown',function(e){
+		var ctrlOrCmd = e.metaKey || e.ctrlKey;
+		// ESC
+		if(e.keyCode === 27){
+			switchSearch(false);
+			return;
+		}
+		// Enter(当搜索框可见的时候回车继续搜索)
+		if(e.keyCode === 13){
+			if(getComputedStyle(document.querySelector('#search')).display !== 'none'){
+				document.querySelector('#search .searchBtn').click();
+			}
+		}
+		return false;
 	});
 
 	// 搜索
@@ -118,42 +162,6 @@
 		}
 	},true);
 
-	// 拖拽插图
-	$editor.addEventListener('dragover',function(e){
-		e.stopPropagation();
-		e.preventDefault();
-	});
-	$editor.addEventListener('drop',function(e){
-		e.stopPropagation();
-		e.preventDefault();
-		var img = e.dataTransfer.files[0];
-		if(!img || !/^image/.test(img.type)) return;
-
-		var $currNode = e.target;
-		if(/\S+/.test($currNode.innerText)){
-			// 如果当前元素非空，插入下方
-			var $nextNode = $currNode.nextSibling;
-			var $parent = $currNode.parentNode;
-			var $newNode = document.createElement('div');
-			var $blankNode = document.createElement('div');
-			$blankNode.innerHTML = '<br />';
-			$newNode.innerText = '![' + img.name + '](' + img.path + ')';
-			if($nextNode){
-				$parent.insertBefore($newNode,$nextNode);
-			}else{
-				$parent.appendChild($newNode);
-			}
-			$parent.insertBefore($blankNode,$newNode);
-		}else{
-			// 如果当前元素为空，插入当前元素
-			$currNode.innerText = '![' + img.name + '](' + img.path + ')';
-		}
-		currentNote.content = $editor.innerText;
-		updateNote(currentNote);
-		renderPreview();
-		console.log(e.target);
-	});
-
 
 	// 获取当前笔记
 	document.querySelector('#noteList').addEventListener('click',function(e){
@@ -166,9 +174,7 @@
 		}
 		currentNote.id = id;
 		currentNote.content = localStorage.getItem('note_'+id);
-		document.querySelector('#editor').innerHTML = htmlEncode(currentNote.content).split('\n').map(function(line){
-			return '<div>' + (line||'<br />') + '</div>';
-		}).join('');
+		document.querySelector('#editor').innerHTML = getEditorContent(currentNote.content);
 		renderPreview();
 		setActiveNote(id);
 	},false);
@@ -183,6 +189,26 @@
 		updateNoteIndex();
 		document.querySelector('#noteList li a').click();
 		renderPreview();
+	},false);
+
+	// 同步当前笔记
+	document.querySelector('#noteList').addEventListener('click',function(e){
+		if(!e.target.classList.contains('vdisk')) return false;
+		// if(!confirm('确定要删除该笔记吗？')) return false;
+		var id = e.target.parentNode.querySelector('a').dataset.id;
+		var isSync = !e.target.classList.contains('ok');
+		doSync('vdisk',id,isSync,function(err,result){
+			if(err){
+				console.log(err.message);
+				return;
+			}
+			updateSyncIndex('vdisk',id,isSync);
+		});
+		if(isSync){
+			e.target.classList.add('ok');
+		}else{
+			e.target.classList.remove('ok');
+		}
 	},false);
 
 	// 折叠笔记
@@ -252,12 +278,10 @@
 			}else{
 				newNote();
 				currentNote.content = fileContent;
-				var title = currentNote.content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
+				var title = getTitleByContent(currentNote.content);
 				updateNoteIndex(title);
 				updateNote(currentNote);
-				$editor.innerHTML = htmlEncode(currentNote.content).split('\n').map(function(line){
-					return '<div>' + (line||'<br />') + '</div>';
-				}).join('');
+				$editor.innerHTML = getEditorContent(currentNote.content);
 				renderPreview();
 				renderNoteList();
 			}
@@ -431,6 +455,33 @@
 		renderNoteList();
 	}
 
+	// 更新同步状态
+	function updateSyncIndex(provider,id,isSync){
+		var newIndex = {
+			localUpdateTime:Date.now()
+		};
+		if(!id) id = currentNote.id;
+		console.log('更新同步索引，ID：'+id+'，时间：'+newIndex.localUpdateTime+'，isSync：'+isSync);
+		if(typeof isSync !== 'undefined'){
+			if(isSync){
+				newIndex.isSync = isSync;
+				syncIndex[provider][id] = newIndex;
+			}else{
+				delete syncIndex[provider][id];
+			}
+		}
+		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
+	}
+
+	// 同步笔记
+	function doSync(provider,id,isSync,callback){
+		if(isSync){
+			api.syncNote(provider,id,localStorage.getItem('note_'+id),callback);
+		}else{
+			api.deleteNote(provider,id);
+		}
+	}
+
 	// 渲染笔记列表
 	function renderNoteList(){
 
@@ -490,7 +541,8 @@
 			tmpHtml = arr.map(function(arrItem){
 				var tmpHtml = '<li class="level'+level+'" data-level="'+level+'">';
 				tmpHtml += '<a href="#" title="'+(arrItem.title || 'Untitled')+'" data-id="'+(arrItem.id || 0)+'">'+(arrItem.title || 'Untitled')+'</a>';
-				tmpHtml += '<i class="delete">X</i>';
+				tmpHtml += '<i title="删除笔记" class="delete">X</i>';
+				tmpHtml += '<i title="同步到微盘" class="vdisk'+(syncIndex.vdisk[arrItem.id] && syncIndex.vdisk[arrItem.id].isSync?' ok':'')+'">V</i>';
 				if(arrItem.children.length){
 					level++;
 					// tmpHtml += '<ul>';
@@ -506,6 +558,7 @@
 
 	}
 
+	// 切换到指定ID的笔记
 	function setActiveNote(id){
 		var activeLi = document.querySelector('#noteList li.active');
 		if(activeLi){
@@ -601,6 +654,18 @@
 			var selection = window.getSelection();
 			selection.removeAllRanges();
 		}
+	}
+
+	// 从内容中提示标题
+	function getTitleByContent(content){
+		return content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
+	}
+
+	// 将内容变成编辑区显示的html
+	function getEditorContent(content){
+		return htmlEncode(content).split('\n').map(function(line){
+			return '<div>' + (line||'<br />') + '</div>';
+		}).join('');
 	}
 
 	// HTML编码
@@ -749,7 +814,51 @@
 				click:function(){
 					api.oauth('vdisk',function(err){
 						if(!err){
-							api.doSync('vdisk');
+							api.pullSync('vdisk',function(id,remoteUpdateTime,content){
+								console.log('从远程获取到笔记，ID:'+id+'，更新时间:'+remoteUpdateTime);
+								if(!syncIndex.vdisk[id]){
+									// 本地没有同步标记的，直接用远程覆盖
+									console.log('本地没有同步标记');
+									updateLocal();
+								}else{
+									console.log('本地有同步标记');
+									// 本地有同步标记
+									if(!syncIndex.vdisk[id].isSync){
+										// 本地关闭了同步，删除远程
+										console.log('本地文章关闭了同步');
+										api.deleteNote(id);
+									}else{
+										// 本地开启了同步
+										console.log('本地文章启用了同步');
+										if(syncIndex.vdisk[id].localUpdateTime > remoteUpdateTime){
+											console.log('本地文章较新，本地更新时间：'+syncIndex.vdisk[id].localUpdateTime);
+											// 本地的比较新
+											api.syncNote('vdisk',id,localStorage.getItem('note_'+id),function(err){
+												if(err){
+													console.log('同步错误');
+												}
+											});
+										}else{
+											console.log('远程文章较新，本地更新时间：'+syncIndex.vdisk[id].localUpdateTime);
+											// 远程的比较新
+											updateLocal();
+										}
+									}
+								}
+								function updateLocal(){
+									localStorage.setItem('note_'+id,content);
+									var title = getTitleByContent(content);
+									var newIndex = {};
+									newIndex[id] = title;
+									updateNoteIndex(newIndex);
+									renderNoteList();
+									if(+id === currentNote.id){
+										document.querySelector('#editor').innerHTML = getEditorContent(content);
+										renderPreview();
+									}
+									syncIndex.vdisk[id].localUpdateTime = remoteUpdateTime;
+								}
+							});
 						}else{
 							alert('授权出错：'+err.message);
 						}

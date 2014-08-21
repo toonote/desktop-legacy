@@ -70,22 +70,100 @@ exports.oauth = function(provider,callback){
 
 };
 
-exports.doSync = function(provider){
-	var request = require('request');
+exports.pullSync = function(provider,callback){
+	var restler = require('restler');
 	var querystring = require('querystring');
 	var url = require('url');
 	var config = window.config;
 	if(provider === 'vdisk'){
 		var accessToken = config.oauth.vdisk.accessToken;
-		request('https://api.weipan.cn/2/metadata/sandbox/?'+querystring.stringify({
+		restler.get('https://api.weipan.cn/2/metadata/sandbox/?'+querystring.stringify({
 			access_token:accessToken
-		}),{
-			strictSSL:false
-		},function(err,response,body){
-			console.log(err,response,body);
-			if(err) return;
+		})).on('complete',function(body){
 			var fileList = JSON.parse(body).contents;
-			console.log(fileList);
+			doPullSync(fileList,callback);
+		});
+	}
+
+	function doPullSync(fileList,fileCallback){
+		// 连接池，并行任务
+		asyncThread(2,fileList,function(fileItem,callback){
+			var remoteUpdateTime = new Date(fileItem.modified).getTime();
+			restler.get('https://api.weipan.cn/2/files/sandbox'+fileItem.path+'?'+querystring.stringify({
+				access_token:accessToken
+			})).on('complete',function(body){
+				var content = JSON.parse(new Buffer(body,'utf8').toString());
+				// console.log(content);
+				fileCallback(fileItem.path.replace(/^\//,''),remoteUpdateTime,content);
+				callback();
+			});
 		});
 	}
 };
+
+exports.syncNote = function(provider,id,content,callback){
+	var restler = require('restler');
+	var querystring = require('querystring');
+	var url = require('url');
+	var config = window.config;
+	var fileContent = new Buffer(JSON.stringify(content),'utf8');
+	if(provider === 'vdisk'){
+		var accessToken = config.oauth.vdisk.accessToken;
+		restler.post('https://upload-vdisk.sina.com.cn/2/files/sandbox/'+id+'?'+querystring.stringify({
+		// restler.post('http://localhost:56789?'+querystring.stringify({
+			access_token:accessToken
+		}),{
+			multipart:true,
+			data:{
+				file:restler.data(id,'application/octet-stream',fileContent)
+			}
+		}).on('complete',function(body){
+			var err;
+			try{
+				JSON.parse(body);
+				err = null;
+			}catch(e){
+				err = new Error('同步失败：\n'+body);
+			}
+			callback(err);
+			console.log(body);
+		});
+	}
+};
+
+exports.deleteNote = function(){};
+
+function asyncThread(threadCount,stack,func){
+	if(!threadCount) threadCount = 1; //异步线程数
+	if(!Array.isArray(stack)) stack = []; //需要处理的队列
+	if(typeof func !== 'function') func = function(data,callback){callback();};	//对数据执行操作的函数
+	var eventUtil = {};
+	eventUtil.subList = {};
+	eventUtil.on = function(e,callback){
+		if(!eventUtil.subList[e]){
+			eventUtil.subList[e] = [];
+		}
+		eventUtil.subList[e].push(callback);
+	};
+	eventUtil.trigger = function(e,data){
+		if(eventUtil.subList[e] && eventUtil.subList[e].length){
+			eventUtil.subList[e].forEach(function(callback){
+				callback(e,data);
+			});
+		}
+	};
+	eventUtil.on('empty',function(threadIndex){
+		if(!stack.length) return;
+		var target = stack.shift();
+		
+		setTimeout(function(){
+			func(target,function(){
+				eventUtil.trigger('empty',threadIndex);
+			});
+		},0);
+	});
+	for(var i=threadCount;i--;){
+		eventUtil.trigger('empty',i);
+	}
+}
+
