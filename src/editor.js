@@ -853,7 +853,7 @@
 									updateSyncIndex('vdisk',id,true);
 									updateNoteIndex(newIndex);
 									renderNoteList();
-									if(+id === currentNote.id){
+									if(+id === +currentNote.id){
 										document.querySelector('#editor').innerHTML = getEditorContent(content);
 										renderPreview();
 									}
