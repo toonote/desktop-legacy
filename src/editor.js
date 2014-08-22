@@ -486,7 +486,7 @@
 		if(isSync){
 			api.syncNote(provider,id,localStorage.getItem('note_'+id),callback);
 		}else{
-			api.deleteNote(provider,id);
+			api.deleteNote(provider,id,callback);
 		}
 	}
 
@@ -693,7 +693,7 @@
 				if(!syncIndex.vdisk[id].isSync){
 					// 本地关闭了同步，删除远程
 					console.log('本地文章关闭了同步');
-					api.deleteNote(id);
+					api.deleteNote('vdisk',id,function(){});
 				}else{
 					// 本地开启了同步
 					console.log('本地文章启用了同步');
@@ -923,6 +923,11 @@
 
 	// 设置菜单
 	buildAppMenu();
+
+	// 微盘同步
+	if(localStorage.getItem('syncVdisk') === 'true'){
+		vdiskSync();
+	}
 
 })();
 

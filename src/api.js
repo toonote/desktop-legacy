@@ -131,7 +131,33 @@ exports.syncNote = function(provider,id,content,callback){
 	}
 };
 
-exports.deleteNote = function(){};
+exports.deleteNote = function(provider,id,callback){
+	var restler = require('restler');
+	var querystring = require('querystring');
+	var url = require('url');
+	var config = window.config;
+	if(provider === 'vdisk'){
+		var accessToken = config.oauth.vdisk.accessToken;
+		restler.post('https://api.weipan.cn/2/fileops/delete?'+querystring.stringify({
+			access_token:accessToken
+		}),{
+			data:{
+				root:'sandbox',
+				path:id
+			}
+		}).on('complete',function(body){
+			var err;
+			try{
+				JSON.parse(body);
+				err = null;
+			}catch(e){
+				err = new Error('同步失败：\n'+body);
+			}
+			callback(err);
+			console.log(body);
+		});
+	}
+};
 
 function asyncThread(threadCount,stack,func){
 	if(!threadCount) threadCount = 1; //异步线程数
