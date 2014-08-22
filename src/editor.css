@@ -321,7 +321,7 @@ body,html{
 	right: 20px;
 	top: 20px;
 	background: #333;
-	border-radius: 5px;
+	border-radius: 15px;
 	opacity: 0.2;
 	color:#fff;
 	padding:10px 30px 10px 0;
@@ -333,6 +333,7 @@ body,html{
 	height: initial;
 	opacity: 0.8;
 	text-indent: initial;
+	border-radius: 5px;
 }
 #toc li{
 	padding-left:10px;
