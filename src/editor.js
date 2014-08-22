@@ -456,19 +456,27 @@
 	}
 
 	// 更新同步状态
-	function updateSyncIndex(provider,id,isSync){
+	function updateSyncIndex(provider,id,isSync,remoteUpdateTime,updateLocal){
 		var newIndex = {
 			localUpdateTime:Date.now()
 		};
+		if(updateLocal){
+			newIndex.localUpdateTime = remoteUpdateTime;
+		}
 		if(!id) id = currentNote.id;
 		console.log('更新同步索引，ID：'+id+'，时间：'+newIndex.localUpdateTime+'，isSync：'+isSync);
 		if(typeof isSync !== 'undefined'){
 			if(isSync){
 				newIndex.isSync = isSync;
+				if(typeof remoteUpdateTime !== 'undefined'){
+					newIndex.remoteUpdateTime = remoteUpdateTime;
+				}
 				syncIndex[provider][id] = newIndex;
 			}else{
 				delete syncIndex[provider][id];
 			}
+		}else{
+			syncIndex[provider][id].localUpdateTime = newIndex.localUpdateTime;
 		}
 		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
 	}
@@ -656,6 +664,92 @@
 		}
 	}
 
+	function vdiskSync(){
+		api.oauth('vdisk',function(err){
+			if(!err){
+				localStorage.setItem('syncVdisk','true');
+				startVdiskSync();
+			}else{
+				alert('授权出错：'+err.message);
+			}
+		});
+	}
+
+	function startVdiskSync(){
+		// 每2分钟同步一次
+		setTimeout(startVdiskSync,120*1000);
+
+		// 拉取同步
+		console.log('准备开始拉取远程笔记');
+		api.pullSync('vdisk',function(id,remoteUpdateTime,content){
+			console.log('从远程获取到笔记，标题为【'+(noteIndex[id] || '本地没有')+'】，ID:'+id+'，更新时间:'+remoteUpdateTime);
+			if(!syncIndex.vdisk[id]){
+				// 本地没有同步标记的，直接用远程覆盖
+				console.log('本地没有同步标记');
+				updateLocal();
+			}else{
+				console.log('本地有同步标记');
+				// 本地有同步标记
+				if(!syncIndex.vdisk[id].isSync){
+					// 本地关闭了同步，删除远程
+					console.log('本地文章关闭了同步');
+					api.deleteNote(id);
+				}else{
+					// 本地开启了同步
+					console.log('本地文章启用了同步');
+					if(syncIndex.vdisk[id].localUpdateTime >= remoteUpdateTime){
+						console.log('本地文章较新，本地更新时间：'+syncIndex.vdisk[id].localUpdateTime);
+						// 本地的比较新
+						api.syncNote('vdisk',id,localStorage.getItem('note_'+id),function(err){
+							if(err){
+								console.log('同步错误');
+							}
+						});
+					}else{
+						console.log('远程文章较新，本地更新时间：'+syncIndex.vdisk[id].localUpdateTime);
+						// 远程的比较新
+						updateLocal();
+					}
+				}
+			}
+			function updateLocal(){
+				localStorage.setItem('note_'+id,content);
+				var title = getTitleByContent(content);
+				var newIndex = {};
+				newIndex[id] = title;
+				updateSyncIndex('vdisk',id,true,remoteUpdateTime,true);
+				updateNoteIndex(newIndex);
+				renderNoteList();
+				if(+id === +currentNote.id){
+					document.querySelector('#editor').innerHTML = getEditorContent(content);
+					renderPreview();
+				}
+			}
+		});
+
+		// 推送同步
+		setTimeout(function(){
+			console.log('开始推送本地笔记');
+			for(var id in syncIndex.vdisk){
+				var sync = syncIndex.vdisk[id];
+				console.log('推送笔记【'+noteIndex[id]+'】，ID：'+id+'，sync:',sync);
+				if(sync.isSync && (!sync.remoteUpdateTime || sync.localUpdateTime > sync.remoteUpdateTime)){
+					console.log('开始推送');
+					api.syncNote('vdisk',id,localStorage.getItem('note_'+id),function(err){
+						if(err){
+							console.log('推送失败',err);
+						}else{
+							console.log('推送成功');
+						}
+					});
+				}else{
+					console.log('无需推送');
+				}
+			}
+		},60*1000);
+		
+	}
+
 	// 从内容中提示标题
 	function getTitleByContent(content){
 		return content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
@@ -810,60 +904,8 @@
 		},{
 			label:'云',
 			submenu:[{
-				label:'微盘授权',
-				click:function(){
-					api.oauth('vdisk',function(err){
-						if(!err){
-							api.pullSync('vdisk',function(id,remoteUpdateTime,content){
-								console.log('从远程获取到笔记，ID:'+id+'，更新时间:'+remoteUpdateTime);
-								if(!syncIndex.vdisk[id]){
-									// 本地没有同步标记的，直接用远程覆盖
-									console.log('本地没有同步标记');
-									updateLocal();
-								}else{
-									console.log('本地有同步标记');
-									// 本地有同步标记
-									if(!syncIndex.vdisk[id].isSync){
-										// 本地关闭了同步，删除远程
-										console.log('本地文章关闭了同步');
-										api.deleteNote(id);
-									}else{
-										// 本地开启了同步
-										console.log('本地文章启用了同步');
-										if(syncIndex.vdisk[id].localUpdateTime > remoteUpdateTime){
-											console.log('本地文章较新，本地更新时间：'+syncIndex.vdisk[id].localUpdateTime);
-											// 本地的比较新
-											api.syncNote('vdisk',id,localStorage.getItem('note_'+id),function(err){
-												if(err){
-													console.log('同步错误');
-												}
-											});
-										}else{
-											console.log('远程文章较新，本地更新时间：'+syncIndex.vdisk[id].localUpdateTime);
-											// 远程的比较新
-											updateLocal();
-										}
-									}
-								}
-								function updateLocal(){
-									localStorage.setItem('note_'+id,content);
-									var title = getTitleByContent(content);
-									var newIndex = {};
-									newIndex[id] = title;
-									updateSyncIndex('vdisk',id,true);
-									updateNoteIndex(newIndex);
-									renderNoteList();
-									if(+id === +currentNote.id){
-										document.querySelector('#editor').innerHTML = getEditorContent(content);
-										renderPreview();
-									}
-								}
-							});
-						}else{
-							alert('授权出错：'+err.message);
-						}
-					});
-				}
+				label:'微盘同步',
+				click:vdiskSync
 			}]
 		}];
 
