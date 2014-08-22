@@ -551,7 +551,7 @@
 		function genHtml(arr){
 			var tmpHtml = '';
 			tmpHtml = arr.map(function(arrItem){
-				var tmpHtml = '<li class="level'+level+'" data-level="'+level+'">';
+				var tmpHtml = '<li class="level'+level+(+arrItem.id === +currentNote.id?' active':'')+'" data-level="'+level+'">';
 				tmpHtml += '<a href="#" title="'+(arrItem.title || 'Untitled')+'" data-id="'+(arrItem.id || 0)+'">'+(arrItem.title || 'Untitled')+'</a>';
 				tmpHtml += '<i title="删除笔记" class="delete">X</i>';
 				tmpHtml += '<i title="同步到微盘" class="vdisk'+(syncIndex.vdisk[arrItem.id] && syncIndex.vdisk[arrItem.id].isSync?' ok':'')+'">V</i>';
