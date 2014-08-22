@@ -51,7 +51,8 @@
 		if(e.keyCode === 9){
 			// TAB
 			e.preventDefault();
-			var selection = window.getSelection();
+			document.execCommand('insertHTML', false, '\t');
+			/*var selection = window.getSelection();
 			var range = selection.getRangeAt(0);
 
 			var node = document.createTextNode('\t');
@@ -59,7 +60,7 @@
 			range.setEndAfter(node);
 			range.setStartAfter(node);
 			selection.removeAllRanges();
-			selection.addRange(range);
+			selection.addRange(range);*/
 		}
 	});
 
