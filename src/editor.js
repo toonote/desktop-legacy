@@ -476,6 +476,9 @@
 				delete syncIndex[provider][id];
 			}
 		}else{
+			if(!syncIndex[provider][id]){
+				syncIndex[provider][id] = {};
+			}
 			syncIndex[provider][id].localUpdateTime = newIndex.localUpdateTime;
 		}
 		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
