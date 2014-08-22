@@ -14,7 +14,8 @@ app.on('ready', function() {
 		width: 1000,
 		height: 600,
 		'use-content-size':true,
-		resizable:true
+		resizable:true,
+		icon: __dirname + '/images/logo_window.png'
 	});
 	mainWindow.loadUrl('file://' + __dirname + '/editor.html');
 	mainWindow.on('closed', function() {
