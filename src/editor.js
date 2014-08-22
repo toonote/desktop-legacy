@@ -721,7 +721,9 @@
 				updateNoteIndex(newIndex);
 				renderNoteList();
 				if(+id === +currentNote.id){
-					document.querySelector('#editor').innerHTML = getEditorContent(content);
+					currentNote.content = content;
+					$editor.innerHTML = getEditorContent(content);
+					updateNote(currentNote);
 					renderPreview();
 				}
 			}
