@@ -34,21 +34,10 @@ exports.oauth = function(provider,callback){
 			console.log(parsedUrl);
 			if(parsedUrl.host === 'api.weibo.com'){
 				authWindow.close();
-				/*var requestCode = parsedUrl.query.code;
-				authWindow.close();
-				request({
-					method:'POST',
-					url:'https://auth.sina.com.cn/oauth2/access_token',
-					form:{
-						client_id:clientId,
-						client_secret:clientSecret,
-						grant_type:'authorization_code',
-						code:requestCode,
-						redirect_uri:redirectUrl
-					}
-				},function(err,response,body){
-					console.log(err,response,body);
-				});*/
+				if(!parsedUrl.hash){
+					callback(new Error('auth error'));
+					return;
+				}
 				var parsedHash = querystring.parse(parsedUrl.hash.substr(1,parsedUrl.hash.length-1));
 				var accessToken = parsedHash.access_token;
 				if(!config.oauth){

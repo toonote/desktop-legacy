@@ -674,6 +674,7 @@
 				localStorage.setItem('syncVdisk','true');
 				startVdiskSync();
 			}else{
+				localStorage.setItem('syncVdisk','false');
 				alert('授权出错：'+err.message);
 			}
 		});
