@@ -13,7 +13,8 @@ body,html{
 }
 #sidebar.hide,
 #editor.hide,
-#preview.hide{
+#preview.hide,
+#toc.hide{
 	display: none;
 }
 #background{
@@ -34,7 +35,7 @@ body,html{
 #sidebar{
 	display: inline-block;
 	width:200px;
-	overflow: hidden;
+	overflow-x: hidden;
 	height:100%;
 	background:#333;
 	color:#f0f0f0;
@@ -55,6 +56,7 @@ body,html{
 	padding:0 10px;
 	white-space: nowrap;
 	list-style-type: square;
+	position: relative;
 }
 #sidebar #noteList li.level0{
 	list-style-type: disc;
@@ -80,7 +82,13 @@ body,html{
 }
 #sidebar #noteList li:hover > i{
 	display: inline-block;
-	float: right;
+	position: absolute;
+	right:0;
+	background: #555;
+	width: 16px;
+}
+#sidebar #noteList li > i.vdisk{
+	right:16px;
 }
 #sidebar #noteList li > i.vdisk.ok{
 	color:lime;

@@ -603,7 +603,13 @@
 			return '<a href="#anchor'+(index++)+'" title="'+text+'">'+text+'</a>';
 		};
 		var tocHtml = marked(tocMarkdown,{renderer:tocRenderer});
-		document.querySelector('#toc').innerHTML = tocHtml;
+		var $toc = document.querySelector('#toc');
+		if(tocHtml){
+			$toc.innerHTML = tocHtml;
+			$toc.classList.remove('hide');
+		}else{
+			$toc.classList.add('hide');
+		}
 	}
 
 	// 切换各栏显示状态
