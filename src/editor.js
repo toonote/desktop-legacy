@@ -341,8 +341,7 @@
 			// 如果是pdf，先生成一个临时HTML文件
 			filePath = path.join(cwd,'tmp.htm');
 		}
-		// fs.writeFile(filePath,content.substr(0,content.length-1),function(err){
-		fs.writeFile(filePath,content,function(err){
+		fs.writeFile(filePath,content.substr(0,content.length-1),function(err){
 			if(err){
 				alert('保存失败：\n' + err.message);
 			}else if(format === 'pdf'){
