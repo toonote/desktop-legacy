@@ -229,6 +229,12 @@ body,html{
 	list-style-position: inside;
 	font-size: 14px;
 	margin-left: 1em;
+	margin-top:1.8em;
+	line-height: 1.6em;
+}
+#preview ul ul,#preview ol ol,
+#preview ul ol,#preview ol ul{
+	margin-top: 0;
 }
 #preview ul{
 	list-style-type: disc;

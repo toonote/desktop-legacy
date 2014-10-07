@@ -96,6 +96,12 @@ body ul,body ol{
 	list-style-position: inside;
 	font-size: 14px;
 	margin-left: 1em;
+	margin-top:1.8em;
+	line-height: 1.6em;
+}
+body ul ul,body ol ol,
+body ul ol,body ol ul{
+	margin-top: 0;
 }
 body ul{
 	list-style-type: disc;
