@@ -25,7 +25,7 @@ exports.oauth = function(provider,callback){
 				redirect_uri:redirectUrl,
 				response_type:'token'
 			}),
-			'test',
+			'authWindow',
 			''
 		);
 

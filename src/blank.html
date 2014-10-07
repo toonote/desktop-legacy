@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>TooNote</title>
+	<style>
+		div#preview{
+			width:100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="preview"></div>
+	<div id="toc"></div>
+	<script>
+		var ipc = require('ipc');
+		ipc.on('loadCss', function(cssArr) {
+			console.log('loadCss',cssArr);
+			if(!Array.isArray(cssArr)) return;
+			cssArr.forEach(function(css){
+				var $link = document.createElement('link');
+				$link.rel = 'stylesheet';
+				$link.href = css;
+				document.head.appendChild($link);
+			});
+		});
+		ipc.on('loadJs', function(jsArr) {
+			console.log('loadJs',jsArr);
+			if(!Array.isArray(jsArr)) return;
+			jsArr.forEach(function(js){
+				var $script = document.createElement('script');
+				$script.src = js;
+				document.head.appendChild($script);
+			});
+		});
+		ipc.on('loadNote', function(note) {
+			var view = require('./view');
+			view.renderPreview(note);
+		});
+	</script>
+</body>
+</html>

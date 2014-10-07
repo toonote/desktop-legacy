@@ -5,6 +5,7 @@
 	var version = packageJson.version;
 
 	var api = require('./api.js');
+	var view = require('./view.js');
 
 	window.config = JSON.parse(localStorage.getItem('config') || '{}');
 
@@ -583,35 +584,7 @@
 
 	// 转换成markdown显示
 	function renderPreview(){
-		var marked = require('marked');
-
-		var previewRenderer = new marked.Renderer();
-		var index = 0;
-		previewRenderer.heading = function (text, level) {
-			return '<h' + level + '><a name="anchor'+(index++)+'">'+ text + '</a></h' + level + '>';
-		};
-		var html = marked(currentNote.content,{renderer:previewRenderer});
-		$preview.innerHTML = html;
-
-		Array.prototype.forEach.call($preview.querySelectorAll('pre code'),function(code){
-			hljs.highlightBlock(code.parentNode);
-		});
-
-		var toc = require('marked-toc');
-		var tocMarkdown = toc(currentNote.content);
-		var tocRenderer = new marked.Renderer();
-		index = 1;
-		tocRenderer.link = function(href,title,text){
-			return '<a href="#anchor'+(index++)+'" title="'+text+'">'+text+'</a>';
-		};
-		var tocHtml = marked(tocMarkdown,{renderer:tocRenderer});
-		var $toc = document.querySelector('#toc');
-		if(tocHtml){
-			$toc.innerHTML = tocHtml;
-			$toc.classList.remove('hide');
-		}else{
-			$toc.classList.add('hide');
-		}
+		view.renderPreview(currentNote);
 	}
 
 	// 切换各栏显示状态
@@ -914,6 +887,12 @@
 				accelerator:'CommandOrControl+3',
 				click:function(){
 					switchVisible('preview');
+				}
+			},{
+				label:'新窗口打开',
+				accelerator:'CommandOrControl+T',
+				click:function(){
+					view.openNoteInNewWindow(currentNote);
 				}
 			}]
 		},{
