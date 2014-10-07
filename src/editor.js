@@ -189,7 +189,10 @@
 		delete noteIndex[id];
 		localStorage.removeItem('note_'+id);
 		updateNoteIndex();
-		document.querySelector('#noteList li a').click();
+		var $firstNoteIndex = document.querySelector('#noteList li a[data-id^="1"]');
+		if($firstNoteIndex){
+			$firstNoteIndex.click();
+		}
 		renderPreview();
 	},false);
 
