@@ -16,9 +16,10 @@ var openNewWindow = function(cssArr,jsArr,action,message){
 
 exports.openNoteInNewWindow = function(note){
 	openNewWindow([
-		'./editor.css'
+		'./editor.css',
+		'./monokai_sublime.css'
 	],[
-		'./highlight.pack.js'
+		'./highlight.pack.js',
 	],'loadNote',note);
 };
 

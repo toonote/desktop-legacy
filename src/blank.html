@@ -27,15 +27,37 @@
 		ipc.on('loadJs', function(jsArr) {
 			console.log('loadJs',jsArr);
 			if(!Array.isArray(jsArr)) return;
-			jsArr.forEach(function(js){
-				var $script = document.createElement('script');
-				$script.src = js;
-				document.head.appendChild($script);
-			});
+			var loadedCount = 0;
+			if(jsArr.length){
+				jsArr.forEach(function(js){
+					var $script = document.createElement('script');
+					$script.src = js;
+					document.head.appendChild($script);
+					var callback = function(){
+						loadedCount++;
+						if(loadedCount === jsArr.length){
+							window.doPageTask && doPageTask();
+							window.ready = true;
+						}
+					};
+					$script.onload = callback;
+					$script.onerror = callback;
+				});
+			}else{
+				setTimeout(function(){
+					window.doPageTask && doPageTask();
+					window.ready = true;
+				},0);
+			}
 		});
 		ipc.on('loadNote', function(note) {
-			var view = require('./view');
-			view.renderPreview(note);
+			window.doPageTask = function(){
+				var view = require('./view');
+				view.renderPreview(note);
+			}
+			if(window.ready){
+				window.doPageTask();
+			}
 		});
 
 		// 关闭窗口
