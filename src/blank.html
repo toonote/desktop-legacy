@@ -37,6 +37,16 @@
 			var view = require('./view');
 			view.renderPreview(note);
 		});
+
+		// 关闭窗口
+		document.addEventListener('keydown',function(e){
+			var ctrlOrCmd = e.metaKey || e.ctrlKey;
+			// CTRL+W
+			if(e.keyCode === 87){
+				window.close();
+				return;
+			}
+		});
 	</script>
 </body>
 </html>
