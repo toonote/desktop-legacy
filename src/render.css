@@ -43,6 +43,10 @@ body p{
 	margin: 1.8em 0;
 	line-height: 1.8em;
 }
+body li p{
+	margin: 0;
+	margin-left:2em;
+}
 body blockquote{
 	padding:10px;
 	margin:10px 0;

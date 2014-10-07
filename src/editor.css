@@ -176,6 +176,10 @@ body,html{
 	margin: 1.8em 0;
 	line-height: 1.8em;
 }
+#preview li p{
+	margin: 0;
+	margin-left:2em;
+}
 #preview blockquote{
 	padding:10px;
 	margin:10px 0;
