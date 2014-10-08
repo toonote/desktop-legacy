@@ -6,6 +6,8 @@
 
 	var api = require('./api.js');
 	var view = require('./view.js');
+	var todo = require('./todo.js');
+	todo.init();
 
 	window.config = JSON.parse(localStorage.getItem('config') || '{}');
 
@@ -21,22 +23,25 @@
 	var $preview = document.querySelector('#preview');
 	var saveTimer,saveInterval=1000;
 
-	// 输入响应
-	$editor.addEventListener('input',function(){
-
+	var handleInput = function(){
 		if(!saveTimer){
 			saveTimer = setTimeout(function(){
 				updateNote(currentNote);
 				renderPreview();
+				updateNoteIndex(title);
+				updateSyncIndex('vdisk');
 				saveTimer = 0;
 			},saveInterval);
 		}
 		currentNote.content = $editor.innerText;
 		var title = getTitleByContent(currentNote.content);
-		updateNoteIndex(title);
-		updateSyncIndex('vdisk');
+	}
 
-	},false);
+	// 输入响应
+	$editor.addEventListener('input',handleInput,false);
+
+	// 输入响应
+	$editor.addEventListener('keydown',handleInput,false);
 
 	// 粘贴响应
 	$editor.addEventListener('paste',function(e){
@@ -103,7 +108,6 @@
 
 	// 搜索快捷键
 	document.addEventListener('keydown',function(e){
-		var ctrlOrCmd = e.metaKey || e.ctrlKey;
 		// ESC
 		if(e.keyCode === 27){
 			switchSearch(false);
@@ -755,7 +759,7 @@
 	// HTML编码
 	function htmlEncode(str){
 		return str.replace(/</g,'&lt;')
-				.replace(/ /g,'&nbsp;')
+				.replace(/ /g,'&#32;')
 				.replace(/>/g,'&gt;')
 				.replace(/"/g,'&quot;')
 				.replace(/'/g,'&apos;');

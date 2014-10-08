@@ -34,8 +34,12 @@ exports.renderPreview = function(note){
 	var html = marked(note.content,{renderer:previewRenderer});
 	$preview.innerHTML = html;
 
-	Array.prototype.forEach.call($preview.querySelectorAll('pre code'),function(code){
-		hljs.highlightBlock(code.parentNode);
+	Array.prototype.forEach.call($preview.querySelectorAll('pre code'),function($code){
+		hljs.highlightBlock($code.parentNode);
+	});
+	var todo = require('./todo');
+	Array.prototype.forEach.call($preview.querySelectorAll('li'),function($li){
+		$li.innerHTML = todo.parseTodo($li.innerHTML);
 	});
 
 	var toc = require('marked-toc');
