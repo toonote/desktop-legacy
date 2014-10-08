@@ -178,7 +178,10 @@ body,html{
 }
 #preview li p{
 	margin: 0;
-	margin-left:2em;
+	margin-left:1em;
+}
+#preview li p:first-of-type{
+	margin-left: 0;
 }
 #preview blockquote{
 	padding:10px;

@@ -45,7 +45,10 @@ body p{
 }
 body li p{
 	margin: 0;
-	margin-left:2em;
+	margin-left:1em;
+}
+body li p:first-of-type{
+	margin-left: 0;
 }
 body blockquote{
 	padding:10px;
