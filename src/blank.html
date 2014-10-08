@@ -64,7 +64,7 @@
 		document.addEventListener('keydown',function(e){
 			var ctrlOrCmd = e.metaKey || e.ctrlKey;
 			// CTRL+W
-			if(e.keyCode === 87){
+			if(ctrlOrCmd && e.keyCode === 87){
 				window.close();
 				return;
 			}
