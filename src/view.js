@@ -38,9 +38,11 @@ exports.renderPreview = function(note){
 		hljs.highlightBlock($code.parentNode);
 	});
 	var todo = require('./todo');
-	Array.prototype.forEach.call($preview.querySelectorAll('li'),function($li){
+	var $allLi = $preview.querySelectorAll('li');
+	for(var i = $allLi.length;i--;){
+		var $li = $allLi[i];
 		$li.innerHTML = todo.parseTodo($li.innerHTML);
-	});
+	}
 
 	var toc = require('marked-toc');
 	var tocMarkdown = toc(note.content);
