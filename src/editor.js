@@ -304,12 +304,12 @@
 		if(format === 'markdown'){
 			filters.push({
 				name: 'Markdown文件',
-				extensions: ['md', 'markdown']
+				extensions: ['md']
 			});
 		}else if(format === 'htmlbody' || format === 'htmlfile'){
 			filters.push({
 				name: 'HTML文件',
-				extensions: ['html', 'htm']
+				extensions: ['html']
 			});
 		}else if(format === 'pdf'){
 			filters.push({
