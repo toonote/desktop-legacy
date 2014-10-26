@@ -260,8 +260,8 @@
 
 	// 保存
 	function save(){
-		currentNote.content = $editor.innerText;
-		currentNote.content = currentNote.content.substr(0,currentNote.content.length - 1);
+		currentNote.content = JSON.parse(JSON.stringify($editor.innerText));
+		currentNote.content = currentNote.content.replace(/\n$/,'');
 		updateNote(currentNote);
 		renderPreview();
 	}
