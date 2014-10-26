@@ -334,7 +334,8 @@
 		if(format === 'htmlfile' || format === 'pdf'){
 			content = '<!doctype html><html>\n' +
 					'<head>\n' + 
-					'<meta charset="utf-8" />\n' +
+					'<meta charset="utf-8">\n' +
+					'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
 					'<title>' + noteIndex[currentNote.id] + '</title>\n' +
 					'<style>\n' + fs.readFileSync(__dirname + '/render.css','utf8') + '</style>\n' +
 					'</head>\n' +
