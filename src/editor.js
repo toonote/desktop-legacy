@@ -35,7 +35,7 @@
 		}
 		currentNote.content = $editor.innerText;
 		var title = getTitleByContent(currentNote.content);
-	}
+	};
 
 	// 输入响应
 	$editor.addEventListener('input',handleInput,false);
@@ -348,7 +348,7 @@
 			// 如果是pdf，先生成一个临时HTML文件
 			filePath = path.join(cwd,'tmp.htm');
 		}
-		fs.writeFile(filePath,content.substr(0,content.length-1),function(err){
+		fs.writeFile(filePath,JSON.parse(JSON.stringify(content))/*.substr(0,content.length-1)*/,function(err){
 			if(err){
 				alert('保存失败：\n' + err.message);
 			}else if(format === 'pdf'){
