@@ -23,6 +23,8 @@
 	var $preview = document.querySelector('#preview');
 	var saveTimer,saveInterval=1000;
 
+	var isExporting = false;	//标记是否正在导出，如果是，则不替换有问题的图片
+
 	var handleInput = function(){
 		if(!saveTimer){
 			saveTimer = setTimeout(function(){
@@ -152,6 +154,7 @@
 
 	// 图片出错处理
 	$preview.addEventListener('error',function(e){
+		if(isExporting) return;
 		var $target = e.target;
 		if($target.tagName === 'IMG'){
 			$target.src = './images/404.jpg';
@@ -329,7 +332,10 @@
 
 		var content = currentNote.content;
 		if(format !== 'markdown'){
+			isExporting = true;
+			view.renderPreview(currentNote);
 			content = $preview.innerHTML;
+			isExporting = false;
 		}
 		if(format === 'htmlfile' || format === 'pdf'){
 			content = '<!doctype html><html>\n' +
