@@ -263,6 +263,7 @@
 
 	// 保存
 	function save(){
+		if($editor.classList.contains('hide')) return;
 		currentNote.content = JSON.parse(JSON.stringify($editor.innerText));
 		currentNote.content = currentNote.content.replace(/\n$/,'');
 		updateNote(currentNote);
