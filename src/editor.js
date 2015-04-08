@@ -348,7 +348,7 @@
 					'<title>' + noteIndex[currentNote.id] + '</title>\n' +
 					'<style>\n' + fs.readFileSync(__dirname + '/render.css','utf8') + '</style>\n' +
 					'</head>\n' +
-					'<body>\n' + content + '</body>\n</html>';
+					'<body class="preview">\n' + content + '</body>\n</html>';
 		}
 
 		if(format === 'pdf'){
