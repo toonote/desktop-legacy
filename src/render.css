@@ -15,7 +15,7 @@ body,html{
 body{
 	background: rgb(253,253,248);
 	padding:20px;
-	color: #333;
+	color: #555;
 	font-size: 14px;
 }
 body h1{
@@ -31,7 +31,7 @@ body h1:first-child{
 }
 body h1 > a,body h2 > a,body h3 > a,
 body h4 > a,body h5 > a,body h6 > a{
-	color:#333;
+	color:#555;
 	cursor:normal;
 }
 body h1 > a::before,body h2 > a::before,body h3 > a::before,
