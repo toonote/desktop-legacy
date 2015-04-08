@@ -1,3 +1,7 @@
+var $editor = document.querySelector('#editor');
+var $preview = document.querySelector('#preview');
+var $sidebar = document.querySelector('#sidebar');
+
 var openNewWindow = function(cssArr,jsArr,action,message){
 
 	var newWindow = window.open('file://' + __dirname + '/blank.html','newWindow','');
@@ -59,4 +63,72 @@ exports.renderPreview = function(note){
 	}else{
 		$toc.classList.add('hide');
 	}
-}
+};
+
+exports.init = function(){
+	var _this = this;
+	var hideTabs = JSON.parse(localStorage.getItem('toonote_hideTabs') || '[]');
+	window.addEventListener('DOMContentLoaded',function(){
+		hideTabs.forEach(function(hideTab){
+			_this.switchVisible(hideTab);
+		});
+	});
+};
+
+// 切换各栏显示状态
+exports.switchVisible = function(eleName){
+
+	var $ele;
+
+	switch(eleName){
+		case 'sidebar':
+			$ele = $sidebar;
+			break;
+		case 'editor':
+			$ele = $editor;
+			break;
+		case 'preview':
+			$ele = $preview;
+			break;
+	}
+
+	if($ele.classList.contains('hide')){
+		$ele.classList.remove('hide');
+	}else{
+		$ele.classList.add('hide');
+	}
+
+	var sidebarVisible = !$sidebar.classList.contains('hide');
+	var editorVisible = !$editor.classList.contains('hide');
+	var previewVisible = !$preview.classList.contains('hide');
+
+	var editorStatus = sidebarVisible?
+		(previewVisible?'normal':'aloneWithSidebar'):
+		(previewVisible?'noSidebar':'alone');
+	var previewStatus = sidebarVisible?
+		(editorVisible?'normal':'aloneWithSidebar'):
+		(editorVisible?'noSidebar':'alone');
+
+	if(editorVisible){
+		$editor.classList.remove('aloneWithSidebar','noSidebar','alone');
+		$editor.classList.add(editorStatus);
+	}
+	if(previewVisible){
+		$preview.classList.remove('aloneWithSidebar','noSidebar','alone');
+		$preview.classList.add(previewStatus);
+	}
+
+	var hideTabs = [];
+	if(!sidebarVisible){
+		hideTabs.push('sidebar');
+	}
+	if(!editorVisible){
+		hideTabs.push('editor');
+	}
+	if(!previewVisible){
+		hideTabs.push('preview');
+	}
+
+	localStorage.setItem('toonote_hideTabs',JSON.stringify(hideTabs));
+
+};

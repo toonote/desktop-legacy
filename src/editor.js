@@ -7,6 +7,8 @@
 	var api = require('./api.js');
 	var view = require('./view.js');
 	var todo = require('./todo.js');
+
+	view.init();
 	todo.init();
 
 	window.config = JSON.parse(localStorage.getItem('config') || '{}');
@@ -21,6 +23,7 @@
 
 	var $editor = document.querySelector('#editor');
 	var $preview = document.querySelector('#preview');
+	var $sidebar = document.querySelector('#sidebar');
 	var saveTimer,saveInterval=1000;
 
 	var isExporting = false;	//标记是否正在导出，如果是，则不替换有问题的图片
@@ -600,48 +603,6 @@
 		view.renderPreview(currentNote);
 	}
 
-	// 切换各栏显示状态
-	function switchVisible(eleName){
-		var $ele;
-		var $sidebar = document.querySelector('#sidebar');
-		switch(eleName){
-			case 'sidebar':
-				$ele = $sidebar;
-				break;
-			case 'editor':
-				$ele = $editor;
-				break;
-			case 'preview':
-				$ele = $preview;
-				break;
-		}
-		if($ele.classList.contains('hide')){
-			$ele.classList.remove('hide');
-		}else{
-			$ele.classList.add('hide');
-		}
-
-		var sidebarVisible = !$sidebar.classList.contains('hide');
-		var editorVisible = !$editor.classList.contains('hide');
-		var previewVisible = !$preview.classList.contains('hide');
-
-		var editorStatus = sidebarVisible?
-			(previewVisible?'normal':'aloneWithSidebar'):
-			(previewVisible?'noSidebar':'alone');
-		var previewStatus = sidebarVisible?
-			(editorVisible?'normal':'aloneWithSidebar'):
-			(editorVisible?'noSidebar':'alone');
-
-		if(editorVisible){
-			$editor.classList.remove('aloneWithSidebar','noSidebar','alone');
-			$editor.classList.add(editorStatus);
-		}
-		if(previewVisible){
-			$preview.classList.remove('aloneWithSidebar','noSidebar','alone');
-			$preview.classList.add(previewStatus);
-		}
-
-	}
 
 	// 搜索框
 	function switchSearch(isShow){
@@ -887,19 +848,19 @@
 				label:'切换列表',
 				accelerator:'CommandOrControl+1',
 				click:function(){
-					switchVisible('sidebar');
+					view.switchVisible('sidebar');
 				}
 			},{
 				label:'切换编辑',
 				accelerator:'CommandOrControl+2',
 				click:function(){
-					switchVisible('editor');
+					view.switchVisible('editor');
 				}
 			},{
 				label:'切换预览',
 				accelerator:'CommandOrControl+3',
 				click:function(){
-					switchVisible('preview');
+					view.switchVisible('preview');
 				}
 			},{
 				label:'新窗口打开',
