@@ -8,17 +8,19 @@
 	var view = require('./view.js');
 	var todo = require('./todo.js');
 
+	// var user = require('./user.js');
+
 	view.init();
 	todo.init();
 
 	window.config = JSON.parse(localStorage.getItem('config') || '{}');
 
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
-	var syncIndex = JSON.parse(localStorage.getItem('syncIndex') || '{}');
+	/*var syncIndex = JSON.parse(localStorage.getItem('syncIndex') || '{}');
 	if(!syncIndex.vdisk){
 		syncIndex.vdisk = {};
 		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
-	}
+	}*/
 	var currentNote = {};
 
 	var $editor = document.querySelector('#editor');
@@ -34,7 +36,7 @@
 				updateNote(currentNote);
 				renderPreview();
 				updateNoteIndex(title);
-				updateSyncIndex('vdisk');
+				// updateSyncIndex('vdisk');
 				saveTimer = 0;
 			},saveInterval);
 		}
@@ -54,7 +56,7 @@
 		var text = e.clipboardData.getData('text/plain');
 		text = getEditorContent(text);
 		document.execCommand('insertHTML', false, text);
-		updateSyncIndex('vdisk');
+		// updateSyncIndex('vdisk');
 	});
 
 	// 编辑体验优化 - 响应TAB
@@ -211,8 +213,8 @@
 		if(!e.target.classList.contains('vdisk')) return false;
 		// if(!confirm('确定要删除该笔记吗？')) return false;
 		var id = e.target.parentNode.querySelector('a').dataset.id;
-		var isSync = !e.target.classList.contains('ok');
-		doSync('vdisk',id,isSync,function(err,result){
+		// var isSync = !e.target.classList.contains('ok');
+		/*doSync('vdisk',id,isSync,function(err,result){
 			if(err){
 				console.log(err.message);
 				return;
@@ -223,7 +225,7 @@
 			e.target.classList.add('ok');
 		}else{
 			e.target.classList.remove('ok');
-		}
+		}*/
 	},false);
 
 	// 折叠笔记
@@ -477,7 +479,7 @@
 	}
 
 	// 更新同步状态
-	function updateSyncIndex(provider,id,isSync,remoteUpdateTime,updateLocal){
+	/*function updateSyncIndex(provider,id,isSync,remoteUpdateTime,updateLocal){
 		var newIndex = {
 			localUpdateTime:Date.now()
 		};
@@ -503,16 +505,16 @@
 			syncIndex[provider][id].localUpdateTime = newIndex.localUpdateTime;
 		}
 		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
-	}
+	}*/
 
 	// 同步笔记
-	function doSync(provider,id,isSync,callback){
+	/*function doSync(provider,id,isSync,callback){
 		if(isSync){
 			api.syncNote(provider,id,localStorage.getItem('note_'+id),callback);
 		}else{
 			api.deleteNote(provider,id,callback);
 		}
-	}
+	}*/
 
 	// 渲染笔记列表
 	function renderNoteList(){
@@ -574,7 +576,7 @@
 				var tmpHtml = '<li class="level'+level+(+arrItem.id === +currentNote.id?' active':'')+'" data-level="'+level+'">';
 				tmpHtml += '<a href="#" title="'+(arrItem.title || 'Untitled')+'" data-id="'+(arrItem.id || 0)+'">'+(arrItem.title || 'Untitled')+'</a>';
 				tmpHtml += '<i title="删除笔记" class="delete">X</i>';
-				tmpHtml += '<i title="同步到微盘" class="vdisk'+(syncIndex.vdisk[arrItem.id] && syncIndex.vdisk[arrItem.id].isSync?' ok':'')+'">V</i>';
+				// tmpHtml += '<i title="同步到微盘" class="vdisk'+(syncIndex.vdisk[arrItem.id] && syncIndex.vdisk[arrItem.id].isSync?' ok':'')+'">V</i>';
 				if(arrItem.children.length){
 					level++;
 					// tmpHtml += '<ul>';
@@ -624,7 +626,7 @@
 		}
 	}
 
-	function vdiskSync(){
+	/*function vdiskSync(){
 		api.oauth('vdisk',function(err){
 			if(!err){
 				localStorage.setItem('syncVdisk','true');
@@ -634,9 +636,9 @@
 				alert('授权出错：'+err.message);
 			}
 		});
-	}
+	}*/
 
-	function startVdiskSync(){
+	/*function startVdiskSync(){
 		// 每2分钟同步一次
 		setTimeout(startVdiskSync,120*1000);
 
@@ -711,7 +713,7 @@
 			}
 		},60*1000);
 		
-	}
+	}*/
 
 	// 从内容中提示标题
 	function getTitleByContent(content){
@@ -872,9 +874,12 @@
 			}]
 		},{
 			label:'云',
-			submenu:[{
+			submenu:[/*{
 				label:'微盘同步',
 				click:vdiskSync
+			},*/{
+				label:'登录',
+				// click:vdiskSync
 			}]
 		}];
 
@@ -894,9 +899,9 @@
 	buildAppMenu();
 
 	// 微盘同步
-	if(localStorage.getItem('syncVdisk') === 'true'){
+	/*if(localStorage.getItem('syncVdisk') === 'true'){
 		vdiskSync();
-	}
+	}*/
 
 })();
 
