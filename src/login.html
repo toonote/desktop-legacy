@@ -12,11 +12,46 @@
 	<div class="form">
 		<form id="loginForm">
 			<p><input type="text" name="email" placeholder="Email" /></p>
-			<p><input type="password" name="password" placeholder="Password" /></p>
+			<p><input type="password" name="loginPassword" placeholder="Password" /></p>
+			<p class="hide"><input type="text" name="registerPassword" placeholder="Password" /></p>
 			<p><button type="submit">登录</button></p>
 		</form>
 	</div>
 	<script>
+
+		var ipc = require('ipc');
+
+		var $email = document.querySelector('#loginForm input[name=email]');
+		var $loginPassword = document.querySelector('#loginForm input[name=loginPassword]');
+		var $registerPassword = document.querySelector('#loginForm input[name=registerPassword]');
+		var $btn = document.querySelector('#loginForm button');
+
+		$email.addEventListener('change',function(){
+			console.log('change');
+			ipc.send('login.queryUser', $email.value);
+		});
+
+		var remote = require('remote');
+		var remoteIpc = remote.require('ipc');
+
+		remoteIpc.on('loginCallback.queryUser',function(e, isRegistered){
+			console.log('checked ', isRegistered);
+			if(!isRegistered){
+				$loginPassword.parentNode.classList.add('hide');
+				$registerPassword.parentNode.classList.remove('hide');
+				$btn.innerHTML = '注册';
+				setTimeout(function(){
+					$registerPassword.focus();
+				}, 0);
+			}else{
+				$loginPassword.parentNode.classList.remove('hide');
+				$registerPassword.parentNode.classList.add('hide');
+				$btn.innerHTML = '登录';
+				setTimeout(function(){
+					$loginPassword.focus();
+				}, 0);
+			}
+		});
 
 		// 关闭窗口
 		document.addEventListener('keydown',function(e){

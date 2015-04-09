@@ -3,6 +3,10 @@
 body{
 	background:#333;
 }
+.hide{
+	display: none;
+}
+
 .banner{
 	height: 120px;
 	background-image: url(../images/logo@256.png);
