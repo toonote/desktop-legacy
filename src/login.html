@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>TooNote</title>
+	<link rel="stylesheet" href="./styles/login.css">
+</head>
+<body>
+	<div class="banner">
+
+	</div>
+	<div class="form">
+		<form id="loginForm">
+			<p><input type="text" name="email" placeholder="Email" /></p>
+			<p><input type="password" name="password" placeholder="Password" /></p>
+			<p><button type="submit">登录</button></p>
+		</form>
+	</div>
+	<script>
+
+		// 关闭窗口
+		document.addEventListener('keydown',function(e){
+			var ctrlOrCmd = e.metaKey || e.ctrlKey;
+			// CTRL+W
+			if(ctrlOrCmd && e.keyCode === 87){
+				window.close();
+				return;
+			}
+		});
+	</script>
+</body>
+</html>

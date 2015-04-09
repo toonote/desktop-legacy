@@ -4,11 +4,11 @@
 	var packageJson = require('./package.json');
 	var version = packageJson.version;
 
-	var api = require('./api.js');
-	var view = require('./view.js');
-	var todo = require('./todo.js');
+	var api = require('./scripts/api.js');
+	var view = require('./scripts/view.js');
+	var todo = require('./scripts/todo.js');
 
-	// var user = require('./user.js');
+	var user = require('./scripts/user.js');
 
 	view.init();
 	todo.init();
@@ -879,7 +879,7 @@
 				click:vdiskSync
 			},*/{
 				label:'登录',
-				// click:vdiskSync
+				click:user.login
 			}]
 		}];
 

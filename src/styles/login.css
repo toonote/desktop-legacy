@@ -1,0 +1,42 @@
+@import "./reset.css";
+
+body{
+	background:#333;
+}
+.banner{
+	height: 120px;
+	background-image: url(../images/logo@256.png);
+	background-size: 64px 64px;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+.form p{
+	height:2.5em;
+	line-height: 2em;
+	margin:0 100px;
+}
+.form input{
+	font-size:14px;
+	display: block;
+	width:100%;
+	padding:5px 10px;
+	border-radius:2px;
+	border:1px solid #ccc;
+}
+.form button{
+	display: block;
+	margin:0 auto;
+	padding:8px 20px;
+	letter-spacing: 1em;
+	text-indent: 1em;
+	background:-webkit-linear-gradient(top,#900,#a00);
+	border:0 none;
+	border-radius:2px;
+	color:white;
+	font-size:16px;
+	cursor: pointer;
+}
+.form button:hover{
+	background:-webkit-linear-gradient(top,#a00,#b00);
+}
