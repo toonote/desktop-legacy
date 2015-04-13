@@ -1,10 +1,22 @@
+var User = function(){};
+var util = require('util');
+util.inherits(User, require('events').EventEmitter);
+var _user = new User();
+console.log(_user);
+
 var remote = require('remote');
 var AV = require('avoscloud-sdk').AV;
-AV.initialize("pnj0o24lytzmcaoebtu3uoynwyuqqs687ch3nxpih0i45qid", "ce3286s9l40kyj5erom2sjlc22tyqku6tn3na3v8s6h17jrs");
+AV.initialize('pnj0o24lytzmcaoebtu3uoynwyuqqs687ch3nxpih0i45qid', 'ce3286s9l40kyj5erom2sjlc22tyqku6tn3na3v8s6h17jrs');
+
+
+var loginWindow;
 var userToken = localStorage.getItem('toonote_userToken');
+
+
 if(userToken){
 	AV.User.become(userToken,{
 		success: function(user){
+			_user.emit('login');
 			console.log('login with Token:', user);
 		},
 		error: function(user, err){
@@ -63,6 +75,7 @@ var registerUserCallback = function(err, result){
 var loginUser = function(userInfo, callback){
 	AV.User.logIn(userInfo.email, userInfo.password, {
 		success: function(user) {
+			_user.emit('login');
 			callback(null);
 		},
 		error: function(user, err) {
@@ -74,15 +87,19 @@ var loginUser = function(userInfo, callback){
 
 var loginUserCallback = function(err, result){
 	var currentUser = AV.User.current();
-	localStorage.setItem('toonote_userToken',currentUser._sessionToken);
 	var isSuccess = false;
 	if(!err){
+		loginWindow.close();
+		localStorage.setItem('toonote_userToken',currentUser._sessionToken);
 		isSuccess = true;
+	}else{
 	}
 	var ipc = require('ipc');
-	ipc.send('loginCallback.login',isSuccess);
+	ipc.send('loginCallback.login',{
+		isSuccess:isSuccess,
+		message:err && err.message
+	});
 };
-
 
 
 var bindEvents = function(){
@@ -95,15 +112,17 @@ var bindEvents = function(){
 		registerUser(userInfo, registerUserCallback);
 	});
 	ipc.on('login.doLogin',function(e, userInfo){
-		loginUser(userInfo, loginUserCallback);
+		loginUser(userInfo, function(){
+			loginUserCallback.apply(null, arguments);
+		});
 	});
 };
 
 
-exports.login = function(){
+_user.login = function(){
 
 	var BrowserWindow = remote.require('browser-window');
-	var loginWindow = new BrowserWindow({
+	loginWindow = new BrowserWindow({
 		width: 400,
 		height: 300
 	});
@@ -115,4 +134,12 @@ exports.login = function(){
 
 	bindEvents();
 };
+
+_user.logout = function(){
+	AV.User.logOut();
+	localStorage.removeItem('toonote_userToken');
+	_user.emit('logout');
+};
+
+module.exports = _user;
 

@@ -55,8 +55,11 @@
 			console.log('after register', isSuccess);
 		});
 
-		remoteIpc.on('loginCallback.login',function(e, isSuccess){
-			console.log('after login', isSuccess);
+		remoteIpc.on('loginCallback.login',function(e, data){
+			console.log('after login', data);
+			if(!data.isSuccess){
+				alert('登录失败：' + data.message);
+			}
 		});
 
 		remoteIpc.on('loginCallback.queryUser',function(e, isRegistered){

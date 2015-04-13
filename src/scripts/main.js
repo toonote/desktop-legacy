@@ -10,6 +10,13 @@
 
 	var user = require('./scripts/user.js');
 
+	user.on('login', function(){
+		buildAppMenu({
+			isLogin:true
+		});
+	});
+	user.on('logout', buildAppMenu);
+
 	view.init();
 	todo.init();
 
@@ -737,11 +744,17 @@
 	}
 
 	// 设置菜单
-	function buildAppMenu(){
+	function buildAppMenu(options){
+		if(!options) options = {};
 		var remote = require('remote');
 		var Menu = remote.require('menu');
 
-		// var MenuItem = remote.require('menu-item');
+		var template = getAppMenuTmpl(options);
+		var menu = Menu.buildFromTemplate(template);
+		Menu.setApplicationMenu(menu);
+	}
+
+	function getAppMenuTmpl(options){
 		var template = [{
 			label:'TooNote',
 			submenu:[,{
@@ -874,17 +887,20 @@
 			}]
 		},{
 			label:'云',
-			submenu:[/*{
-				label:'微盘同步',
-				click:vdiskSync
-			},*/{
+			submenu:[]
+		}];
+		if(options.isLogin){
+			template[4].submenu[0] = {
+				label:'退出登录',
+				click:user.logout
+			};
+		}else{
+			template[4].submenu[0] = {
 				label:'登录',
 				click:user.login
-			}]
-		}];
-
-		var menu = Menu.buildFromTemplate(template);
-		Menu.setApplicationMenu(menu);
+			};
+		}
+		return template;
 	}
 
 	// 初始化
