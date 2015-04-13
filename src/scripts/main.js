@@ -90,34 +90,49 @@
 		e.preventDefault();
 	});
 	$editor.addEventListener('drop',function(e){
+		console.log('drop');
 		e.stopPropagation();
 		e.preventDefault();
+		var $currNode = e.target;
 		var img = e.dataTransfer.files[0];
 		if(!img || !/^image/.test(img.type)) return;
 
-		var $currNode = e.target;
+		// var ext = img.type.replace('image/','');
+		var AV = require('avoscloud-sdk').AV;
+		AV.initialize('pnj0o24lytzmcaoebtu3uoynwyuqqs687ch3nxpih0i45qid', 'ce3286s9l40kyj5erom2sjlc22tyqku6tn3na3v8s6h17jrs');
+		var avFile = new AV.File(img.name, img);
+
+		var $targetNode;
+
 		if(/\S+/.test($currNode.innerText)){
 			// 如果当前元素非空，插入下方
 			var $nextNode = $currNode.nextSibling;
 			var $parent = $currNode.parentNode;
-			var $newNode = document.createElement('div');
+			var $targetNode = document.createElement('div');
 			var $blankNode = document.createElement('div');
 			$blankNode.innerHTML = '<br />';
-			$newNode.innerText = '![' + img.name + '](' + img.path + ')';
 			if($nextNode){
-				$parent.insertBefore($newNode,$nextNode);
+				$parent.insertBefore($targetNode,$nextNode);
 			}else{
-				$parent.appendChild($newNode);
+				$parent.appendChild($targetNode);
 			}
-			$parent.insertBefore($blankNode,$newNode);
+			$parent.insertBefore($blankNode,$targetNode);
 		}else{
 			// 如果当前元素为空，插入当前元素
-			$currNode.innerText = '![' + img.name + '](' + img.path + ')';
+			$targetNode = $currNode;
 		}
-		currentNote.content = $editor.innerText;
-		updateNote(currentNote);
-		renderPreview();
-		console.log(e.target);
+
+		$targetNode.innerText = img.name + '上传中...';
+
+		avFile.save().then(function(image) {
+			$targetNode.innerText = '![' + img.name + '](' + image.url() + ')';
+			currentNote.content = $editor.innerText;
+			updateNote(currentNote);
+			renderPreview();
+		}, function(err) {
+			console.log(err);
+		});
+
 	});
 
 	// 搜索快捷键
