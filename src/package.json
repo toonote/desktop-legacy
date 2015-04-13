@@ -7,6 +7,8 @@
     "jszip": "^2.5.0",
     "marked": "^0.3.3",
     "marked-toc": "^0.3.0",
+    "postcss": "^4.1.4",
+    "postcss-import": "^5.1.1",
     "restler": "^3.2.2"
   }
 }

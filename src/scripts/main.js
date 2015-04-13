@@ -366,12 +366,25 @@
 			isExporting = false;
 		}
 		if(format === 'htmlfile' || format === 'pdf'){
+			var postcss = require('postcss');
+			var atImport = require('postcss-import');
+
+			var css = fs.readFileSync(__dirname + '/render.css', 'utf8');
+
+			var outputCss = postcss()
+				.use(atImport())
+				.process(css, {
+					from: __dirname + '/render.css'
+				})
+				.css;
+
+			console.log(outputCss);
 			content = '<!doctype html><html>\n' +
 					'<head>\n' + 
 					'<meta charset="utf-8">\n' +
 					'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
 					'<title>' + noteIndex[currentNote.id] + '</title>\n' +
-					'<style>\n' + fs.readFileSync(__dirname + '/render.css','utf8') + '</style>\n' +
+					'<style>\n' + outputCss + '</style>\n' +
 					'</head>\n' +
 					'<body class="preview">\n' + content + '</body>\n</html>';
 		}
