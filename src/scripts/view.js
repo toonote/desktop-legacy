@@ -1,3 +1,9 @@
+var View = function(){};
+var util = require('util');
+util.inherits(View, require('events').EventEmitter);
+var _view = new View();
+
+
 var $editor = document.querySelector('#editor');
 var $preview = document.querySelector('#preview');
 var $sidebar = document.querySelector('#sidebar');
@@ -18,7 +24,7 @@ var openNewWindow = function(cssArr,jsArr,action,message){
 	});
 };
 
-exports.openNoteInNewWindow = function(note){
+_view.openNoteInNewWindow = function(note){
 	openNewWindow([
 		'./editor.css',
 		'./monokai_sublime.css'
@@ -27,7 +33,7 @@ exports.openNoteInNewWindow = function(note){
 	],'loadNote',note);
 };
 
-exports.renderPreview = function(note){
+_view.renderPreview = function(note){
 	var $preview = document.querySelector('#preview');
 	var marked = require('marked');
 	var previewRenderer = new marked.Renderer();
@@ -65,7 +71,7 @@ exports.renderPreview = function(note){
 	}
 };
 
-exports.init = function(){
+_view.init = function(){
 	var _this = this;
 	var hideTabs = JSON.parse(localStorage.getItem('toonote_hideTabs') || '[]');
 	window.addEventListener('DOMContentLoaded',function(){
@@ -76,7 +82,7 @@ exports.init = function(){
 };
 
 // 切换各栏显示状态
-exports.switchVisible = function(eleName){
+_view.switchVisible = function(eleName){
 
 	var $ele;
 
@@ -129,6 +135,10 @@ exports.switchVisible = function(eleName){
 		hideTabs.push('preview');
 	}
 
+	_view.emit('layoutChange',hideTabs);
+
 	localStorage.setItem('toonote_hideTabs',JSON.stringify(hideTabs));
 
 };
+
+module.exports = _view;

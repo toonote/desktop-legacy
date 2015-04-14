@@ -7,8 +7,12 @@
 	var api = require('./scripts/api.js');
 	var view = require('./scripts/view.js');
 	var todo = require('./scripts/todo.js');
-
+	var editor = require('./scripts/editor.js');
 	var user = require('./scripts/user.js');
+
+
+	// 布局变化时重排editor
+	view.on('layoutChange',editor.resize.bind(editor));
 
 	user.on('login', function(){
 		buildAppMenu({
@@ -47,7 +51,7 @@
 				saveTimer = 0;
 			},saveInterval);
 		}
-		currentNote.content = $editor.innerText;
+		currentNote.content = editor.getContent();
 		var title = getTitleByContent(currentNote.content);
 	};
 
@@ -58,13 +62,13 @@
 	$editor.addEventListener('keydown',handleInput,false);
 
 	// 粘贴响应
-	$editor.addEventListener('paste',function(e){
+	/*$editor.addEventListener('paste',function(e){
 		e.preventDefault();
 		var text = e.clipboardData.getData('text/plain');
 		text = getEditorContent(text);
 		document.execCommand('insertHTML', false, text);
 		// updateSyncIndex('vdisk');
-	});
+	});*/
 
 	// 编辑体验优化 - 响应TAB
 	$editor.addEventListener('keydown',function(e){
@@ -126,7 +130,7 @@
 
 		avFile.save().then(function(image) {
 			$targetNode.innerText = '![' + img.name + '](' + image.url() + ')';
-			currentNote.content = $editor.innerText;
+			currentNote.content = editor.getContent();
 			updateNote(currentNote);
 			renderPreview();
 		}, function(err) {
@@ -209,8 +213,8 @@
 			return false;
 		}
 		currentNote.id = id;
-		currentNote.content = localStorage.getItem('note_'+id);
-		document.querySelector('#editor').innerHTML = getEditorContent(currentNote.content);
+		currentNote.content = localStorage.getItem('note_'+id).replace(/\xa0/g,' ');
+		editor.setContent(currentNote.content);
 		renderPreview();
 		setActiveNote(id);
 	},false);
@@ -277,7 +281,7 @@
 		currentNote.id = id;
 		currentNote.content = '# Untitled\\'+random;
 		updateNote(currentNote);
-		$editor.innerHTML = '';
+		editor.setContent('');
 		renderNoteList();
 		document.execCommand('insertHTML', false, '# Untitled\\'+random);
 		setTimeout(function(){
@@ -288,7 +292,7 @@
 	// 保存
 	function save(){
 		if($editor.classList.contains('hide')) return;
-		currentNote.content = JSON.parse(JSON.stringify($editor.innerText));
+		currentNote.content = JSON.parse(JSON.stringify(editor.getContent()));
 		currentNote.content = currentNote.content.replace(/\n$/,'');
 		updateNote(currentNote);
 		renderPreview();
@@ -322,7 +326,7 @@
 				var title = getTitleByContent(currentNote.content);
 				updateNoteIndex(title);
 				updateNote(currentNote);
-				$editor.innerHTML = getEditorContent(currentNote.content);
+				editor.setContent(currentNote.content);
 				renderPreview();
 				renderNoteList();
 			}
@@ -906,6 +910,9 @@
 				click:function(){
 					view.switchVisible('preview');
 				}
+			},{
+				label:'切换行号显示',
+				click:editor.switchGutter
 			},{
 				label:'新窗口打开',
 				accelerator:'CommandOrControl+T',
