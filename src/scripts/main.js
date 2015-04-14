@@ -4,9 +4,18 @@
 	var packageJson = require('./package.json');
 	var version = packageJson.version;
 
-	var api = require('./api.js');
-	var view = require('./view.js');
-	var todo = require('./todo.js');
+	var api = require('./scripts/api.js');
+	var view = require('./scripts/view.js');
+	var todo = require('./scripts/todo.js');
+
+	var user = require('./scripts/user.js');
+
+	user.on('login', function(){
+		buildAppMenu({
+			isLogin:true
+		});
+	});
+	user.on('logout', buildAppMenu);
 
 	view.init();
 	todo.init();
@@ -14,11 +23,11 @@
 	window.config = JSON.parse(localStorage.getItem('config') || '{}');
 
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
-	var syncIndex = JSON.parse(localStorage.getItem('syncIndex') || '{}');
+	/*var syncIndex = JSON.parse(localStorage.getItem('syncIndex') || '{}');
 	if(!syncIndex.vdisk){
 		syncIndex.vdisk = {};
 		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
-	}
+	}*/
 	var currentNote = {};
 
 	var $editor = document.querySelector('#editor');
@@ -34,7 +43,7 @@
 				updateNote(currentNote);
 				renderPreview();
 				updateNoteIndex(title);
-				updateSyncIndex('vdisk');
+				// updateSyncIndex('vdisk');
 				saveTimer = 0;
 			},saveInterval);
 		}
@@ -54,7 +63,7 @@
 		var text = e.clipboardData.getData('text/plain');
 		text = getEditorContent(text);
 		document.execCommand('insertHTML', false, text);
-		updateSyncIndex('vdisk');
+		// updateSyncIndex('vdisk');
 	});
 
 	// 编辑体验优化 - 响应TAB
@@ -81,34 +90,49 @@
 		e.preventDefault();
 	});
 	$editor.addEventListener('drop',function(e){
+		console.log('drop');
 		e.stopPropagation();
 		e.preventDefault();
+		var $currNode = e.target;
 		var img = e.dataTransfer.files[0];
 		if(!img || !/^image/.test(img.type)) return;
 
-		var $currNode = e.target;
+		// var ext = img.type.replace('image/','');
+		var AV = require('avoscloud-sdk').AV;
+		AV.initialize('pnj0o24lytzmcaoebtu3uoynwyuqqs687ch3nxpih0i45qid', 'ce3286s9l40kyj5erom2sjlc22tyqku6tn3na3v8s6h17jrs');
+		var avFile = new AV.File(img.name, img);
+
+		var $targetNode;
+
 		if(/\S+/.test($currNode.innerText)){
 			// 如果当前元素非空，插入下方
 			var $nextNode = $currNode.nextSibling;
 			var $parent = $currNode.parentNode;
-			var $newNode = document.createElement('div');
+			var $targetNode = document.createElement('div');
 			var $blankNode = document.createElement('div');
 			$blankNode.innerHTML = '<br />';
-			$newNode.innerText = '![' + img.name + '](' + img.path + ')';
 			if($nextNode){
-				$parent.insertBefore($newNode,$nextNode);
+				$parent.insertBefore($targetNode,$nextNode);
 			}else{
-				$parent.appendChild($newNode);
+				$parent.appendChild($targetNode);
 			}
-			$parent.insertBefore($blankNode,$newNode);
+			$parent.insertBefore($blankNode,$targetNode);
 		}else{
 			// 如果当前元素为空，插入当前元素
-			$currNode.innerText = '![' + img.name + '](' + img.path + ')';
+			$targetNode = $currNode;
 		}
-		currentNote.content = $editor.innerText;
-		updateNote(currentNote);
-		renderPreview();
-		console.log(e.target);
+
+		$targetNode.innerText = img.name + '上传中...';
+
+		avFile.save().then(function(image) {
+			$targetNode.innerText = '![' + img.name + '](' + image.url() + ')';
+			currentNote.content = $editor.innerText;
+			updateNote(currentNote);
+			renderPreview();
+		}, function(err) {
+			console.log(err);
+		});
+
 	});
 
 	// 搜索快捷键
@@ -211,8 +235,8 @@
 		if(!e.target.classList.contains('vdisk')) return false;
 		// if(!confirm('确定要删除该笔记吗？')) return false;
 		var id = e.target.parentNode.querySelector('a').dataset.id;
-		var isSync = !e.target.classList.contains('ok');
-		doSync('vdisk',id,isSync,function(err,result){
+		// var isSync = !e.target.classList.contains('ok');
+		/*doSync('vdisk',id,isSync,function(err,result){
 			if(err){
 				console.log(err.message);
 				return;
@@ -223,7 +247,7 @@
 			e.target.classList.add('ok');
 		}else{
 			e.target.classList.remove('ok');
-		}
+		}*/
 	},false);
 
 	// 折叠笔记
@@ -342,12 +366,25 @@
 			isExporting = false;
 		}
 		if(format === 'htmlfile' || format === 'pdf'){
+			var postcss = require('postcss');
+			var atImport = require('postcss-import');
+
+			var css = fs.readFileSync(__dirname + '/render.css', 'utf8');
+
+			var outputCss = postcss()
+				.use(atImport())
+				.process(css, {
+					from: __dirname + '/render.css'
+				})
+				.css;
+
+			console.log(outputCss);
 			content = '<!doctype html><html>\n' +
 					'<head>\n' + 
 					'<meta charset="utf-8">\n' +
 					'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
 					'<title>' + noteIndex[currentNote.id] + '</title>\n' +
-					'<style>\n' + fs.readFileSync(__dirname + '/render.css','utf8') + '</style>\n' +
+					'<style>\n' + outputCss + '</style>\n' +
 					'</head>\n' +
 					'<body class="preview">\n' + content + '</body>\n</html>';
 		}
@@ -477,7 +514,7 @@
 	}
 
 	// 更新同步状态
-	function updateSyncIndex(provider,id,isSync,remoteUpdateTime,updateLocal){
+	/*function updateSyncIndex(provider,id,isSync,remoteUpdateTime,updateLocal){
 		var newIndex = {
 			localUpdateTime:Date.now()
 		};
@@ -503,16 +540,16 @@
 			syncIndex[provider][id].localUpdateTime = newIndex.localUpdateTime;
 		}
 		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
-	}
+	}*/
 
 	// 同步笔记
-	function doSync(provider,id,isSync,callback){
+	/*function doSync(provider,id,isSync,callback){
 		if(isSync){
 			api.syncNote(provider,id,localStorage.getItem('note_'+id),callback);
 		}else{
 			api.deleteNote(provider,id,callback);
 		}
-	}
+	}*/
 
 	// 渲染笔记列表
 	function renderNoteList(){
@@ -574,7 +611,7 @@
 				var tmpHtml = '<li class="level'+level+(+arrItem.id === +currentNote.id?' active':'')+'" data-level="'+level+'">';
 				tmpHtml += '<a href="#" title="'+(arrItem.title || 'Untitled')+'" data-id="'+(arrItem.id || 0)+'">'+(arrItem.title || 'Untitled')+'</a>';
 				tmpHtml += '<i title="删除笔记" class="delete">X</i>';
-				tmpHtml += '<i title="同步到微盘" class="vdisk'+(syncIndex.vdisk[arrItem.id] && syncIndex.vdisk[arrItem.id].isSync?' ok':'')+'">V</i>';
+				// tmpHtml += '<i title="同步到微盘" class="vdisk'+(syncIndex.vdisk[arrItem.id] && syncIndex.vdisk[arrItem.id].isSync?' ok':'')+'">V</i>';
 				if(arrItem.children.length){
 					level++;
 					// tmpHtml += '<ul>';
@@ -624,7 +661,7 @@
 		}
 	}
 
-	function vdiskSync(){
+	/*function vdiskSync(){
 		api.oauth('vdisk',function(err){
 			if(!err){
 				localStorage.setItem('syncVdisk','true');
@@ -634,9 +671,9 @@
 				alert('授权出错：'+err.message);
 			}
 		});
-	}
+	}*/
 
-	function startVdiskSync(){
+	/*function startVdiskSync(){
 		// 每2分钟同步一次
 		setTimeout(startVdiskSync,120*1000);
 
@@ -711,7 +748,7 @@
 			}
 		},60*1000);
 		
-	}
+	}*/
 
 	// 从内容中提示标题
 	function getTitleByContent(content){
@@ -735,11 +772,17 @@
 	}
 
 	// 设置菜单
-	function buildAppMenu(){
+	function buildAppMenu(options){
+		if(!options) options = {};
 		var remote = require('remote');
 		var Menu = remote.require('menu');
 
-		// var MenuItem = remote.require('menu-item');
+		var template = getAppMenuTmpl(options);
+		var menu = Menu.buildFromTemplate(template);
+		Menu.setApplicationMenu(menu);
+	}
+
+	function getAppMenuTmpl(options){
 		var template = [{
 			label:'TooNote',
 			submenu:[,{
@@ -872,14 +915,20 @@
 			}]
 		},{
 			label:'云',
-			submenu:[{
-				label:'微盘同步',
-				click:vdiskSync
-			}]
+			submenu:[]
 		}];
-
-		var menu = Menu.buildFromTemplate(template);
-		Menu.setApplicationMenu(menu);
+		if(options.isLogin){
+			template[4].submenu[0] = {
+				label:'退出登录',
+				click:user.logout
+			};
+		}else{
+			template[4].submenu[0] = {
+				label:'登录',
+				click:user.login
+			};
+		}
+		return template;
 	}
 
 	// 初始化
@@ -894,9 +943,9 @@
 	buildAppMenu();
 
 	// 微盘同步
-	if(localStorage.getItem('syncVdisk') === 'true'){
+	/*if(localStorage.getItem('syncVdisk') === 'true'){
 		vdiskSync();
-	}
+	}*/
 
 })();
 

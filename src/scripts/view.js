@@ -4,7 +4,7 @@ var $sidebar = document.querySelector('#sidebar');
 
 var openNewWindow = function(cssArr,jsArr,action,message){
 
-	var newWindow = window.open('file://' + __dirname + '/blank.html','newWindow','');
+	var newWindow = window.open('file://' + __dirname + '/../blank.html','newWindow','');
 	
 	newWindow.webContents.on('did-finish-load',function(){
 		console.log('ready');
