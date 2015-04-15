@@ -10,7 +10,6 @@
 	var editor = require('./scripts/editor.js');
 	var user = require('./scripts/user.js');
 
-
 	// 布局变化时重排editor
 	view.on('layoutChange',editor.resize.bind(editor));
 
@@ -265,11 +264,11 @@
 		currentNote.id = id;
 		currentNote.content = '# Untitled\\'+random;
 		updateNote(currentNote);
-		editor.setContent('');
+		editor.setContent('# Untitled\\'+random);
 		renderNoteList();
-		document.execCommand('insertHTML', false, '# Untitled\\'+random);
 		setTimeout(function(){
-			$editor.focus();
+			editor.focus();
+			editor.setCursorToLineEnd();
 		},0);
 	}
 

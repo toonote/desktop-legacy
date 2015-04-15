@@ -11,6 +11,7 @@ var init = function(){
 	session.setUseWrapMode(true);
 	aceEditor.renderer.setHScrollBarAlwaysVisible(false);
 	aceEditor.renderer.setShowGutter(false);
+	aceEditor.renderer.setPadding(10);
 	/*aceEditor.on('mousemove',function(e){
 		console.log(e);
 		editor.position = e.getDocumentPosition();
@@ -20,15 +21,19 @@ var init = function(){
 		aceEditor.setValue(content, -1);
 	};
 	editor.getContent = aceEditor.getValue.bind(aceEditor);
+	editor.focus = aceEditor.focus.bind(aceEditor);
 	editor.resize = aceEditor.resize.bind(aceEditor);
+	editor.getRowText = session.getLine.bind(session);
 	editor.setCursor = function(row, col){
 		aceEditor.getSelection().moveCursorTo(row, col);
 	};
-	editor.getRowText = session.getLine.bind(session);
+	editor.setCursorToLineEnd = function(){
+		aceEditor.getSelection().moveCursorLineEnd();
+	};
 	editor.insertText = function(text){
 		aceEditor.insert(text);
 	};
-	// moveCursorLineEnd
+
 
 	var isGutterOn = false;
 	editor.switchGutter = function(){
