@@ -97,39 +97,23 @@
 		console.log('drop');
 		e.stopPropagation();
 		e.preventDefault();
-		var $currNode = e.target;
+
 		var img = e.dataTransfer.files[0];
 		if(!img || !/^image/.test(img.type)) return;
 
-		// var ext = img.type.replace('image/','');
 		var AV = require('avoscloud-sdk').AV;
 		AV.initialize('pnj0o24lytzmcaoebtu3uoynwyuqqs687ch3nxpih0i45qid', 'ce3286s9l40kyj5erom2sjlc22tyqku6tn3na3v8s6h17jrs');
 		var avFile = new AV.File(img.name, img);
 
-		var $targetNode;
+		// var position = editor.position;
+		// editor.setCursor(position.row, position.column);
+		// var rowText = editor.getRowText(position.row);
+		// editor.insertText(img.name + '上传中...');
 
-		if(/\S+/.test($currNode.innerText)){
-			// 如果当前元素非空，插入下方
-			var $nextNode = $currNode.nextSibling;
-			var $parent = $currNode.parentNode;
-			var $targetNode = document.createElement('div');
-			var $blankNode = document.createElement('div');
-			$blankNode.innerHTML = '<br />';
-			if($nextNode){
-				$parent.insertBefore($targetNode,$nextNode);
-			}else{
-				$parent.appendChild($targetNode);
-			}
-			$parent.insertBefore($blankNode,$targetNode);
-		}else{
-			// 如果当前元素为空，插入当前元素
-			$targetNode = $currNode;
-		}
-
-		$targetNode.innerText = img.name + '上传中...';
+		// console.log(rowText);
 
 		avFile.save().then(function(image) {
-			$targetNode.innerText = '![' + img.name + '](' + image.url() + ')';
+			editor.insertText('![' + img.name + '](' + image.url() + ')');
 			currentNote.content = editor.getContent();
 			updateNote(currentNote);
 			renderPreview();
