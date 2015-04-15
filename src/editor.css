@@ -1,5 +1,6 @@
 @import "./styles/reset.css";
 @import "./styles/theme.css";
+@import "./styles/monokai_sublime.css";
 
 body,html{
 	height: 100%;
