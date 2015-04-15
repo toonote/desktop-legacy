@@ -141,4 +141,27 @@ _view.switchVisible = function(eleName){
 
 };
 
+var bindEvents = function(){
+
+	// 折叠笔记
+	$sidebar.querySelector('#noteList').addEventListener('click',function(e){
+		if(e.target.tagName !== 'LI') return false;
+		var $tmpNode = e.target.nextSibling;
+		if(!$tmpNode) return;
+		var thisLevel = +e.target.dataset.level;
+		var isVisible = getComputedStyle($tmpNode).display !== 'none';
+		while($tmpNode && +$tmpNode.dataset.level > thisLevel){
+			if(isVisible){
+				$tmpNode.style.display = 'none';
+			}else{
+				$tmpNode.style.display = '';
+			}
+			$tmpNode = $tmpNode.nextSibling;
+		}
+		
+	},false);
+};
+
+bindEvents();
+
 module.exports = _view;

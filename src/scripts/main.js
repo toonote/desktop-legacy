@@ -233,23 +233,6 @@
 		}*/
 	},false);
 
-	// 折叠笔记
-	document.querySelector('#noteList').addEventListener('click',function(e){
-		if(e.target.tagName !== 'LI') return false;
-		var $tmpNode = e.target.nextSibling;
-		if(!$tmpNode) return;
-		var thisLevel = +e.target.dataset.level;
-		var isVisible = getComputedStyle($tmpNode).display !== 'none';
-		while($tmpNode && +$tmpNode.dataset.level > thisLevel){
-			if(isVisible){
-				$tmpNode.style.display = 'none';
-			}else{
-				$tmpNode.style.display = '';
-			}
-			$tmpNode = $tmpNode.nextSibling;
-		}
-	},false);
-
 	// 新建笔记
 	function newNote(){
 		var id = Date.now();
@@ -361,7 +344,7 @@
 				})
 				.css;
 
-			console.log(outputCss);
+			// console.log(outputCss);
 			content = '<!doctype html><html>\n' +
 					'<head>\n' + 
 					'<meta charset="utf-8">\n' +
