@@ -7,19 +7,26 @@
 	var api = require('./scripts/api.js');
 	var view = require('./scripts/view.js');
 	var todo = require('./scripts/todo.js');
-
+	var editor = require('./scripts/editor.js');
 	var user = require('./scripts/user.js');
 
+	// 布局变化时重排editor
+	view.on('layoutChange',editor.resize.bind(editor));
+
+	// 登录之后重建菜单
 	user.on('login', function(){
 		buildAppMenu({
 			isLogin:true
 		});
 	});
+
+	// 退出登录后重建菜单
 	user.on('logout', buildAppMenu);
 
 	view.init();
 	todo.init();
 
+	// TODO:准备抛弃
 	window.config = JSON.parse(localStorage.getItem('config') || '{}');
 
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
@@ -47,7 +54,7 @@
 				saveTimer = 0;
 			},saveInterval);
 		}
-		currentNote.content = $editor.innerText;
+		currentNote.content = editor.getContent();
 		var title = getTitleByContent(currentNote.content);
 	};
 
@@ -58,31 +65,22 @@
 	$editor.addEventListener('keydown',handleInput,false);
 
 	// 粘贴响应
-	$editor.addEventListener('paste',function(e){
+	/*$editor.addEventListener('paste',function(e){
 		e.preventDefault();
 		var text = e.clipboardData.getData('text/plain');
 		text = getEditorContent(text);
 		document.execCommand('insertHTML', false, text);
 		// updateSyncIndex('vdisk');
-	});
+	});*/
 
 	// 编辑体验优化 - 响应TAB
-	$editor.addEventListener('keydown',function(e){
+	/*$editor.addEventListener('keydown',function(e){
 		if(e.keyCode === 9){
 			// TAB
 			e.preventDefault();
 			document.execCommand('insertHTML', false, '\t');
-			/*var selection = window.getSelection();
-			var range = selection.getRangeAt(0);
-
-			var node = document.createTextNode('\t');
-			range.insertNode(node);
-			range.setEndAfter(node);
-			range.setStartAfter(node);
-			selection.removeAllRanges();
-			selection.addRange(range);*/
 		}
-	});
+	});*/
 
 	// 拖拽插图
 	$editor.addEventListener('dragover',function(e){
@@ -93,40 +91,24 @@
 		console.log('drop');
 		e.stopPropagation();
 		e.preventDefault();
-		var $currNode = e.target;
+
 		var img = e.dataTransfer.files[0];
 		if(!img || !/^image/.test(img.type)) return;
 
-		// var ext = img.type.replace('image/','');
 		var AV = require('avoscloud-sdk').AV;
 		AV.initialize('pnj0o24lytzmcaoebtu3uoynwyuqqs687ch3nxpih0i45qid', 'ce3286s9l40kyj5erom2sjlc22tyqku6tn3na3v8s6h17jrs');
 		var avFile = new AV.File(img.name, img);
 
-		var $targetNode;
+		// var position = editor.position;
+		// editor.setCursor(position.row, position.column);
+		// var rowText = editor.getRowText(position.row);
+		// editor.insertText(img.name + '上传中...');
 
-		if(/\S+/.test($currNode.innerText)){
-			// 如果当前元素非空，插入下方
-			var $nextNode = $currNode.nextSibling;
-			var $parent = $currNode.parentNode;
-			var $targetNode = document.createElement('div');
-			var $blankNode = document.createElement('div');
-			$blankNode.innerHTML = '<br />';
-			if($nextNode){
-				$parent.insertBefore($targetNode,$nextNode);
-			}else{
-				$parent.appendChild($targetNode);
-			}
-			$parent.insertBefore($blankNode,$targetNode);
-		}else{
-			// 如果当前元素为空，插入当前元素
-			$targetNode = $currNode;
-		}
-
-		$targetNode.innerText = img.name + '上传中...';
+		// console.log(rowText);
 
 		avFile.save().then(function(image) {
-			$targetNode.innerText = '![' + img.name + '](' + image.url() + ')';
-			currentNote.content = $editor.innerText;
+			editor.insertText('![' + img.name + '](' + image.url() + ')');
+			currentNote.content = editor.getContent();
 			updateNote(currentNote);
 			renderPreview();
 		}, function(err) {
@@ -209,8 +191,8 @@
 			return false;
 		}
 		currentNote.id = id;
-		currentNote.content = localStorage.getItem('note_'+id);
-		document.querySelector('#editor').innerHTML = getEditorContent(currentNote.content);
+		currentNote.content = localStorage.getItem('note_'+id).replace(/\xa0/g,' ');
+		editor.setContent(currentNote.content);
 		renderPreview();
 		setActiveNote(id);
 	},false);
@@ -231,6 +213,7 @@
 	},false);
 
 	// 同步当前笔记
+	// todo:准备抛弃
 	document.querySelector('#noteList').addEventListener('click',function(e){
 		if(!e.target.classList.contains('vdisk')) return false;
 		// if(!confirm('确定要删除该笔记吗？')) return false;
@@ -277,18 +260,18 @@
 		currentNote.id = id;
 		currentNote.content = '# Untitled\\'+random;
 		updateNote(currentNote);
-		$editor.innerHTML = '';
+		editor.setContent('# Untitled\\'+random);
 		renderNoteList();
-		document.execCommand('insertHTML', false, '# Untitled\\'+random);
 		setTimeout(function(){
-			$editor.focus();
+			editor.focus();
+			editor.setCursorToLineEnd();
 		},0);
 	}
 
 	// 保存
 	function save(){
 		if($editor.classList.contains('hide')) return;
-		currentNote.content = JSON.parse(JSON.stringify($editor.innerText));
+		currentNote.content = JSON.parse(JSON.stringify(editor.getContent()));
 		currentNote.content = currentNote.content.replace(/\n$/,'');
 		updateNote(currentNote);
 		renderPreview();
@@ -322,7 +305,7 @@
 				var title = getTitleByContent(currentNote.content);
 				updateNoteIndex(title);
 				updateNote(currentNote);
-				$editor.innerHTML = getEditorContent(currentNote.content);
+				editor.setContent(currentNote.content);
 				renderPreview();
 				renderNoteList();
 			}
@@ -907,6 +890,9 @@
 					view.switchVisible('preview');
 				}
 			},{
+				label:'切换行号显示',
+				click:editor.switchGutter
+			},{
 				label:'新窗口打开',
 				accelerator:'CommandOrControl+T',
 				click:function(){
@@ -948,16 +934,3 @@
 	}*/
 
 })();
-
-
-
-/*var observer = new MutationObserver(function(mutations){
-	console.log(mutations);
-});
-
-observer.observe(document.querySelector('#editor'),{
-	childList: true,
-	characterData: true
-});*/
-
-
