@@ -13,16 +13,20 @@
 	// 布局变化时重排editor
 	view.on('layoutChange',editor.resize.bind(editor));
 
+	// 登录之后重建菜单
 	user.on('login', function(){
 		buildAppMenu({
 			isLogin:true
 		});
 	});
+
+	// 退出登录后重建菜单
 	user.on('logout', buildAppMenu);
 
 	view.init();
 	todo.init();
 
+	// TODO:准备抛弃
 	window.config = JSON.parse(localStorage.getItem('config') || '{}');
 
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
@@ -70,22 +74,13 @@
 	});*/
 
 	// 编辑体验优化 - 响应TAB
-	$editor.addEventListener('keydown',function(e){
+	/*$editor.addEventListener('keydown',function(e){
 		if(e.keyCode === 9){
 			// TAB
 			e.preventDefault();
 			document.execCommand('insertHTML', false, '\t');
-			/*var selection = window.getSelection();
-			var range = selection.getRangeAt(0);
-
-			var node = document.createTextNode('\t');
-			range.insertNode(node);
-			range.setEndAfter(node);
-			range.setStartAfter(node);
-			selection.removeAllRanges();
-			selection.addRange(range);*/
 		}
-	});
+	});*/
 
 	// 拖拽插图
 	$editor.addEventListener('dragover',function(e){
@@ -218,6 +213,7 @@
 	},false);
 
 	// 同步当前笔记
+	// todo:准备抛弃
 	document.querySelector('#noteList').addEventListener('click',function(e){
 		if(!e.target.classList.contains('vdisk')) return false;
 		// if(!confirm('确定要删除该笔记吗？')) return false;
@@ -938,16 +934,3 @@
 	}*/
 
 })();
-
-
-
-/*var observer = new MutationObserver(function(mutations){
-	console.log(mutations);
-});
-
-observer.observe(document.querySelector('#editor'),{
-	childList: true,
-	characterData: true
-});*/
-
-
