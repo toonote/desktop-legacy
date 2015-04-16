@@ -135,6 +135,13 @@ _view.switchVisible = function(eleName){
 		hideTabs.push('preview');
 	}
 
+	// 处理TOC显示隐藏
+	if(hideTabs.indexOf('preview') > -1){
+		document.querySelector('#toc').classList.add('hide');
+	}else{
+		document.querySelector('#toc').classList.remove('hide');
+	}
+
 	_view.emit('layoutChange',hideTabs);
 
 	localStorage.setItem('toonote_hideTabs',JSON.stringify(hideTabs));
@@ -158,7 +165,7 @@ var bindEvents = function(){
 			}
 			$tmpNode = $tmpNode.nextSibling;
 		}
-		
+
 	},false);
 };
 
