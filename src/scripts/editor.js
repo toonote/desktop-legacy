@@ -5,6 +5,8 @@ var init = function(){
 
 	var aceEditor = ace.edit('editor');
 	var session = aceEditor.getSession();
+	aceEditor.commands.bindKey('Cmd-D', null);
+	aceEditor.commands.bindKey('Ctrl-D', null);
 	aceEditor.setTheme('ace/theme/tomorrow');
 	aceEditor.$blockScrolling = Infinity;
 	session.setMode('ace/mode/markdown');
@@ -12,18 +14,43 @@ var init = function(){
 	aceEditor.renderer.setHScrollBarAlwaysVisible(false);
 	aceEditor.renderer.setShowGutter(false);
 	aceEditor.renderer.setPadding(10);
-	/*aceEditor.on('mousemove',function(e){
-		console.log(e);
-		editor.position = e.getDocumentPosition();
-	});*/
-	console.log('hello?');
+
 	editor.setContent = function(content){
 		aceEditor.setValue(content, -1);
 	};
 	editor.getContent = aceEditor.getValue.bind(aceEditor);
 	editor.focus = aceEditor.focus.bind(aceEditor);
 	editor.resize = aceEditor.resize.bind(aceEditor);
-	editor.getRowText = session.getLine.bind(session);
+	editor.getRowText = function(row){
+		if(typeof row === 'undefined'){
+			row = aceEditor.getSelection().getCursor().row;
+		}
+		return session.getLine(row);
+	};
+	editor.replaceRowText = function(newText){
+		var range = aceEditor.getSelectionRange();
+		var position = aceEditor.getSelection().getCursor();
+		var oldColumn = range.start.column;
+		range.setStart({
+			row:position.row,
+			column:0
+		});
+		range.setEnd({
+			row:position.row,
+			column:999999999
+		});
+		session.replace(range, newText);
+
+		/*range = aceEditor.getSelectionRange();
+		range.setStart({
+			row:position.row,
+			column:oldColumn
+		});
+		range.setEnd({
+			row:position.row,
+			column:oldColumn
+		});*/
+	};
 	editor.setCursor = function(row, col){
 		aceEditor.getSelection().moveCursorTo(row, col);
 	};

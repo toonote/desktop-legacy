@@ -900,20 +900,28 @@
 		return template;
 	}
 
-	// 初始化
-	renderNoteList();
-	// renderPreview();
-	var $firstNoteIndex = document.querySelector('#noteList li a[data-id^="1"]');
-	if($firstNoteIndex){
-		$firstNoteIndex.click();
+	function init(){
+		// 初始化
+		renderNoteList();
+		// renderPreview();
+		var $firstNoteIndex = document.querySelector('#noteList li a[data-id^="1"]');
+		if($firstNoteIndex){
+			$firstNoteIndex.click();
+		}
+
+		// 设置菜单
+		buildAppMenu();
+
+		// todo切换完成状态
+		document.addEventListener('keydown', function(e){
+			todo.keyDown(e, editor);
+		});
+		// 微盘同步
+		/*if(localStorage.getItem('syncVdisk') === 'true'){
+			vdiskSync();
+		}*/
 	}
 
-	// 设置菜单
-	buildAppMenu();
-
-	// 微盘同步
-	/*if(localStorage.getItem('syncVdisk') === 'true'){
-		vdiskSync();
-	}*/
+	init();
 
 })();

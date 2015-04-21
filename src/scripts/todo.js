@@ -1,6 +1,7 @@
 exports.init = function(){
 	var $editor = document.querySelector('#editor');
-	$editor.addEventListener('keydown',function(e){
+
+	/*$editor.addEventListener('keydown',function(e){
 		var ctrlOrCmd = e.metaKey || e.ctrlKey;
 		// CTRL+D，切换todo完成状态
 		if(ctrlOrCmd && e.keyCode === 68){
@@ -34,7 +35,30 @@ exports.init = function(){
 			document.execCommand('insertHTML', false, '-&#32;[&#32;]&#32;');
 			return;
 		}
-	});
+	});*/
+};
+
+exports.keyDown = function(e, editor){
+	var ctrlOrCmd = e.metaKey || e.ctrlKey;
+	// CTRL+D，切换todo完成状态
+	if(!ctrlOrCmd || e.keyCode !== 68) return;
+
+	var currText = editor.getRowText();
+	// console.log(currText);
+
+	var todoItemRegExp = /\- \[([x ])\] ?/;
+	var todoItemMatch = currText.match(todoItemRegExp);
+	if(!todoItemMatch || todoItemMatch.length < 2) return;
+
+	var newText;
+	var isDone = todoItemMatch[1] === 'x';
+	if(isDone){
+		newText = currText.replace('[x]','[ ]');
+	}else{
+		newText = currText.replace('[ ]','[x]');
+	}
+	editor.replaceRowText(newText);
+	// console.log(newText);
 };
 
 exports.parseTodo = function(str){
