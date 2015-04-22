@@ -248,6 +248,9 @@
 		if(!view.isVisible('editor')){
 			view.switchVisible('editor');
 		}
+		if(view.isVisible('preview')){
+			view.renderPreview(currentNote);
+		}
 		setTimeout(function(){
 			editor.focus();
 			editor.setCursorToLineEnd();
