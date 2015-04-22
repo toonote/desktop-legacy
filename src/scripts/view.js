@@ -63,7 +63,7 @@ _view.renderPreview = function(note){
 	};
 	var tocHtml = marked(tocMarkdown,{renderer:tocRenderer});
 	var $toc = document.querySelector('#toc');
-	if(tocHtml){
+	if(tocHtml && this.isVisible('preview')){
 		$toc.innerHTML = tocHtml;
 		$toc.classList.remove('hide');
 	}else{
