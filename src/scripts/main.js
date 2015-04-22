@@ -245,6 +245,9 @@
 		updateNote(currentNote);
 		editor.setContent('# Untitled\\'+random);
 		renderNoteList();
+		if(!view.isVisible('editor')){
+			view.switchVisible('editor');
+		}
 		setTimeout(function(){
 			editor.focus();
 			editor.setCursorToLineEnd();

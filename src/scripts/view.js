@@ -148,6 +148,11 @@ _view.switchVisible = function(eleName){
 
 };
 
+_view.isVisible = function(eleName){
+	var hideTabs = JSON.parse(localStorage.getItem('toonote_hideTabs') || '[]');
+	return hideTabs.indexOf(eleName) === -1;
+};
+
 var bindEvents = function(){
 
 	// 折叠笔记
