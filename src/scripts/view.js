@@ -35,13 +35,33 @@ _view.openNoteInNewWindow = function(note){
 
 _view.renderPreview = function(note){
 	var $preview = document.querySelector('#preview');
-	var marked = require('marked');
-	var previewRenderer = new marked.Renderer();
+	var Remarkable = require('remarkable');
+	// var marked = require('marked');
+	// var previewRenderer = new marked.Renderer();
+	var previewRenderer = new Remarkable();
 	var index = 0;
-	previewRenderer.heading = function (text, level) {
+	/*previewRenderer.heading = function (text, level) {
 		return '<h' + level + '><a name="anchor'+(index++)+'">'+ text + '</a></h' + level + '>';
+	};*/
+	// var html = marked(note.content,{renderer:previewRenderer});
+	previewRenderer.renderer.rules.paragraph_open = function (tokens, idx) {
+		var line;
+		if (tokens[idx].lines && tokens[idx].level === 0) {
+			line = tokens[idx].lines[0];
+			return '<p class="line" data-line="' + line + '">';
+		}
+		return '<p>';
 	};
-	var html = marked(note.content,{renderer:previewRenderer});
+
+	previewRenderer.renderer.rules.heading_open = function (tokens, idx) {
+		var line;
+		if (tokens[idx].lines && tokens[idx].level === 0) {
+			line = tokens[idx].lines[0];
+			return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '">';
+		}
+		return '<h' + tokens[idx].hLevel + '>';
+	};
+	var html = previewRenderer.render(note.content);
 	$preview.innerHTML = html;
 
 	Array.prototype.forEach.call($preview.querySelectorAll('pre code'),function($code){
@@ -54,7 +74,7 @@ _view.renderPreview = function(note){
 		$li.innerHTML = todo.parseTodo($li.innerHTML);
 	}
 
-	var toc = require('marked-toc');
+	/*var toc = require('marked-toc');
 	var tocMarkdown = toc(note.content);
 	var tocRenderer = new marked.Renderer();
 	index = 1;
@@ -68,7 +88,7 @@ _view.renderPreview = function(note){
 		$toc.classList.remove('hide');
 	}else{
 		$toc.classList.add('hide');
-	}
+	}*/
 };
 
 _view.init = function(){
@@ -172,6 +192,73 @@ var bindEvents = function(){
 		}
 
 	},false);
+};
+
+_view.syncScroll = function(editor){
+	var scrollMap = [];
+	var lastTime = 0;
+	var buildScrollMap = function(){
+		var $previewAnchors = $preview.querySelectorAll('h1,h2,h3,h4,h5,h6,p');
+		Array.prototype.forEach.call($previewAnchors, function($previewAnchor){
+			if(typeof $previewAnchor.dataset.line !== 'undefined'){
+				scrollMap[$previewAnchor.dataset.line] = $previewAnchor.offsetTop;
+			}
+		});
+
+		var content = editor.getContent();
+		var contentLines = content.split('\n').length;
+		if(!scrollMap[0]) scrollMap[0] = 0;
+		if(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;
+		for(var i = 1; i<contentLines -1; i++){
+			if(!scrollMap[i]){
+				var j = i+1;
+				while(!scrollMap[j] && j < contentLines - 1){
+					j++;
+				}
+				scrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);
+			}
+		}
+		// console.log(scrollMap);
+		lastTime = Date.now();
+		return scrollMap;
+	};
+
+	// var isAnimating = false;
+
+	var animatedScroll = function($elem, target, time){
+		$elem.scrollTop = target;
+		/*var currentScroll = $elem.scrollTop;
+		var delta = target - currentScroll;
+		var lastTime;
+		var animateFunc = function(time){
+			if(lastTime){
+				var timeDelta = time - lastTime;
+				var animateDelta = delta * (timeDelta / time);
+				$elem.scrollTop += animateDelta;
+			}
+			lastTime = time;
+			if((delta > 0 && $elem.scrollTop > target) || (delta < 0 && $elem.scrollTop < target)){
+				$elem.scrollTop = target;
+			}else if(1){
+				requestAnimationFrame(animateFunc);
+			}
+		};
+		requestAnimationFrame(animateFunc);*/
+	};
+
+	
+	editor.session.on('changeScrollTop', function(scroll) {
+		if(!lastTime || Date.now() - lastTime > 5000){
+			buildScrollMap();
+		}
+		var targetRow = editor.getFirstVisibleRow();
+		// targetRow += 1;
+		// if(targetRow === 1 || targetRow >= scrollMap.length){
+			// targetRow -= 1;
+		// }
+		animatedScroll($preview, scrollMap[targetRow], 200);
+		// console.log('scroll',scroll);
+	});
 };
 
 bindEvents();

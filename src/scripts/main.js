@@ -12,6 +12,7 @@
 
 	// 布局变化时重排editor
 	view.on('layoutChange',editor.resize.bind(editor));
+	view.syncScroll(editor);
 
 	// 登录之后重建菜单
 	user.on('login', function(){

@@ -5,6 +5,7 @@ var init = function(){
 
 	var aceEditor = ace.edit('editor');
 	var session = aceEditor.getSession();
+	window.test = aceEditor;
 	aceEditor.commands.bindKey('Cmd-D', null);
 	aceEditor.commands.bindKey('Ctrl-D', null);
 	aceEditor.setTheme('ace/theme/tomorrow');
@@ -21,6 +22,8 @@ var init = function(){
 	editor.getContent = aceEditor.getValue.bind(aceEditor);
 	editor.focus = aceEditor.focus.bind(aceEditor);
 	editor.resize = aceEditor.resize.bind(aceEditor);
+	editor.getFirstVisibleRow = aceEditor.getFirstVisibleRow.bind(aceEditor);
+	editor.session = session;
 	editor.getRowText = function(row){
 		if(typeof row === 'undefined'){
 			row = aceEditor.getSelection().getCursor().row;
