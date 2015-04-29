@@ -196,7 +196,7 @@ var bindEvents = function(){
 
 _view.syncScroll = function(editor){
 	var scrollMap = [];
-	var lastTime = 0;
+	var lastBuildTime = 0;
 	var buildScrollMap = function(){
 		var $previewAnchors = $preview.querySelectorAll('h1,h2,h3,h4,h5,h6,p');
 		Array.prototype.forEach.call($previewAnchors, function($previewAnchor){
@@ -219,44 +219,66 @@ _view.syncScroll = function(editor){
 			}
 		}
 		// console.log(scrollMap);
-		lastTime = Date.now();
+		lastBuildTime = Date.now();
 		return scrollMap;
 	};
 
-	// var isAnimating = false;
+	var isRunning = false;
+	var currentScroll;
+	var delta;
+	var lastTime;
+	var animateDuring;
+	var animatedScroll = function($elem, target, during){
+		
+		currentScroll = $elem.scrollTop;
+		delta = target - currentScroll;
+		if(!delta) return;
+		lastTime = 0;
+		animateDuring = during;
 
-	var animatedScroll = function($elem, target, time){
-		$elem.scrollTop = target;
-		/*var currentScroll = $elem.scrollTop;
-		var delta = target - currentScroll;
-		var lastTime;
+		// console.log('target:%d,delta:%d',target,delta);
+
 		var animateFunc = function(time){
 			if(lastTime){
 				var timeDelta = time - lastTime;
-				var animateDelta = delta * (timeDelta / time);
-				$elem.scrollTop += animateDelta;
+				var animateDelta = delta * (timeDelta / animateDuring);
+				// console.log('timeDelta %d, animateDelta, %d', timeDelta, animateDelta);
+				if(Math.abs(animateDelta) < 1){
+					$elem.scrollTop = target;
+					isRunning = false;
+				}else{
+					$elem.scrollTop += animateDelta;
+				}
 			}
 			lastTime = time;
-			if((delta > 0 && $elem.scrollTop > target) || (delta < 0 && $elem.scrollTop < target)){
+			if((delta > 0 && $elem.scrollTop >= target) || (delta < 0 && $elem.scrollTop <= target) ||
+				$elem.scrollTop + $elem.clientHeight >= $elem.scrollHeight){
 				$elem.scrollTop = target;
-			}else if(1){
+				isRunning = false;
+			}else if(!isRunning){
+				$elem.scrollTop = target;
+				isRunning = false;
+			}else{
 				requestAnimationFrame(animateFunc);
 			}
 		};
-		requestAnimationFrame(animateFunc);*/
+		if(!isRunning){
+			isRunning = true;
+			requestAnimationFrame(animateFunc);
+		}
 	};
 
 	
+	var waitStart = Date.now();
 	editor.session.on('changeScrollTop', function(scroll) {
-		if(!lastTime || Date.now() - lastTime > 5000){
+		if(!lastBuildTime || Date.now() - lastBuildTime > 5000){
 			buildScrollMap();
 		}
 		var targetRow = editor.getFirstVisibleRow();
-		// targetRow += 1;
-		// if(targetRow === 1 || targetRow >= scrollMap.length){
-			// targetRow -= 1;
-		// }
-		animatedScroll($preview, scrollMap[targetRow], 200);
+
+		if(Date.now() - waitStart < 500) return;
+		animatedScroll($preview, scrollMap[targetRow], 500);
+		waitStart = Date.now();
 		// console.log('scroll',scroll);
 	});
 };
