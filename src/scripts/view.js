@@ -253,6 +253,7 @@ _view.syncScroll = function(editor){
 			lastTime = time;
 			if((delta > 0 && $elem.scrollTop >= target) || (delta < 0 && $elem.scrollTop <= target) ||
 				$elem.scrollTop + $elem.clientHeight >= $elem.scrollHeight){
+				// console.log('target 2',target,delta > 0 && $elem.scrollTop >= target,delta < 0 && $elem.scrollTop <= target,$elem.scrollTop + $elem.clientHeight >= $elem.scrollHeight);
 				$elem.scrollTop = target;
 				isRunning = false;
 			}else if(!isRunning){
@@ -270,15 +271,19 @@ _view.syncScroll = function(editor){
 
 	
 	var waitStart = Date.now();
+	var timing;
 	editor.session.on('changeScrollTop', function(scroll) {
 		if(!lastBuildTime || Date.now() - lastBuildTime > 5000){
 			buildScrollMap();
 		}
 		var targetRow = editor.getFirstVisibleRow();
 
-		if(Date.now() - waitStart < 500) return;
-		animatedScroll($preview, scrollMap[targetRow], 500);
-		waitStart = Date.now();
+		if(timing && Date.now() - waitStart < 500) clearTimeout(timing);
+		timing = setTimeout(function(){
+			animatedScroll($preview, scrollMap[targetRow], 500);
+			waitStart = Date.now();
+			timing = 0;
+		},500);
 		// console.log('scroll',scroll);
 	});
 };
