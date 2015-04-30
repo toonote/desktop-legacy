@@ -223,50 +223,31 @@ _view.syncScroll = function(editor){
 		return scrollMap;
 	};
 
-	var isRunning = false;
-	var currentScroll;
-	var delta;
-	var lastTime;
-	var animateDuring;
+	var TWEEN = require('tween.js');
 	var animatedScroll = function($elem, target, during){
-		
-		currentScroll = $elem.scrollTop;
-		delta = target - currentScroll;
-		if(!delta) return;
-		lastTime = 0;
-		animateDuring = during;
 
-		// console.log('target:%d,delta:%d',target,delta);
+	    init();
+	    animate();
 
-		var animateFunc = function(time){
-			if(lastTime){
-				var timeDelta = time - lastTime;
-				var animateDelta = delta * (timeDelta / animateDuring);
-				// console.log('timeDelta %d, animateDelta, %d', timeDelta, animateDelta);
-				if(Math.abs(animateDelta) < 1){
-					$elem.scrollTop = target;
-					isRunning = false;
-				}else{
-					$elem.scrollTop += animateDelta;
-				}
-			}
-			lastTime = time;
-			if((delta > 0 && $elem.scrollTop >= target) || (delta < 0 && $elem.scrollTop <= target) ||
-				$elem.scrollTop + $elem.clientHeight >= $elem.scrollHeight){
-				// console.log('target 2',target,delta > 0 && $elem.scrollTop >= target,delta < 0 && $elem.scrollTop <= target,$elem.scrollTop + $elem.clientHeight >= $elem.scrollHeight);
-				$elem.scrollTop = target;
-				isRunning = false;
-			}else if(!isRunning){
-				$elem.scrollTop = target;
-				isRunning = false;
-			}else{
-				requestAnimationFrame(animateFunc);
-			}
-		};
-		if(!isRunning){
-			isRunning = true;
-			requestAnimationFrame(animateFunc);
-		}
+	    function init() {
+	    	TWEEN.removeAll();
+	        var tween = new TWEEN.Tween( {scrollTop:$elem.scrollTop} )
+	            .to( {scrollTop: target}, 500 )
+	            .easing( TWEEN.Easing.Quadratic.Out )
+	            .onUpdate( function () {
+
+	            	$elem.scrollTop = this.scrollTop;
+
+	            })
+	            .start();
+	    }
+
+	    function animate(time) {
+
+	        requestAnimationFrame(animate);
+	        TWEEN.update(time);
+	    }
+
 	};
 
 	
@@ -278,12 +259,13 @@ _view.syncScroll = function(editor){
 		}
 		var targetRow = editor.getFirstVisibleRow();
 
-		if(timing && Date.now() - waitStart < 500) clearTimeout(timing);
+		if(timing && Date.now() - waitStart < 100) clearTimeout(timing);
 		timing = setTimeout(function(){
+			// console.log(targetRow,scrollMap[targetRow]);
 			animatedScroll($preview, scrollMap[targetRow], 500);
 			waitStart = Date.now();
 			timing = 0;
-		},500);
+		},100);
 		// console.log('scroll',scroll);
 	});
 };
