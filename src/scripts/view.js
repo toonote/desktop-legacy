@@ -89,6 +89,8 @@ _view.renderPreview = function(note){
 	}else{
 		$toc.classList.add('hide');
 	}
+	
+	_view.emit('contentChange');
 };
 
 _view.init = function(){
@@ -268,6 +270,9 @@ _view.syncScroll = function(editor){
 		},100);
 		// console.log('scroll',scroll);
 	});
+
+	_view.on('contentChange', buildScrollMap);
+	_view.on('layoutChange', buildScrollMap);
 };
 
 bindEvents();
