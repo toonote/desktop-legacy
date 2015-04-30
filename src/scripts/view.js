@@ -36,14 +36,8 @@ _view.openNoteInNewWindow = function(note){
 _view.renderPreview = function(note){
 	var $preview = document.querySelector('#preview');
 	var Remarkable = require('remarkable');
-	// var marked = require('marked');
-	// var previewRenderer = new marked.Renderer();
 	var previewRenderer = new Remarkable();
 	var index = 0;
-	/*previewRenderer.heading = function (text, level) {
-		return '<h' + level + '><a name="anchor'+(index++)+'">'+ text + '</a></h' + level + '>';
-	};*/
-	// var html = marked(note.content,{renderer:previewRenderer});
 	previewRenderer.renderer.rules.paragraph_open = function (tokens, idx) {
 		var line;
 		if (tokens[idx].lines && tokens[idx].level === 0) {
@@ -57,10 +51,15 @@ _view.renderPreview = function(note){
 		var line;
 		if (tokens[idx].lines && tokens[idx].level === 0) {
 			line = tokens[idx].lines[0];
-			return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '">';
+			return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor'+(index++)+'">';
 		}
 		return '<h' + tokens[idx].hLevel + '>';
 	};
+
+	previewRenderer.renderer.rules.heading_close = function (tokens, idx) {
+		return '</a></h'+ tokens[idx].hLevel + '>';
+	};
+
 	var html = previewRenderer.render(note.content);
 	$preview.innerHTML = html;
 
@@ -74,21 +73,22 @@ _view.renderPreview = function(note){
 		$li.innerHTML = todo.parseTodo($li.innerHTML);
 	}
 
-	/*var toc = require('marked-toc');
+	var toc = require('marked-toc');
 	var tocMarkdown = toc(note.content);
-	var tocRenderer = new marked.Renderer();
+	var tocRenderer = new Remarkable();
 	index = 1;
-	tocRenderer.link = function(href,title,text){
-		return '<a href="#anchor'+(index++)+'" title="'+text+'">'+text+'</a>';
+	tocRenderer.renderer.rules.link_open = function(tokens, idx){
+		// return '<a href="#anchor'+(index++)+'" title="'+text+'">';
+		return '<a href="#anchor'+(index++)+'">';
 	};
-	var tocHtml = marked(tocMarkdown,{renderer:tocRenderer});
+	var tocHtml = tocRenderer.render(tocMarkdown);
 	var $toc = document.querySelector('#toc');
 	if(tocHtml && this.isVisible('preview')){
 		$toc.innerHTML = tocHtml;
 		$toc.classList.remove('hide');
 	}else{
 		$toc.classList.add('hide');
-	}*/
+	}
 };
 
 _view.init = function(){
