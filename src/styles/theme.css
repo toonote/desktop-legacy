@@ -3,6 +3,10 @@
 	padding:20px;
 	color: #666;
 	font-size: 16px;
+	font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+}
+.preview *{
+	font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
 }
 .preview h1{
 	margin-bottom: 10px;

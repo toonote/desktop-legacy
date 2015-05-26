@@ -4,21 +4,38 @@
 	var packageJson = require('./package.json');
 	var version = packageJson.version;
 
-	var api = require('./api.js');
-	var view = require('./view.js');
-	var todo = require('./todo.js');
+	var api = require('./scripts/api.js');
+	var view = require('./scripts/view.js');
+	var todo = require('./scripts/todo.js');
+	var editor = require('./scripts/editor.js');
+	var user = require('./scripts/user.js');
+
+	// 布局变化时重排editor
+	view.on('layoutChange',editor.resize.bind(editor));
+	view.syncScroll(editor);
+
+	// 登录之后重建菜单
+	user.on('login', function(){
+		buildAppMenu({
+			isLogin:true
+		});
+	});
+
+	// 退出登录后重建菜单
+	user.on('logout', buildAppMenu);
 
 	view.init();
 	todo.init();
 
+	// TODO:准备抛弃
 	window.config = JSON.parse(localStorage.getItem('config') || '{}');
 
 	var noteIndex = JSON.parse(localStorage.getItem('noteIndex')||'{}');
-	var syncIndex = JSON.parse(localStorage.getItem('syncIndex') || '{}');
+	/*var syncIndex = JSON.parse(localStorage.getItem('syncIndex') || '{}');
 	if(!syncIndex.vdisk){
 		syncIndex.vdisk = {};
 		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
-	}
+	}*/
 	var currentNote = {};
 
 	var $editor = document.querySelector('#editor');
@@ -34,11 +51,11 @@
 				updateNote(currentNote);
 				renderPreview();
 				updateNoteIndex(title);
-				updateSyncIndex('vdisk');
+				// updateSyncIndex('vdisk');
 				saveTimer = 0;
 			},saveInterval);
 		}
-		currentNote.content = $editor.innerText;
+		currentNote.content = editor.getContent();
 		var title = getTitleByContent(currentNote.content);
 	};
 
@@ -49,31 +66,22 @@
 	$editor.addEventListener('keydown',handleInput,false);
 
 	// 粘贴响应
-	$editor.addEventListener('paste',function(e){
+	/*$editor.addEventListener('paste',function(e){
 		e.preventDefault();
 		var text = e.clipboardData.getData('text/plain');
 		text = getEditorContent(text);
 		document.execCommand('insertHTML', false, text);
-		updateSyncIndex('vdisk');
-	});
+		// updateSyncIndex('vdisk');
+	});*/
 
 	// 编辑体验优化 - 响应TAB
-	$editor.addEventListener('keydown',function(e){
+	/*$editor.addEventListener('keydown',function(e){
 		if(e.keyCode === 9){
 			// TAB
 			e.preventDefault();
 			document.execCommand('insertHTML', false, '\t');
-			/*var selection = window.getSelection();
-			var range = selection.getRangeAt(0);
-
-			var node = document.createTextNode('\t');
-			range.insertNode(node);
-			range.setEndAfter(node);
-			range.setStartAfter(node);
-			selection.removeAllRanges();
-			selection.addRange(range);*/
 		}
-	});
+	});*/
 
 	// 拖拽插图
 	$editor.addEventListener('dragover',function(e){
@@ -81,34 +89,33 @@
 		e.preventDefault();
 	});
 	$editor.addEventListener('drop',function(e){
+		console.log('drop');
 		e.stopPropagation();
 		e.preventDefault();
+
 		var img = e.dataTransfer.files[0];
 		if(!img || !/^image/.test(img.type)) return;
 
-		var $currNode = e.target;
-		if(/\S+/.test($currNode.innerText)){
-			// 如果当前元素非空，插入下方
-			var $nextNode = $currNode.nextSibling;
-			var $parent = $currNode.parentNode;
-			var $newNode = document.createElement('div');
-			var $blankNode = document.createElement('div');
-			$blankNode.innerHTML = '<br />';
-			$newNode.innerText = '![' + img.name + '](' + img.path + ')';
-			if($nextNode){
-				$parent.insertBefore($newNode,$nextNode);
-			}else{
-				$parent.appendChild($newNode);
-			}
-			$parent.insertBefore($blankNode,$newNode);
-		}else{
-			// 如果当前元素为空，插入当前元素
-			$currNode.innerText = '![' + img.name + '](' + img.path + ')';
-		}
-		currentNote.content = $editor.innerText;
-		updateNote(currentNote);
-		renderPreview();
-		console.log(e.target);
+		var AV = require('avoscloud-sdk').AV;
+		AV.initialize('pnj0o24lytzmcaoebtu3uoynwyuqqs687ch3nxpih0i45qid', 'ce3286s9l40kyj5erom2sjlc22tyqku6tn3na3v8s6h17jrs');
+		var avFile = new AV.File(img.name, img);
+
+		// var position = editor.position;
+		// editor.setCursor(position.row, position.column);
+		// var rowText = editor.getRowText(position.row);
+		// editor.insertText(img.name + '上传中...');
+
+		// console.log(rowText);
+
+		avFile.save().then(function(image) {
+			editor.insertText('![' + img.name + '](' + image.url() + ')');
+			currentNote.content = editor.getContent();
+			updateNote(currentNote);
+			renderPreview();
+		}, function(err) {
+			console.log(err);
+		});
+
 	});
 
 	// 搜索快捷键
@@ -185,8 +192,8 @@
 			return false;
 		}
 		currentNote.id = id;
-		currentNote.content = localStorage.getItem('note_'+id);
-		document.querySelector('#editor').innerHTML = getEditorContent(currentNote.content);
+		currentNote.content = localStorage.getItem('note_'+id).replace(/\xa0/g,' ');
+		editor.setContent(currentNote.content);
 		renderPreview();
 		setActiveNote(id);
 	},false);
@@ -207,12 +214,13 @@
 	},false);
 
 	// 同步当前笔记
+	// todo:准备抛弃
 	document.querySelector('#noteList').addEventListener('click',function(e){
 		if(!e.target.classList.contains('vdisk')) return false;
 		// if(!confirm('确定要删除该笔记吗？')) return false;
 		var id = e.target.parentNode.querySelector('a').dataset.id;
-		var isSync = !e.target.classList.contains('ok');
-		doSync('vdisk',id,isSync,function(err,result){
+		// var isSync = !e.target.classList.contains('ok');
+		/*doSync('vdisk',id,isSync,function(err,result){
 			if(err){
 				console.log(err.message);
 				return;
@@ -223,24 +231,7 @@
 			e.target.classList.add('ok');
 		}else{
 			e.target.classList.remove('ok');
-		}
-	},false);
-
-	// 折叠笔记
-	document.querySelector('#noteList').addEventListener('click',function(e){
-		if(e.target.tagName !== 'LI') return false;
-		var $tmpNode = e.target.nextSibling;
-		if(!$tmpNode) return;
-		var thisLevel = +e.target.dataset.level;
-		var isVisible = getComputedStyle($tmpNode).display !== 'none';
-		while($tmpNode && +$tmpNode.dataset.level > thisLevel){
-			if(isVisible){
-				$tmpNode.style.display = 'none';
-			}else{
-				$tmpNode.style.display = '';
-			}
-			$tmpNode = $tmpNode.nextSibling;
-		}
+		}*/
 	},false);
 
 	// 新建笔记
@@ -253,18 +244,24 @@
 		currentNote.id = id;
 		currentNote.content = '# Untitled\\'+random;
 		updateNote(currentNote);
-		$editor.innerHTML = '';
+		editor.setContent('# Untitled\\'+random);
 		renderNoteList();
-		document.execCommand('insertHTML', false, '# Untitled\\'+random);
+		if(!view.isVisible('editor')){
+			view.switchVisible('editor');
+		}
+		if(view.isVisible('preview')){
+			view.renderPreview(currentNote);
+		}
 		setTimeout(function(){
-			$editor.focus();
+			editor.focus();
+			editor.setCursorToLineEnd();
 		},0);
 	}
 
 	// 保存
 	function save(){
 		if($editor.classList.contains('hide')) return;
-		currentNote.content = JSON.parse(JSON.stringify($editor.innerText));
+		currentNote.content = JSON.parse(JSON.stringify(editor.getContent()));
 		currentNote.content = currentNote.content.replace(/\n$/,'');
 		updateNote(currentNote);
 		renderPreview();
@@ -298,7 +295,7 @@
 				var title = getTitleByContent(currentNote.content);
 				updateNoteIndex(title);
 				updateNote(currentNote);
-				$editor.innerHTML = getEditorContent(currentNote.content);
+				editor.setContent(currentNote.content);
 				renderPreview();
 				renderNoteList();
 			}
@@ -342,12 +339,25 @@
 			isExporting = false;
 		}
 		if(format === 'htmlfile' || format === 'pdf'){
+			var postcss = require('postcss');
+			var atImport = require('postcss-import');
+
+			var css = fs.readFileSync(__dirname + '/render.css', 'utf8');
+
+			var outputCss = postcss()
+				.use(atImport())
+				.process(css, {
+					from: __dirname + '/render.css'
+				})
+				.css;
+
+			// console.log(outputCss);
 			content = '<!doctype html><html>\n' +
 					'<head>\n' + 
 					'<meta charset="utf-8">\n' +
 					'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
 					'<title>' + noteIndex[currentNote.id] + '</title>\n' +
-					'<style>\n' + fs.readFileSync(__dirname + '/render.css','utf8') + '</style>\n' +
+					'<style>\n' + outputCss + '</style>\n' +
 					'</head>\n' +
 					'<body class="preview">\n' + content + '</body>\n</html>';
 		}
@@ -477,7 +487,7 @@
 	}
 
 	// 更新同步状态
-	function updateSyncIndex(provider,id,isSync,remoteUpdateTime,updateLocal){
+	/*function updateSyncIndex(provider,id,isSync,remoteUpdateTime,updateLocal){
 		var newIndex = {
 			localUpdateTime:Date.now()
 		};
@@ -503,16 +513,16 @@
 			syncIndex[provider][id].localUpdateTime = newIndex.localUpdateTime;
 		}
 		localStorage.setItem('syncIndex',JSON.stringify(syncIndex));
-	}
+	}*/
 
 	// 同步笔记
-	function doSync(provider,id,isSync,callback){
+	/*function doSync(provider,id,isSync,callback){
 		if(isSync){
 			api.syncNote(provider,id,localStorage.getItem('note_'+id),callback);
 		}else{
 			api.deleteNote(provider,id,callback);
 		}
-	}
+	}*/
 
 	// 渲染笔记列表
 	function renderNoteList(){
@@ -574,7 +584,7 @@
 				var tmpHtml = '<li class="level'+level+(+arrItem.id === +currentNote.id?' active':'')+'" data-level="'+level+'">';
 				tmpHtml += '<a href="#" title="'+(arrItem.title || 'Untitled')+'" data-id="'+(arrItem.id || 0)+'">'+(arrItem.title || 'Untitled')+'</a>';
 				tmpHtml += '<i title="删除笔记" class="delete">X</i>';
-				tmpHtml += '<i title="同步到微盘" class="vdisk'+(syncIndex.vdisk[arrItem.id] && syncIndex.vdisk[arrItem.id].isSync?' ok':'')+'">V</i>';
+				// tmpHtml += '<i title="同步到微盘" class="vdisk'+(syncIndex.vdisk[arrItem.id] && syncIndex.vdisk[arrItem.id].isSync?' ok':'')+'">V</i>';
 				if(arrItem.children.length){
 					level++;
 					// tmpHtml += '<ul>';
@@ -624,7 +634,7 @@
 		}
 	}
 
-	function vdiskSync(){
+	/*function vdiskSync(){
 		api.oauth('vdisk',function(err){
 			if(!err){
 				localStorage.setItem('syncVdisk','true');
@@ -634,9 +644,9 @@
 				alert('授权出错：'+err.message);
 			}
 		});
-	}
+	}*/
 
-	function startVdiskSync(){
+	/*function startVdiskSync(){
 		// 每2分钟同步一次
 		setTimeout(startVdiskSync,120*1000);
 
@@ -711,7 +721,7 @@
 			}
 		},60*1000);
 		
-	}
+	}*/
 
 	// 从内容中提示标题
 	function getTitleByContent(content){
@@ -735,11 +745,17 @@
 	}
 
 	// 设置菜单
-	function buildAppMenu(){
+	function buildAppMenu(options){
+		if(!options) options = {};
 		var remote = require('remote');
 		var Menu = remote.require('menu');
 
-		// var MenuItem = remote.require('menu-item');
+		var template = getAppMenuTmpl(options);
+		var menu = Menu.buildFromTemplate(template);
+		Menu.setApplicationMenu(menu);
+	}
+
+	function getAppMenuTmpl(options){
 		var template = [{
 			label:'TooNote',
 			submenu:[,{
@@ -864,6 +880,9 @@
 					view.switchVisible('preview');
 				}
 			},{
+				label:'切换行号显示',
+				click:editor.switchGutter
+			},{
 				label:'新窗口打开',
 				accelerator:'CommandOrControl+T',
 				click:function(){
@@ -872,43 +891,44 @@
 			}]
 		},{
 			label:'云',
-			submenu:[{
-				label:'微盘同步',
-				click:vdiskSync
-			}]
+			submenu:[]
 		}];
-
-		var menu = Menu.buildFromTemplate(template);
-		Menu.setApplicationMenu(menu);
+		if(options.isLogin){
+			template[4].submenu[0] = {
+				label:'退出登录',
+				click:user.logout
+			};
+		}else{
+			template[4].submenu[0] = {
+				label:'登录',
+				click:user.login
+			};
+		}
+		return template;
 	}
 
-	// 初始化
-	renderNoteList();
-	// renderPreview();
-	var $firstNoteIndex = document.querySelector('#noteList li a[data-id^="1"]');
-	if($firstNoteIndex){
-		$firstNoteIndex.click();
+	function init(){
+		// 初始化
+		renderNoteList();
+		// renderPreview();
+		var $firstNoteIndex = document.querySelector('#noteList li a[data-id^="1"]');
+		if($firstNoteIndex){
+			$firstNoteIndex.click();
+		}
+
+		// 设置菜单
+		buildAppMenu();
+
+		// todo切换完成状态
+		document.addEventListener('keydown', function(e){
+			todo.keyDown(e, editor);
+		});
+		// 微盘同步
+		/*if(localStorage.getItem('syncVdisk') === 'true'){
+			vdiskSync();
+		}*/
 	}
 
-	// 设置菜单
-	buildAppMenu();
-
-	// 微盘同步
-	if(localStorage.getItem('syncVdisk') === 'true'){
-		vdiskSync();
-	}
+	init();
 
 })();
-
-
-
-/*var observer = new MutationObserver(function(mutations){
-	console.log(mutations);
-});
-
-observer.observe(document.querySelector('#editor'),{
-	childList: true,
-	characterData: true
-});*/
-
-
