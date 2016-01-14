@@ -13,6 +13,11 @@ module.exports = {
 		},{
 			test: /\.png$/,
 			loader: 'url?limit=100000'
+		},{
+			test: /\.jsx?$/,
+			exclude: /(node_modules|bower_components)/,
+			loader: 'babel?presets=es2015', // 'babel-loader' is also a legal name to reference
 		}]
-	}
+	},
+    devtool: '#source-map'
 };
