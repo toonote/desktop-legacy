@@ -1,14 +1,18 @@
 <style scoped>
 .preview{
 	font-family: "PingFang SC";
-	min-height:100%;
+	height:100%;
+	overflow-y:auto;
 	flex:1;
+	padding:10px;
+	font-size:14px;
+	line-height: 28px;
 }
 </style>
 
 <template>
 <section class="preview">
-	{{content}}
+	{{{html}}}
 </section>
 </template>
 
@@ -18,14 +22,44 @@ export default {
 	// props:['content'],
 	events:{
 		sourceChange:function(content){
-			this.content = content;
+			this.source = content;
+			let html = this._render.render(content);
+			this.html = html;
 		}
 	},
 	data(){
 		var data = {
-			content:''
+			content:'',
+			html:''
 		};
 		return data;
+	},
+	ready(){
+		var Remarkable = require('remarkable');
+		var previewRenderer = new Remarkable();
+		var index = 0;
+		previewRenderer.renderer.rules.paragraph_open = function (tokens, idx) {
+			var line;
+			if (tokens[idx].lines && tokens[idx].level === 0) {
+				line = tokens[idx].lines[0];
+				return '<p class="line" data-line="' + line + '">';
+			}
+			return '<p>';
+		};
+
+		previewRenderer.renderer.rules.heading_open = function (tokens, idx) {
+			var line;
+			if (tokens[idx].lines && tokens[idx].level === 0) {
+				line = tokens[idx].lines[0];
+				return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor'+(index++)+'">';
+			}
+			return '<h' + tokens[idx].hLevel + '>';
+		};
+
+		previewRenderer.renderer.rules.heading_close = function (tokens, idx) {
+			return '</a></h'+ tokens[idx].hLevel + '>';
+		};
+		this._render = previewRenderer;
 	}
 };
 </script>
