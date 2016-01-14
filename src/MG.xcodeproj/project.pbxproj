@@ -291,7 +291,7 @@
 			attributes = {
 				LastUpgradeCheck = 0510;
 			};
-			buildConfigurationList = 2237E641192B0177001E1393 /* Build configuration list for PBXProject "MG" */;
+			buildConfigurationList = 2237E641192B0177001E1393 /* Build configuration list for PBXProject "TooNote" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -474,6 +474,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MacGap/MG-Prefix.pch";
 				INFOPLIST_FILE = "MacGap/MG-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = toobug.net.toonote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -487,6 +488,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MacGap/MG-Prefix.pch";
 				INFOPLIST_FILE = "MacGap/MG-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = toobug.net.toonote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -495,7 +497,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2237E641192B0177001E1393 /* Build configuration list for PBXProject "MG" */ = {
+		2237E641192B0177001E1393 /* Build configuration list for PBXProject "TooNote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2237E675192B0177001E1393 /* Debug */,
