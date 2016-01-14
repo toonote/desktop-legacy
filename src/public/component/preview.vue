@@ -7,6 +7,7 @@
 	padding:10px;
 	font-size:14px;
 	line-height: 28px;
+	background:#fff;
 }
 </style>
 

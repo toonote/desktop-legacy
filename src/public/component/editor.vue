@@ -46,6 +46,11 @@ export default {
 			this.content = content;
 			this.$dispatch('sourceChange', content);
 		});
+
+		// 重新计算大小
+		setTimeout(function(){
+			aceEditor.resize();
+		},0);
 	}
 };
 </script>
