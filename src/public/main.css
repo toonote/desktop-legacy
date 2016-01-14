@@ -1,0 +1,17 @@
+*{
+	padding:0;
+	margin:0;
+}
+html,body{
+	min-height: 100%;
+}
+
+.icon::before{
+	content:' ';
+	display: inline-block;
+	width:16px;
+	height:16px;
+	vertical-align: sub;
+	background-size:16px 16px;
+	background-repeat:no-repeat;
+}

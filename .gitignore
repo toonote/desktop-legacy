@@ -5,3 +5,4 @@ src/node_modules
 dist.sh
 logo
 other
+src/public/node_modules

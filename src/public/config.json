@@ -1,6 +1,6 @@
 {
     "main": "public/index.html",
-    "name": "MacGap",
+    "name": "TooNote",
     "description": "",
     "version": "2.0.0",
     "plugins" : {
@@ -15,8 +15,8 @@
                 "File" : "File"
                  },
     "window" : {
-        "title" : "MacGap",
-        "width" : 900,
+        "title" : "TooNote",
+        "width" : 1000,
         "height" : 600,
         "position": "center",
         "min_width": 400,
@@ -26,5 +26,5 @@
         "opaque": 1,
         "alpha": 1
     }
-  
+
 }
