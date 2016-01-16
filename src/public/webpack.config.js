@@ -1,5 +1,5 @@
 module.exports = {
-	entry: './main.js',
+	entry: ['babel-regenerator-runtime','./main.js'],
 	output: {
 		path: __dirname,
 		filename: 'bundle.js'
@@ -16,7 +16,10 @@ module.exports = {
 		},{
 			test: /\.jsx?$/,
 			exclude: /(node_modules|bower_components)/,
-			loader: 'babel?presets=es2015', // 'babel-loader' is also a legal name to reference
+			loader: 'babel',
+			query: {
+				presets: ['es2015','stage-0']
+			}
 		}]
 	},
     devtool: '#source-map'

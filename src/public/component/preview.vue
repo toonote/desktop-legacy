@@ -22,10 +22,14 @@
 export default {
 	// props:['content'],
 	events:{
-		sourceChange:function(content){
+		sourceChange(content){
+			console.log(content);
 			this.source = content;
 			let html = this._render.render(content);
 			this.html = html;
+		},
+		currentNoteUpdate(note){
+			this.$emit('sourceChange',note.content);
 		}
 	},
 	data(){

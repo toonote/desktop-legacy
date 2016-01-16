@@ -24,6 +24,12 @@ import ace from 'brace';
 import 'brace/theme/tomorrow';
 import 'brace/mode/markdown';
 export default {
+	events:{
+		currentNoteUpdate(note){
+			this.content = note.content;
+			this._aceEditor.setValue(note.content, -1);
+		}
+	},
 	data(){
 		var data = {
 			content:''
@@ -33,6 +39,7 @@ export default {
 	ready(){
 		var aceEditor = ace.edit('ace_container');
 		var session = aceEditor.getSession();
+		this._aceEditor = aceEditor;
 		aceEditor.setTheme('ace/theme/tomorrow');
 		session.setMode('ace/mode/markdown');
 		session.setUseWrapMode(true);
