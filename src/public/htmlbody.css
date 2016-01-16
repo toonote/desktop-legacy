@@ -1,0 +1,74 @@
+.htmlBody{
+	line-height: 28px;
+	font-size: 14px;
+	color:#4D4D4C;
+	letter-spacing: 3px;
+	padding:0 10px;
+}
+/*标题*/
+.htmlBody h1,.htmlBody h2,.htmlBody h3,
+.htmlBody h4,.htmlBody h5,.htmlBody h6{
+	margin:16px 0;
+	color:#718C00;
+	font-weight: normal;
+}
+/*段落*/
+.htmlBody p{
+	margin-bottom: 28px;
+	text-indent: 34px;
+}
+
+/*列表*/
+.htmlBody ul,ol{
+	margin-bottom: 28px;
+	padding-left:34px;
+	list-style-position: inside;
+}
+.htmlBody li > p{
+	text-indent: 0;
+	margin-bottom: 0;
+}
+.htmlBody ul ul,
+.htmlBody ul ol,
+.htmlBody ol ol,
+.htmlBody ol ul{
+	margin-bottom: 0;
+}
+
+/*代码*/
+.htmlBody code{
+	background:#E0E0E0;
+	padding:0 5px;
+}
+.htmlBody pre code{
+	margin-left:34px;
+	margin-bottom: 28px;
+	display: block;
+	background:#fff;
+	border:1px solid #E0E0E0;
+}
+/*引用*/
+.htmlBody blockquote{
+	margin-left:34px;
+	font-size:13px;
+	margin-bottom: 28px;
+	padding:0 10px;
+	background:#F0F0F0;
+	border-left:3px solid #E0E0E0;
+}
+.htmlBody blockquote p{
+	text-indent: 0;
+	margin-bottom: 14px;
+}
+/*图片*/
+.htmlBody img{
+	max-width: 100%;
+	border: 1px solid #E0E0E0;
+	padding: 1px;
+}
+
+/*链接*/
+.htmlBody a{
+	color:#718C00;
+	text-decoration: none;
+}

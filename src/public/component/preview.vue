@@ -4,16 +4,16 @@
 	height:100%;
 	overflow-y:auto;
 	flex:1;
-	padding:10px;
 	font-size:14px;
 	line-height: 28px;
 	background:#fff;
 }
+@import "../htmlbody.css";
 </style>
 
 <template>
 <section class="preview">
-	{{{html}}}
+	<div class="htmlBody">{{{html}}}</div>
 </section>
 </template>
 
