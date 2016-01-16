@@ -38,12 +38,12 @@
 		22B1CF411937734B00D2C294 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 22B1CF251937734B00D2C294 /* InfoPlist.strings */; };
 		22B1CF421937734B00D2C294 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22B1CF271937734B00D2C294 /* Images.xcassets */; };
 		22B1CF431937734B00D2C294 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B1CF281937734B00D2C294 /* main.m */; };
-		22B1CF441937734B00D2C294 /* MG-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22B1CF291937734B00D2C294 /* MG-Info.plist */; };
+		22B1CF441937734B00D2C294 /* TooNote-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22B1CF291937734B00D2C294 /* TooNote-Info.plist */; };
 		22BE36ED193B7F8800D8199F /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BE36EC193B7F8800D8199F /* Defaults.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2237E646192B0177001E1393 /* MG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2237E646192B0177001E1393 /* TooNote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TooNote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2237E649192B0177001E1393 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		2237E64C192B0177001E1393 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		2237E64D192B0177001E1393 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -102,8 +102,8 @@
 		22B1CF261937734B00D2C294 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		22B1CF271937734B00D2C294 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		22B1CF281937734B00D2C294 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		22B1CF291937734B00D2C294 /* MG-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MG-Info.plist"; sourceTree = "<group>"; };
-		22B1CF2A1937734B00D2C294 /* MG-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MG-Prefix.pch"; sourceTree = "<group>"; };
+		22B1CF291937734B00D2C294 /* TooNote-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TooNote-Info.plist"; sourceTree = "<group>"; };
+		22B1CF2A1937734B00D2C294 /* TooNote-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TooNote-Prefix.pch"; sourceTree = "<group>"; };
 		22BE36EB193B7F8800D8199F /* Defaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defaults.h; sourceTree = "<group>"; };
 		22BE36EC193B7F8800D8199F /* Defaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defaults.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -135,7 +135,7 @@
 		2237E647192B0177001E1393 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2237E646192B0177001E1393 /* MG.app */,
+				2237E646192B0177001E1393 /* TooNote.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -248,8 +248,8 @@
 				22B1CF251937734B00D2C294 /* InfoPlist.strings */,
 				22B1CF271937734B00D2C294 /* Images.xcassets */,
 				22B1CF281937734B00D2C294 /* main.m */,
-				22B1CF291937734B00D2C294 /* MG-Info.plist */,
-				22B1CF2A1937734B00D2C294 /* MG-Prefix.pch */,
+				22B1CF291937734B00D2C294 /* TooNote-Info.plist */,
+				22B1CF2A1937734B00D2C294 /* TooNote-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -266,9 +266,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2237E645192B0177001E1393 /* MG */ = {
+		2237E645192B0177001E1393 /* TooNote */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2237E677192B0177001E1393 /* Build configuration list for PBXNativeTarget "MG" */;
+			buildConfigurationList = 2237E677192B0177001E1393 /* Build configuration list for PBXNativeTarget "TooNote" */;
 			buildPhases = (
 				2237E642192B0177001E1393 /* Sources */,
 				2237E643192B0177001E1393 /* Frameworks */,
@@ -278,9 +278,9 @@
 			);
 			dependencies = (
 			);
-			name = MG;
+			name = TooNote;
 			productName = MG;
-			productReference = 2237E646192B0177001E1393 /* MG.app */;
+			productReference = 2237E646192B0177001E1393 /* TooNote.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -304,7 +304,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2237E645192B0177001E1393 /* MG */,
+				2237E645192B0177001E1393 /* TooNote */,
 			);
 		};
 /* End PBXProject section */
@@ -314,7 +314,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22B1CF441937734B00D2C294 /* MG-Info.plist in Resources */,
+				22B1CF441937734B00D2C294 /* TooNote-Info.plist in Resources */,
 				2237E6EF192BAF85001E1393 /* public in Resources */,
 				22B1CF401937734B00D2C294 /* Credits.rtf in Resources */,
 				22B1CF421937734B00D2C294 /* Images.xcassets in Resources */,
@@ -472,10 +472,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "MacGap/MG-Prefix.pch";
-				INFOPLIST_FILE = "MacGap/MG-Info.plist";
+				GCC_PREFIX_HEADER = "MacGap/TooNote-Prefix.pch";
+				INFOPLIST_FILE = "MacGap/TooNote-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = toobug.net.toonote;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = TooNote;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -486,10 +486,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "MacGap/MG-Prefix.pch";
-				INFOPLIST_FILE = "MacGap/MG-Info.plist";
+				GCC_PREFIX_HEADER = "MacGap/TooNote-Prefix.pch";
+				INFOPLIST_FILE = "MacGap/TooNote-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = toobug.net.toonote;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = TooNote;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -506,7 +506,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2237E677192B0177001E1393 /* Build configuration list for PBXNativeTarget "MG" */ = {
+		2237E677192B0177001E1393 /* Build configuration list for PBXNativeTarget "TooNote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2237E678192B0177001E1393 /* Debug */,
