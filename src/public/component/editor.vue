@@ -25,7 +25,7 @@ import 'brace/theme/tomorrow';
 import 'brace/mode/markdown';
 export default {
 	events:{
-		currentNoteUpdate(note){
+		currentNoteDidChange(note){
 			this.content = note.content;
 			this._aceEditor.setValue(note.content, -1);
 		}
@@ -51,7 +51,7 @@ export default {
 		aceEditor.on('input', () => {
 			let content = aceEditor.getValue();
 			this.content = content;
-			this.$dispatch('sourceChange', content);
+			this.$dispatch('currentNoteContentChange', content);
 		});
 
 		// 重新计算大小

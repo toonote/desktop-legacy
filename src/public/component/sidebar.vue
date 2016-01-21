@@ -52,11 +52,13 @@
 <script>
 export default {
 	events:{
-		metaUpdate:function(data){
+		metaDidChange:function(data){
 			this.notes = data.notebook;
 		},
-		currentNoteUpdate:function(note){
-			this.currentNote = note;
+		currentNoteDidChange:function(note){
+			if(this.currentNote.id !== note.id){
+				this.currentNote = note;
+			}
 		}
 	},
 	data(){
