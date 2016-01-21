@@ -18,7 +18,6 @@ meta.initData = async function(){
 			notes:[{
 				id:Date.now()+((Math.random()*10000)>>0),
 				title:'欢迎使用TooNote',
-				content:'# 欢迎使用TooNote\n\nTooNote是一款基于Markdown的笔记软件。'
 			}]
 		}]
 	};

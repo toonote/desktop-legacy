@@ -6,7 +6,13 @@ html,body{
 	height: 100%;
 }
 body{
+}
+.main{
 	display: flex;
+	height:100%;
+}
+.main.withMenubar{
+	height:calc(100% - 24px);
 }
 
 .icon::before{

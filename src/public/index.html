@@ -6,9 +6,12 @@
 	<link href="./main.css" rel="stylesheet" />
 </head>
 <body>
-	<sidebar></sidebar>
-	<editor></editor>
-	<preview></preview>
+	<menubar></menubar>
+	<div class="main" v-bind:class="{withMenubar:withMenubar}">
+		<sidebar></sidebar>
+		<editor></editor>
+		<preview></preview>
+	</div>
 	<script src="./bundle.js"></script>
 </body>
 </html>
