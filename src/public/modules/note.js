@@ -9,6 +9,11 @@ note.getNote = async function(id){
 	return await store.readFile(`/note-${id}.md`);
 };
 
+note.addNote = async function(note){
+	note.content = '# Untitled Note';
+	return await this.saveNoteContent(note);
+};
+
 note.saveNoteContent = async function(note, shouldThrottle){
 	return await store.writeFile(`/note-${note.id}.md`,note.content);
 };

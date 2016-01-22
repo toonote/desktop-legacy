@@ -7,12 +7,14 @@ import Menubar from './component/menubar.vue';
 
 import meta from './modules/meta';
 import note from './modules/note';
+import menu from './modules/menu';
 
 let app = new Vue({
 	el: 'body',
 	data:{
-		currentNote:{
-		},
+		metaData:{},
+		currentNote:{},
+		currentNotebook:{},
 		withMenubar:true
 	},
 	events: {
@@ -44,6 +46,7 @@ let app = new Vue({
 		}else{
 			metaData = JSON.parse(metaText);
 		}
+		app.metaData = metaData;
 		app.$broadcast('metaDidChange', metaData);
 		app.$broadcast('currentNodeWillChange');
 		var shouldChangeCurrentNote = true;
@@ -53,7 +56,8 @@ let app = new Vue({
 		}*/
 		// todo:扫描所有笔记，看当前笔记还是否存在
 		if(shouldChangeCurrentNote){
-			var noteMeta = metaData.notebook[0].notes[0];
+			app.currentNotebook = metaData.notebook[0];
+			var noteMeta = Object.assign({},app.currentNotebook.notes[0]);
 			noteMeta.content = await note.getNote(noteMeta.id);
 			console.log(noteMeta);
 			app.currentNote = noteMeta;
@@ -63,5 +67,24 @@ let app = new Vue({
 		console.log(e);
 		throw e;
 	}
+
+	var newNote = async function(){
+		// todo
+		var noteMeta = await meta.addNote(app.metaData, app.currentNotebook);
+		await note.addNote(noteMeta);
+		app.currentNote = noteMeta;
+		app.$broadcast('currentNoteDidChange', app.currentNote);
+		app.$broadcast('metaDidChange', app.metaData);
+
+	}
+
+	menu.on('click',function(eventType, command){
+		switch(command){
+			case 'newNote':
+				newNote();
+				break;
+		}
+
+	});
 })();
 

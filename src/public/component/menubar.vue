@@ -5,6 +5,7 @@
 	font-size:13px;
 	line-height: 24px;
 	background:linear-gradient(top,#EEE,#CCC);
+	cursor: default;
 }
 .menubar ul{
 	padding:0 20px;
@@ -12,21 +13,49 @@
 }
 .menubar ul li{
 	display: inline-block;
-	padding:0 5px;
 	margin-right:10px;
 }
 .menubar ul li.active{
 	background:rgb(40,141,248);
 	color: white;
 }
+.menubar ul li span{
+	padding:0 5px;
+}
+.menubar ul > li > ul{
+	position: absolute;
+	background:#D6D6D6;
+	color:#333;
+	opacity: .9;
+	display: none;
+	box-shadow:0 3px 3px rgba(192,192,192,.5);
+	padding:0;
+	border:1px solid #ccc;
+}
+.menubar ul > li.active > ul{
+	display: block;
+}
+.menubar ul > li > ul > li{
+	margin:0;
+}
+.menubar ul > li > ul > li:hover{
+	color:white;
+	background:rgb(40,141,248);
+}
+.menubar ul > li > ul > li > span{
+	padding:0 20px;
+}
 </style>
 
 <template>
 <section class="menubar">
 	<ul>
-		<li class="active">TooNote</li>
-		<li>File</li>
-		<li>Edit</li>
+		<li v-for="menu in menuList" v-bind:class="{active:menu.isActive}" v-on:click="menuClick(menu.title)">
+			<span>{{menu.title}}</span>
+			<ul v-if="menu.subMenu && menu.subMenu.length">
+				<li v-for="subMenu in menu.subMenu" v-on:click="subMenuClick(subMenu.title)"><span>{{subMenu.title}}</span></li>
+			</ul>
+		</li>
 	</ul>
 </section>
 </template>
@@ -38,13 +67,40 @@ let menu = new Menu();
 export default {
 	events:{
 	},
+	methods:{
+		menuClick(title){
+			this.menuList.forEach(function(menu){
+				if(menu.title === title){
+					menu.isActive = !menu.isActive;
+				}else{
+					menu.isActive = false;
+				}
+			});
+			// 触发vue更新
+			// this.menuList = this.menuList.concat([]);
+		},
+		subMenuClick(title){
+			switch (title){
+				case 'New':
+					menu.onClick('newNote');
+					break;
+			}
+		}
+	},
 	data(){
 		let data = {
 			isShow:menu.isVue,
 			menuList:[{
 				title:'TooNote',
+				isActive:false,
 				subMenu:[{
 					title:'About'
+				}]
+			},{
+				title:'File',
+				isActive:false,
+				subMenu:[{
+					title:'New'
 				}]
 			}]
 		};
