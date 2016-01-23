@@ -41,6 +41,14 @@ let app = new Vue({
 		},
 		currentNoteContentChange: (content) => {
 			app.onCurrentNoteContentChange(content);
+		},
+		async currentNoteChange(noteId){
+			app.$broadcast('currentNoteWillChange');
+			var noteMeta = Object.assign({},await meta.findNoteById(noteId));
+			noteMeta.content = await note.getNote(noteMeta.id);
+			app.currentNotebook = await meta.findNotebookOfNote(noteId);
+			app.currentNote = noteMeta;
+			app.$broadcast('currentNoteDidChange', app.currentNote);
 		}
 	},
 	components: {
@@ -63,7 +71,7 @@ let app = new Vue({
 			await meta.init();
 		}
 
-		app.$broadcast('currentNoteWillChange', app.currentNote);
+		app.$broadcast('currentNoteWillChange');
 		app.currentNotebook = app.metaData.notebook[0];
 		var noteMeta = Object.assign({},app.currentNotebook.notes[0]);
 		noteMeta.content = await note.getNote(noteMeta.id);

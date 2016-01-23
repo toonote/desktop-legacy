@@ -63,6 +63,30 @@ class Meta{
 		await store.writeFile('/meta.json', JSON.stringify(data));
 		return data;
 	}
+	async findNoteById(noteId){
+		let data = await this.data;
+		let target;
+		data.notebook.forEach((notebook)=>{
+			notebook.notes.forEach((note)=>{
+				if(note.id === noteId){
+					target = note;
+				}
+			});
+		});
+		return target;
+	}
+	async findNotebookOfNote(noteId){
+		let data = await this.data;
+		let target;
+		data.notebook.forEach((notebook)=>{
+			notebook.notes.forEach((note)=>{
+				if(note.id === noteId){
+					target = notebook;
+				}
+			});
+		});
+		return target;
+	}
 };
 
 

@@ -23,7 +23,6 @@ export default {
 	// props:['content'],
 	events:{
 		currentNoteContentChange(content){
-			console.log(content);
 			this.source = content;
 			let html = this._render.render(content);
 			this.html = html;

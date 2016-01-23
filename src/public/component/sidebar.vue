@@ -22,7 +22,7 @@
 .wrapper li{
 	font-size:13px;
 	padding-left:25px;
-	/*cursor:pointer;*/
+	cursor:default;
 }
 .wrapper li.active{
 	background: #CECECE;
@@ -42,7 +42,7 @@
 	<section class="wrapper" v-for="notebook in notes">
 		<h2>{{notebook.title}}</h2>
 		<ul>
-			<li class="icon note" v-bind:class="{active:note.id == currentNote.id}" v-for="note in notebook.notes">{{note.title}}</li>
+			<li class="icon note" v-bind:class="{active:note.id == currentNote.id}" v-for="note in notebook.notes" v-on:click="switchCurrentNote(note.id)">{{note.title}}</li>
 		</ul>
 	</section>
 </section>
@@ -51,6 +51,11 @@
 
 <script>
 export default {
+	methods:{
+		switchCurrentNote(noteId){
+			this.$dispatch('currentNoteChange', noteId);
+		}
+	},
 	events:{
 		metaDidChange:function(data){
 			this.notes = data.notebook;
