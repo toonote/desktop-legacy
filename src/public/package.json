@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --inline --hot",
+    "macgap": "webpack -w",
     "build": "webpack -p"
   },
   "author": "TooBug",

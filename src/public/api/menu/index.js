@@ -1,9 +1,14 @@
 import Web from './web';
+import Macgap from './macgap';
 
 class Menu{
 	constructor(platform){
 		this._platform = platform;
-		return new Web();
+		if(platform === 'web'){
+			return new Web();
+		}else if(platform === 'macgap'){
+			return new Macgap();
+		}
 	}
 }
 

@@ -11,9 +11,7 @@ class WebMenu extends Menu{
 		console.log('no cache');
 		WebMenu._instance = this;
 	}
-	buildMenu(menuList){
 
-	}
 
 	get isVue(){
 		return true;

@@ -32,6 +32,9 @@ class Menu{
 	onClick(command){
 		this.trigger('click', command);
 	}
+	buildMenu(menuList){
+
+	}
 }
 
 export default Menu;

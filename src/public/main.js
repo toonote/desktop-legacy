@@ -100,6 +100,9 @@ let app = new Vue({
 			case 'newNote':
 				newNote();
 				break;
+			case 'devReload':
+				location.reload(true);
+				break;
 		}
 
 	});

@@ -6,7 +6,7 @@
 	<link href="./main.css" rel="stylesheet" />
 </head>
 <body>
-	<menubar></menubar>
+	<menubar v-bind:class="{hidden:!withMenubar}"></menubar>
 	<div class="main" v-bind:class="{withMenubar:withMenubar}">
 		<sidebar></sidebar>
 		<editor></editor>

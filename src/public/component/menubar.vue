@@ -7,6 +7,9 @@
 	background:linear-gradient(top,#EEE,#CCC);
 	cursor: default;
 }
+.menubar.hidden{
+	display: none;
+}
 .menubar ul{
 	padding:0 20px;
 	list-style: none;
@@ -53,7 +56,7 @@
 		<li v-for="menu in menuList" v-bind:class="{active:menu.isActive}" v-on:click="menuClick(menu.title)">
 			<span>{{menu.title}}</span>
 			<ul v-if="menu.subMenu && menu.subMenu.length">
-				<li v-for="subMenu in menu.subMenu" v-on:click="subMenuClick(subMenu.title)"><span>{{subMenu.title}}</span></li>
+				<li v-for="subMenu in menu.subMenu" v-on:click="subMenuClick(subMenu.event)"><span>{{subMenu.title}}</span></li>
 			</ul>
 		</li>
 	</ul>
@@ -63,7 +66,8 @@
 
 <script>
 import Menu from '../api/menu/index';
-let menu = new Menu();
+import util from '../modules/util';
+let menu = new Menu(util.platform);
 export default {
 	events:{
 	},
@@ -79,12 +83,8 @@ export default {
 			// 触发vue更新
 			// this.menuList = this.menuList.concat([]);
 		},
-		subMenuClick(title){
-			switch (title){
-				case 'New':
-					menu.onClick('newNote');
-					break;
-			}
+		subMenuClick(event){
+			menu.onClick(event);
 		}
 	},
 	data(){
@@ -94,19 +94,22 @@ export default {
 				title:'TooNote',
 				isActive:false,
 				subMenu:[{
-					title:'About'
+					title:'About TooNote'
 				}]
 			},{
 				title:'File',
 				isActive:false,
 				subMenu:[{
-					title:'New'
+					title:'New',
+					event:'newNote',
+					hotKey:'cmd+n'
 				}]
 			}]
 		};
 		return data;
 	},
 	ready(){
+		menu.buildMenu(this.menuList);
 		this.$nextTick(()=>{
 			this.$dispatch('toggleMenubar', menu.isVue);
 		});

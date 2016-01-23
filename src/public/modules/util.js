@@ -1,10 +1,15 @@
 let util = {};
 
-util.platform = 'web';
-if(window.MacGap){
+if(typeof MacGap !== 'undefined'){
 	util.platform = 'macgap';
-}else if(typeof global !== 'undefined'){
-	util.platform = 'electron';
+}else if(typeof process !== 'undefined'){
+	if(process.browser){
+		util.platform = 'web';
+	}else{
+		util.platform = 'electron';
+	}
+}else{
+	util.platform = 'web';
 }
 
 export default util;
