@@ -19,9 +19,10 @@
 	</div>
 	<script>
 
-		var ipc = require('ipc');
-		var remote = require('remote');
-		var remoteIpc = remote.require('ipc');
+		var electron = require('electron');
+		var ipc = electron.ipcRender;
+		var remote = electron.remote;
+		var remoteIpc = electron.ipcMain;
 
 		var $email = document.querySelector('#loginForm input[name=email]');
 		var $loginPassword = document.querySelector('#loginForm input[name=loginPassword]');

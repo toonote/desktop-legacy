@@ -269,7 +269,7 @@
 
 	// 打开markdown文件
 	function openFile(){
-		var remote = require('remote');
+		var remote = require('electron').remote;
 		var dialog = remote.require('dialog');
 		var filePath = dialog.showOpenDialog({
 			filters: [{
@@ -321,7 +321,7 @@
 				extensions: ['pdf']
 			});
 		}
-		var remote = require('remote');
+		var remote = require('electron').remote;
 		var dialog = remote.require('dialog');
 		var filePath = dialog.showSaveDialog({
 			filters: filters,
@@ -405,7 +405,7 @@
 			name: 'TooNote备份文件',
 			extensions: ['tnt']
 		}];
-		var remote = require('remote');
+		var remote = require('electron').remote;
 		var dialog = remote.require('dialog');
 		var filePath = dialog.showSaveDialog({
 			filters: filters,
@@ -430,7 +430,7 @@
 
 	// 从备份文件恢复
 	function importBackUp(){
-		var remote = require('remote');
+		var remote = require('electron').remote;
 		var dialog = remote.require('dialog');
 		var filePath = dialog.showOpenDialog({
 			filters: [{
@@ -747,8 +747,8 @@
 	// 设置菜单
 	function buildAppMenu(options){
 		if(!options) options = {};
-		var remote = require('remote');
-		var Menu = remote.require('menu');
+		var remote = require('electron').remote;
+		var Menu = remote.Menu;
 
 		var template = getAppMenuTmpl(options);
 		var menu = Menu.buildFromTemplate(template);

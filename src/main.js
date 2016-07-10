@@ -1,5 +1,7 @@
-var app = require('app');
-var BrowserWindow = require('browser-window');
+var electron = require('electron');
+
+var app = electron.app;
+var BrowserWindow = electron.BrowserWindow;
 
 // require('crash-reporter').start();
 
@@ -17,7 +19,7 @@ app.on('ready', function() {
 		resizable:true,
 		icon: __dirname + '/images/logo_window.png'
 	});
-	mainWindow.loadUrl('file://' + __dirname + '/editor.html');
+	mainWindow.loadURL('file://' + __dirname + '/editor.html');
 	mainWindow.on('closed', function() {
 		mainWindow = null;
 	});

@@ -4,7 +4,7 @@ util.inherits(User, require('events').EventEmitter);
 var _user = new User();
 console.log(_user);
 
-var remote = require('remote');
+var remote = require('electron').remote;
 var AV = require('avoscloud-sdk').AV;
 AV.initialize('pnj0o24lytzmcaoebtu3uoynwyuqqs687ch3nxpih0i45qid', 'ce3286s9l40kyj5erom2sjlc22tyqku6tn3na3v8s6h17jrs');
 
