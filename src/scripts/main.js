@@ -270,7 +270,7 @@
 	// 打开markdown文件
 	function openFile(){
 		var remote = require('electron').remote;
-		var dialog = remote.require('dialog');
+		var dialog = remote.dialog;
 		var filePath = dialog.showOpenDialog({
 			filters: [{
 				name: 'Markdown文件',
@@ -322,7 +322,7 @@
 			});
 		}
 		var remote = require('electron').remote;
-		var dialog = remote.require('dialog');
+		var dialog = remote.dialog;
 		var filePath = dialog.showSaveDialog({
 			filters: filters,
 			properties: ['createDirectory']
@@ -406,7 +406,7 @@
 			extensions: ['tnt']
 		}];
 		var remote = require('electron').remote;
-		var dialog = remote.require('dialog');
+		var dialog = remote.dialog;
 		var filePath = dialog.showSaveDialog({
 			filters: filters,
 			properties: ['createDirectory']
@@ -431,7 +431,7 @@
 	// 从备份文件恢复
 	function importBackUp(){
 		var remote = require('electron').remote;
-		var dialog = remote.require('dialog');
+		var dialog = remote.dialog;
 		var filePath = dialog.showOpenDialog({
 			filters: [{
 				name: 'TooNote备份文件',
