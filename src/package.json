@@ -2,7 +2,7 @@
   "name": "toonote",
   "version": "0.2.0",
   "description": "",
-  "main": "index.js",
+  "main": "electron.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --inline --hot",
