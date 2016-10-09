@@ -1,4 +1,9 @@
 import Vue from 'vue/dist/vue.js';
+import Vuex from 'vuex';
+
+Vue.use(Vuex);
+let store = require('./vuex/store');
+
 // Vue.config.debug = true;
 import Sidebar from './component/sidebar.vue';
 import Editor from './component/editor.vue';
@@ -14,6 +19,7 @@ window.eventHub = new Vue();
 
 let app = new Vue({
 	el: '#wrapper',
+	store,
 	/*created: function () {
 		// eventHub.$on('toggleMenubar', this.toggleMenubar);
 		// eventHub.$on('currentNoteContentChange', this.currentNoteContentChange);
@@ -28,6 +34,9 @@ let app = new Vue({
 		_getTitle(content){
 			return content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
 		},
+		switchCurrentNote(note){
+			store.commit('switchCurrentNote', note);
+		}
 		/*async currentNoteContentChange(content){
 			var title = app._getTitle(content);
 			if(title !== app.currentNote.title){
@@ -85,6 +94,10 @@ let app = new Vue({
 		var noteMeta = Object.assign({},app.currentNotebook.notes[0]);
 		noteMeta.content = await note.getNote(noteMeta.id);
 		app.currentNote = noteMeta;
+
+		// vuex:new
+		app.switchCurrentNote(app.currentNote);
+
 		eventHub.$emit('currentNoteDidChange', app.currentNote);
 	}catch(e){
 		console.log(e);

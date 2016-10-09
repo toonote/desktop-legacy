@@ -19,18 +19,32 @@
 
 
 <script>
+import {mapGetters} from 'vuex'
 let _render;
 export default {
+	computed:{
+		html(){
+			console.log(this.currentNote);
+			if(!this.currentNote || !this.currentNote.content){
+				return ''
+			}
+			return _render.render(this.currentNote.content)
+		},
+		/*currentNote(){
+			return this.$store.getters.currentNote
+		},*/
+		...mapGetters(['currentNote'])
+	},
 	// props:['content'],
-	created: function () {
+	/*created: function () {
 		eventHub.$on('currentNoteContentChange', this.currentNoteContentChange);
 		eventHub.$on('currentNoteDidChange', this.currentNoteDidChange);
 	},
 	beforeDestroy: function () {
 		eventHub.$off('currentNoteContentChange', this.currentNoteContentChange);
 		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
-	},
-	methods:{
+	},*/
+	/*methods:{
 		currentNoteContentChange(content){
 			this.source = content;
 			let html = _render.render(content);
@@ -39,15 +53,16 @@ export default {
 		currentNoteDidChange(note){
 			this.currentNoteContentChange(note.content);
 		}
-	},
+	},*/
 	data(){
 		var data = {
-			content:'',
-			html:''
+			// content:'',
+			// html:''
 		};
 		return data;
 	},
 	mounted(){
+		console.log('[preview] mounted', this, this.$store);
 		var Remarkable = require('remarkable');
 		var previewRenderer = new Remarkable();
 		var index = 0;
@@ -73,7 +88,6 @@ export default {
 			return '</a></h'+ tokens[idx].hLevel + '>';
 		};
 		_render = previewRenderer;
-		console.log('hello', _render);
 	}
 };
 </script>

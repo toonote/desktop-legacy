@@ -61,7 +61,7 @@ export default {
 	},
 	methods:{
 		switchCurrentNote(noteId){
-			this.$dispatch('currentNoteChange', noteId);
+			eventHub.$emit('currentNoteChange', noteId);
 		},
 		metaDidChange:function(data){
 			this.notes = data.notebook;
