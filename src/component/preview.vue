@@ -13,22 +13,31 @@
 
 <template>
 <section class="preview">
-	<div class="htmlBody">{{{html}}}</div>
+	<div class="htmlBody" v-html="html"></div>
 </section>
 </template>
 
 
 <script>
+let _render;
 export default {
 	// props:['content'],
-	events:{
+	created: function () {
+		eventHub.$on('currentNoteContentChange', this.currentNoteContentChange);
+		eventHub.$on('currentNoteDidChange', this.currentNoteDidChange);
+	},
+	beforeDestroy: function () {
+		eventHub.$off('currentNoteContentChange', this.currentNoteContentChange);
+		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
+	},
+	methods:{
 		currentNoteContentChange(content){
 			this.source = content;
-			let html = this._render.render(content);
+			let html = _render.render(content);
 			this.html = html;
 		},
 		currentNoteDidChange(note){
-			this.$emit('CurrentNoteContentChange',note.content);
+			this.currentNoteContentChange(note.content);
 		}
 	},
 	data(){
@@ -38,7 +47,7 @@ export default {
 		};
 		return data;
 	},
-	ready(){
+	mounted(){
 		var Remarkable = require('remarkable');
 		var previewRenderer = new Remarkable();
 		var index = 0;
@@ -63,7 +72,8 @@ export default {
 		previewRenderer.renderer.rules.heading_close = function (tokens, idx) {
 			return '</a></h'+ tokens[idx].hLevel + '>';
 		};
-		this._render = previewRenderer;
+		_render = previewRenderer;
+		console.log('hello', _render);
 	}
 };
 </script>

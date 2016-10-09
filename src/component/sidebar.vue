@@ -51,12 +51,18 @@
 
 <script>
 export default {
+	created: function () {
+		eventHub.$on('metaDidChange', this.metaDidChange);
+		eventHub.$on('currentNoteDidChange', this.currentNoteDidChange);
+	},
+	beforeDestroy: function () {
+		eventHub.$off('metaDidChange', this.metaDidChange);
+		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
+	},
 	methods:{
 		switchCurrentNote(noteId){
 			this.$dispatch('currentNoteChange', noteId);
-		}
-	},
-	events:{
+		},
 		metaDidChange:function(data){
 			this.notes = data.notebook;
 		},

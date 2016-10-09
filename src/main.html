@@ -6,12 +6,14 @@
 	<link href="./style/main.css" rel="stylesheet" />
 </head>
 <body>
+<div id="wrapper">
 	<menubar v-bind:class="{hidden:!withMenubar}"></menubar>
 	<div class="main" v-bind:class="{withMenubar:withMenubar}">
 		<sidebar></sidebar>
 		<editor></editor>
 		<preview></preview>
 	</div>
-	<script src="./bundle.js"></script>
+</div>
+<script src="./bundle.js"></script>
 </body>
 </html>

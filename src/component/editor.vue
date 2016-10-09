@@ -23,11 +23,18 @@
 import ace from 'brace';
 import 'brace/theme/tomorrow';
 import 'brace/mode/markdown';
+let _aceEditor;
 export default {
-	events:{
+	created: function () {
+		eventHub.$on('currentNoteDidChange', this.currentNoteDidChange);
+	},
+	beforeDestroy: function () {
+		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
+	},
+	methods:{
 		currentNoteDidChange(note){
 			this.content = note.content;
-			this._aceEditor.setValue(note.content, -1);
+			_aceEditor.setValue(note.content, -1);
 		}
 	},
 	data(){
@@ -36,10 +43,10 @@ export default {
 		};
 		return data;
 	},
-	ready(){
+	mounted(){
 		var aceEditor = ace.edit('ace_container');
 		var session = aceEditor.getSession();
-		this._aceEditor = aceEditor;
+		_aceEditor = aceEditor;
 		aceEditor.setTheme('ace/theme/tomorrow');
 		session.setMode('ace/mode/markdown');
 		session.setUseWrapMode(true);
@@ -51,7 +58,7 @@ export default {
 		aceEditor.on('input', () => {
 			let content = aceEditor.getValue();
 			this.content = content;
-			this.$dispatch('currentNoteContentChange', content);
+			eventHub.$emit('currentNoteContentChange', content);
 		});
 
 		// 重新计算大小

@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue from 'vue/dist/vue.js';
 // Vue.config.debug = true;
 import Sidebar from './component/sidebar.vue';
 import Editor from './component/editor.vue';
@@ -10,46 +10,55 @@ import menu from './modules/menu';
 import meta from './modules/meta';
 import note from './modules/note';
 
+window.eventHub = new Vue();
+
 let app = new Vue({
-	el: 'body',
+	el: '#wrapper',
+	/*created: function () {
+		// eventHub.$on('toggleMenubar', this.toggleMenubar);
+		// eventHub.$on('currentNoteContentChange', this.currentNoteContentChange);
+		// eventHub.$on('currentNoteChange', this.currentNoteChange);
+	},
+	beforeDestroy: function () {
+		eventHub.$off('toggleMenubar', this.toggleMenubar);
+		eventHub.$off('currentNoteContentChange', this.currentNoteContentChange);
+		eventHub.$off('currentNoteChange', this.currentNoteChange);
+	},*/
 	methods:{
 		_getTitle(content){
 			return content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
 		},
-		async onCurrentNoteContentChange(content){
+		/*async currentNoteContentChange(content){
 			var title = app._getTitle(content);
 			if(title !== app.currentNote.title){
 				app.currentNote.title = title;
 
-				app.$broadcast('metaWillChange');
+				eventHub.$emit('metaWillChange');
 				app.metaData = await meta.updateNote(app.currentNote.id,app.currentNote.title);
-				app.$broadcast('metaDidChange',app.metaData);
+				eventHub.$emit('metaDidChange',app.metaData);
 			}
 			app.currentNote.content = content;
 			note.saveNoteContent(app.currentNote, true);
-			app.$broadcast('currentNoteContentChange',content);
-		}
+			// eventHub.$emit('currentNoteContentChange',content);
+		},
+		toggleMenubar: (isShow) => {
+			console.log(2);
+			app.withMenubar = isShow;
+		},
+		async currentNoteChange(noteId){
+			console.log(3);
+			eventHub.$emit('currentNoteWillChange');
+			var noteMeta = Object.assign({},await meta.findNoteById(noteId));
+			noteMeta.content = await note.getNote(noteMeta.id);
+			app.currentNotebook = await meta.findNotebookOfNote(noteId);
+			app.currentNote = noteMeta;
+			eventHub.$emit('currentNoteDidChange', app.currentNote);
+		}*/
 	},
 	data:{
 		currentNote:{},
 		currentNotebook:{},
 		withMenubar:false
-	},
-	events: {
-		toggleMenubar: (isShow) => {
-			app.withMenubar = isShow;
-		},
-		currentNoteContentChange: (content) => {
-			app.onCurrentNoteContentChange(content);
-		},
-		async currentNoteChange(noteId){
-			app.$broadcast('currentNoteWillChange');
-			var noteMeta = Object.assign({},await meta.findNoteById(noteId));
-			noteMeta.content = await note.getNote(noteMeta.id);
-			app.currentNotebook = await meta.findNotebookOfNote(noteId);
-			app.currentNote = noteMeta;
-			app.$broadcast('currentNoteDidChange', app.currentNote);
-		}
 	},
 	components: {
 		menubar: Menubar,
@@ -61,9 +70,9 @@ let app = new Vue({
 
 (async function(){
 	try{
-		app.$broadcast('metaWillChange');
+		eventHub.$emit('metaWillChange');
 		app.metaData = await meta.data;
-		app.$broadcast('metaDidChange', app.metaData);
+		eventHub.$emit('metaDidChange', app.metaData);
 
 		// 初始化欢迎笔记
 		if(!app.metaData.init){
@@ -71,26 +80,26 @@ let app = new Vue({
 			await meta.init();
 		}
 
-		app.$broadcast('currentNoteWillChange');
+		eventHub.$emit('currentNoteWillChange');
 		app.currentNotebook = app.metaData.notebook[0];
 		var noteMeta = Object.assign({},app.currentNotebook.notes[0]);
 		noteMeta.content = await note.getNote(noteMeta.id);
 		app.currentNote = noteMeta;
-		app.$broadcast('currentNoteDidChange', app.currentNote);
+		eventHub.$emit('currentNoteDidChange', app.currentNote);
 	}catch(e){
 		console.log(e);
 		throw e;
 	}
 
 	var newNote = async function(){
-		app.$broadcast('metaWillChange');
+		eventHub.$emit('metaWillChange');
 		var noteMeta = await meta.addNote(app.currentNotebook.id);
 		app.metaData = await meta.data;
-		app.$broadcast('metaDidChange', app.metaData);
+		eventHub.$emit('metaDidChange', app.metaData);
 		await note.addNote(noteMeta);
-		app.$broadcast('currentNoteWillChange', app.currentNote);
+		eventHub.$emit('currentNoteWillChange', app.currentNote);
 		app.currentNote = noteMeta;
-		app.$broadcast('currentNoteDidChange', app.currentNote);
+		eventHub.$emit('currentNoteDidChange', app.currentNote);
 
 
 	}
