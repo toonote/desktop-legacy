@@ -5,8 +5,8 @@
   "main": "electron.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack-dev-server --inline --hot",
-    "macgap": "webpack -w",
+    "dev": "webpack -w",
+    "server": "webpack-dev-server --inline --hot",
     "build": "webpack -p"
   },
   "author": "TooBug",

@@ -8,7 +8,7 @@
 	line-height: 28px;
 	background:#fff;
 }
-@import "../htmlbody.css";
+@import "../style/htmlbody.css";
 </style>
 
 <template>

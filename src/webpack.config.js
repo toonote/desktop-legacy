@@ -2,7 +2,7 @@ module.exports = {
 	entry: ['babel-regenerator-runtime','./main.js'],
 	output: {
 		path: __dirname,
-		filename: 'main.js'
+		filename: 'bundle.js'
 	},
 	module: {
 		// `loaders` is an array of loaders to use.

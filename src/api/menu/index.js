@@ -1,5 +1,6 @@
 import Web from './web';
 import Macgap from './macgap';
+import Electron from './electron';
 
 class Menu{
 	constructor(platform){
@@ -8,6 +9,8 @@ class Menu{
 			return new Web();
 		}else if(platform === 'macgap'){
 			return new Macgap();
+		}else if(platform === 'electron'){
+			return new Electron();
 		}
 	}
 }
