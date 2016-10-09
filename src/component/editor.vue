@@ -14,7 +14,7 @@
 
 <template>
 <section class="editor">
-	<div id="ace_container"></div>
+	<div id="ace_container" :editor="editor"></div>
 </section>
 </template>
 
@@ -23,23 +23,37 @@
 import ace from 'brace';
 import 'brace/theme/tomorrow';
 import 'brace/mode/markdown';
+import {mapGetters} from 'vuex'
 let _aceEditor;
+let _content;
 export default {
-	created: function () {
+	computed:{
+		editor(){
+			if(!this.currentNote || !this.currentNote.content){
+				return ''
+			}
+			if(_content !== this.currentNote.content){
+				_aceEditor.setValue(this.currentNote.content, -1);
+			}
+			return ''
+		},
+		...mapGetters(['currentNote'])
+	},
+	/*created: function () {
 		eventHub.$on('currentNoteDidChange', this.currentNoteDidChange);
 	},
 	beforeDestroy: function () {
 		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
-	},
-	methods:{
+	},*/
+	/*methods:{
 		currentNoteDidChange(note){
 			this.content = note.content;
 			_aceEditor.setValue(note.content, -1);
 		}
-	},
+	},*/
 	data(){
 		var data = {
-			content:''
+			// content:''
 		};
 		return data;
 	},
@@ -56,9 +70,9 @@ export default {
 		aceEditor.setShowPrintMargin(false);
 		aceEditor.$blockScrolling = Infinity;
 		aceEditor.on('input', () => {
-			let content = aceEditor.getValue();
-			this.content = content;
-			eventHub.$emit('currentNoteContentChange', content);
+			_content = aceEditor.getValue();
+			this.$store.commit('changeCurrentNoteContent', _content);
+			// eventHub.$emit('currentNoteContentChange', content);
 		});
 
 		// 重新计算大小

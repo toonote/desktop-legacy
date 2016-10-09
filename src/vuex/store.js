@@ -10,6 +10,9 @@ const store = new Vuex.Store({
 	mutations: {
 		switchCurrentNote (state, note) {
 			state.currentNote = note;
+		},
+		changeCurrentNoteContent (state, content) {
+			state.currentNote.content = content;
 		}
 	},
 	getters: {
