@@ -20,7 +20,7 @@
       "add-module-exports"
     ]
   },
-  "jshintOption": {
+  "jshintConfig": {
     "esversion": 6,
     "asi": true
   },

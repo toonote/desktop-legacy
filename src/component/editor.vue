@@ -25,18 +25,21 @@ import 'brace/theme/tomorrow';
 import 'brace/mode/markdown';
 import {mapGetters} from 'vuex'
 let _aceEditor;
-let _content;
+let _id,_content;
 export default {
 	computed:{
 		...mapGetters(['currentNote'])
 	},
 	watch:{
 		currentNote(note){
-			if(!note || !note.content) return
+			if(!note || (!note.content && note.content !== '')) return
 			if(_content !== note.content){
-				_aceEditor.setValue(this.currentNote.content, -1);
+				_aceEditor.setValue(note.content, -1);
 			}
-
+			if(_id !== note.id){
+				_content = '';
+				_id = note.id;
+			}
 		}
 	},
 	data(){

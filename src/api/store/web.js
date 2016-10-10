@@ -28,7 +28,8 @@ class WebStore extends Store{
 	async readFile(fileName){
 		return new Promise((resolve,reject) => {
 			var path = this._normalizePath(fileName);
-			var content = localStorage.getItem(this._getPathKey(path)) || false;
+			var content = localStorage.getItem(this._getPathKey(path));
+			if(typeof content !== 'string') content = false;
 			resolve(content);
 		});
 	}

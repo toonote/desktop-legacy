@@ -39,7 +39,7 @@
 
 <template>
 <section class="sidebar">
-	<section class="wrapper" v-for="notebook in notes">
+	<section class="wrapper" v-for="notebook in notebooks">
 		<h2>{{notebook.title}}</h2>
 		<ul>
 			<li class="icon note" v-bind:class="{active:note.id == currentNote.id}" v-for="note in notebook.notes" v-on:click="switchCurrentNote(note.id)">{{note.title}}</li>
@@ -50,18 +50,23 @@
 
 
 <script>
+import {mapGetters} from 'vuex';
 export default {
-	created: function () {
+	/*created: function () {
 		eventHub.$on('metaDidChange', this.metaDidChange);
 		eventHub.$on('currentNoteDidChange', this.currentNoteDidChange);
 	},
 	beforeDestroy: function () {
 		eventHub.$off('metaDidChange', this.metaDidChange);
 		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
+	},*/
+	computed: {
+		...mapGetters(['notebooks'])
 	},
-	methods:{
+	methods: {
 		switchCurrentNote(noteId){
-			eventHub.$emit('currentNoteChange', noteId);
+			this.$store.dispatch('switchCurrentNoteById', noteId);
+			// eventHub.$emit('currentNoteChange', noteId);
 		},
 		metaDidChange:function(data){
 			this.notes = data.notebook;
