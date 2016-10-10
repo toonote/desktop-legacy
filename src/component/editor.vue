@@ -14,7 +14,7 @@
 
 <template>
 <section class="editor">
-	<div id="ace_container" :editor="editor"></div>
+	<div id="ace_container"></div>
 </section>
 </template>
 
@@ -28,29 +28,17 @@ let _aceEditor;
 let _content;
 export default {
 	computed:{
-		editor(){
-			if(!this.currentNote || !this.currentNote.content){
-				return ''
-			}
-			if(_content !== this.currentNote.content){
-				_aceEditor.setValue(this.currentNote.content, -1);
-			}
-			return ''
-		},
 		...mapGetters(['currentNote'])
 	},
-	/*created: function () {
-		eventHub.$on('currentNoteDidChange', this.currentNoteDidChange);
-	},
-	beforeDestroy: function () {
-		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
-	},*/
-	/*methods:{
-		currentNoteDidChange(note){
-			this.content = note.content;
-			_aceEditor.setValue(note.content, -1);
+	watch:{
+		currentNote(note){
+			if(!note || !note.content) return
+			if(_content !== note.content){
+				_aceEditor.setValue(this.currentNote.content, -1);
+			}
+
 		}
-	},*/
+	},
 	data(){
 		var data = {
 			// content:''
