@@ -59,7 +59,7 @@ export default {
 		aceEditor.$blockScrolling = Infinity;
 		aceEditor.on('input', () => {
 			_content = aceEditor.getValue();
-			this.$store.commit('changeCurrentNoteContent', _content);
+			this.$store.dispatch('changeCurrentNoteContent', _content);
 			// eventHub.$emit('currentNoteContentChange', content);
 		});
 

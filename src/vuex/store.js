@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import note from '../modules/note';
+
 // Vue.use(Vuex);
 
 const store = new Vuex.Store({
@@ -24,7 +26,10 @@ const store = new Vuex.Store({
 		}*/
 	},
 	actions:{
-
+		async changeCurrentNoteContent(context, content) {
+			context.commit('changeCurrentNoteContent', content);
+			await note.saveNoteContent(context.state.currentNote);
+		}
 	}
 });
 
