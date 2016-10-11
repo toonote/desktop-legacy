@@ -12,9 +12,9 @@ class ElectronMenu extends Menu{
 		// console.log('no cache');
 		ElectronMenu._instance = this;
 	}
-	buildMenu(menuList){
+	_getMenu(menuList){
 		let template = menuList.map((menuItem) => {
-			let subMenu = [];
+			let subMenu;
 			if(menuItem.subMenu){
 				subMenu = menuItem.subMenu.map((menuItem) => {
 					return {
@@ -46,9 +46,16 @@ class ElectronMenu extends Menu{
 			};
 			return thisMenu;
 		});
-		console.log('[menu electron]',template);
 		let menu = remote.Menu.buildFromTemplate(template);
+		return menu;
+	}
+	buildMenu(menuList){
+		let menu = this._getMenu(menuList);
 		remote.Menu.setApplicationMenu(menu);
+	}
+	showContextMenu(menuList){
+		let contextMenu = this._getMenu(menuList);
+		contextMenu.popup(remote.getCurrentWindow());
 	}
 	get isVue(){
 		return true;

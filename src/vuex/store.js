@@ -8,6 +8,7 @@ import note from '../modules/note';
 
 const store = new Vuex.Store({
 	state: {
+		contextMenuNoteId: null,
 		currentNote: null,
 		currentNotebook: null,
 		notebooks: []
@@ -18,6 +19,10 @@ const store = new Vuex.Store({
 		},
 		switchCurrentNote (state, note) {
 			state.currentNote = note;
+		},
+		switchContextMenuNote (state, noteId) {
+			state.contextMenuNoteId = noteId;
+			console.log('[store]',state);
 		},
 		switchCurrentNotebook (state, notebook) {
 			state.currentNotebook = notebook;
@@ -30,6 +35,9 @@ const store = new Vuex.Store({
 		}
 	},
 	getters: {
+		contextMenuNoteId(state){
+			return state.contextMenuNoteId;
+		},
 		currentNote(state){
 			return state.currentNote;
 		},

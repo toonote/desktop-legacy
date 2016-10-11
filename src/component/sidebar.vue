@@ -1,5 +1,7 @@
 <style scoped>
 .sidebar{
+	-webkit-user-select: none;
+	user-select:none;
 	background:#F6F6F6;
 	border-right:1px solid #E0E0E0;
 	color:#585858;
@@ -38,11 +40,17 @@
 </style>
 
 <template>
-<section class="sidebar">
+<section class="sidebar" v-on:click="hideContextMenu()">
 	<section class="wrapper" v-for="notebook in notebooks">
 		<h2>{{notebook.title}}</h2>
 		<ul>
-			<li class="icon note" v-bind:class="{active:note.id == currentNote.id}" v-for="note in notebook.notes" v-on:click="switchCurrentNote(note.id)">{{note.title}}</li>
+			<li
+				class="icon note"
+				v-bind:class="{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}"
+				v-for="note in notebook.notes"
+				v-on:click="switchCurrentNote(note.id)"
+				v-on:contextmenu="showContextMenu(note.id)"
+			>{{note.title}}</li>
 		</ul>
 	</section>
 </section>
@@ -51,34 +59,52 @@
 
 <script>
 import {mapGetters} from 'vuex';
+import Menu from '../api/menu/index';
+import util from '../modules/util';
+
+let menu = new Menu(util.platform);
 export default {
-	/*created: function () {
-		eventHub.$on('metaDidChange', this.metaDidChange);
-		eventHub.$on('currentNoteDidChange', this.currentNoteDidChange);
-	},
-	beforeDestroy: function () {
-		eventHub.$off('metaDidChange', this.metaDidChange);
-		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
-	},*/
 	computed: {
-		...mapGetters(['notebooks', 'currentNote'])
+		...mapGetters(['notebooks', 'currentNote', 'contextMenuNoteId'])
 	},
 	methods: {
+		isActive(noteId){
+			let ret = false;
+			// 当前笔记
+			if(this.currentNote && noteId === this.currentNote.id){
+				ret = true;
+			}
+			// 当前右键笔记
+			if(this.contextMenuNoteId === noteId){
+				ret = true;
+			}
+			return ret;
+		},
 		switchCurrentNote(noteId){
 			this.$store.dispatch('switchCurrentNoteById', noteId);
 			// eventHub.$emit('currentNoteChange', noteId);
 		},
-		metaDidChange:function(data){
-			this.notes = data.notebook;
+		showContextMenu(noteId){
+			console.log('contextmenu');
+			this.$store.commit('switchContextMenuNote', noteId);
+			// this.$nextTick(() => {
+			setTimeout(() => {
+				menu.showContextMenu([{
+					title:'打开',
+					event:'noteOpen'
+				},{
+					title:'删除',
+					event:'noteDelete'
+				}]);
+			},50);
 		},
-		currentNoteDidChange:function(note){
-			if(this.currentNote.id !== note.id){
-				this.currentNote = note;
-			}
+		hideContextMenu(){
+			// 会自动关闭，这里主要是将当前右键笔记置空
+			this.$store.commit('switchContextMenuNote', 0);
 		}
 	},
 	data(){
-		var data = {notes:[],currentNote:{}};
+		var data = {};
 		return data;
 	}
 };
