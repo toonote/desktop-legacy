@@ -69,8 +69,6 @@ import Menu from '../api/menu/index';
 import util from '../modules/util';
 let menu = new Menu(util.platform);
 export default {
-	events:{
-	},
 	methods:{
 		menuClick(title){
 			this.menuList.forEach(function(menu){
@@ -93,9 +91,7 @@ export default {
 			menuList:[{
 				title:'TooNote',
 				isActive:false,
-				subMenu:[{
-					title:'About TooNote'
-				}]
+				subMenu:[]
 			},{
 				title:'File',
 				isActive:false,
@@ -108,11 +104,11 @@ export default {
 		};
 		return data;
 	},
-	ready(){
+	mounted(){
 		menu.buildMenu(this.menuList);
-		this.$nextTick(()=>{
+		/*this.$nextTick(()=>{
 			this.$dispatch('toggleMenubar', menu.isVue);
-		});
+		});*/
 	}
 };
 </script>

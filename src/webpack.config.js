@@ -1,5 +1,6 @@
 module.exports = {
 	entry: ['babel-regenerator-runtime','./main.js'],
+	target: 'electron',
 	output: {
 		path: __dirname,
 		filename: 'bundle.js'
