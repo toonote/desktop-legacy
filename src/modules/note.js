@@ -5,7 +5,6 @@ let note = {};
 let store = new Store(util.platform);
 
 note.getNote = async function(id){
-	console.log('getNote');
 	return await store.readFile(`/note-${id}.md`);
 };
 

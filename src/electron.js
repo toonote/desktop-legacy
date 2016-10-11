@@ -13,8 +13,8 @@ app.on('window-all-closed', function() {
 
 app.on('ready', function() {
 	mainWindow = new BrowserWindow({
-		width: 1000,
-		height: 600,
+		width: 1200,
+		height: 800,
 		'use-content-size':true,
 		resizable:true,
 		icon: __dirname + '/images/logo_window.png'

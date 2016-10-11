@@ -24,7 +24,6 @@ let _render;
 export default {
 	computed:{
 		html(){
-			console.log(this.currentNote);
 			if(!this.currentNote || !this.currentNote.content){
 				return ''
 			}
@@ -35,25 +34,6 @@ export default {
 		},*/
 		...mapGetters(['currentNote'])
 	},
-	// props:['content'],
-	/*created: function () {
-		eventHub.$on('currentNoteContentChange', this.currentNoteContentChange);
-		eventHub.$on('currentNoteDidChange', this.currentNoteDidChange);
-	},
-	beforeDestroy: function () {
-		eventHub.$off('currentNoteContentChange', this.currentNoteContentChange);
-		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
-	},*/
-	/*methods:{
-		currentNoteContentChange(content){
-			this.source = content;
-			let html = _render.render(content);
-			this.html = html;
-		},
-		currentNoteDidChange(note){
-			this.currentNoteContentChange(note.content);
-		}
-	},*/
 	data(){
 		var data = {
 			// content:'',
