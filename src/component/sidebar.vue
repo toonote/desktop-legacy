@@ -61,7 +61,7 @@ export default {
 		eventHub.$off('currentNoteDidChange', this.currentNoteDidChange);
 	},*/
 	computed: {
-		...mapGetters(['notebooks'])
+		...mapGetters(['notebooks', 'currentNote'])
 	},
 	methods: {
 		switchCurrentNote(noteId){
