@@ -24,8 +24,14 @@ let app = new Vue({
 		_getTitle(content){
 			return content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
 		},
+		newNote(){
+			store.dispatch('newNote');
+		},
 		switchCurrentNote(note){
 			store.commit('switchCurrentNote', note);
+		},
+		switchCurrentNotebook(notebook){
+			store.commit('switchCurrentNotebook', notebook);
 		},
 		updateMeta(metaData){
 			store.commit('updateNotebooks', metaData.notebook);
@@ -59,6 +65,9 @@ let app = new Vue({
 		}
 
 		app.currentNotebook = app.metaData.notebook[0];
+		app.switchCurrentNotebook(app.currentNotebook);
+
+
 		var noteMeta = Object.assign({},app.currentNotebook.notes[0]);
 		noteMeta.content = await note.getNote(noteMeta.id);
 		app.currentNote = noteMeta;
@@ -71,23 +80,10 @@ let app = new Vue({
 		throw e;
 	}
 
-	var newNote = async function(){
-		eventHub.$emit('metaWillChange');
-		var noteMeta = await meta.addNote(app.currentNotebook.id);
-		app.metaData = await meta.data;
-		eventHub.$emit('metaDidChange', app.metaData);
-		await note.addNote(noteMeta);
-		eventHub.$emit('currentNoteWillChange', app.currentNote);
-		app.currentNote = noteMeta;
-		eventHub.$emit('currentNoteDidChange', app.currentNote);
-
-
-	}
-
 	menu.on('click',function(eventType, command){
 		switch(command){
 			case 'newNote':
-				newNote();
+				app.newNote();
 				break;
 			case 'devReload':
 				location.reload(true);
