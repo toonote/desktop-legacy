@@ -96,10 +96,14 @@ export default {
 				title:'File',
 				isActive:false,
 				subMenu:[{
-					title:'New',
+					title:'新建',
 					event:'newNote',
 					hotKey:'cmd+n'
 				}]
+			},{
+				title:'Edit',
+				isActive:false,
+				subMenu:[]
 			}]
 		};
 		return data;

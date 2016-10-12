@@ -9664,15 +9664,45 @@
 					}
 					if (menuItem.title === 'TooNote') {
 						subMenu.unshift({
+							label: '关于TooNote',
 							role: 'about'
 						});
-						subMenu.push({
+						subMenu = subMenu.concat([{
 							label: 'Reload',
 							accelerator: 'cmd+r',
 							click: function click(item, focusWindow) {
 								_this2.trigger('click', 'devReload');
 							}
-						});
+						}, {
+							label: '退出',
+							accelerator: 'cmd+q',
+							role: 'close'
+						}]);
+					} else if (menuItem.title === 'Edit') {
+						subMenu = [/*{
+	                label: '撤销',
+	                role: 'undo'
+	                },{
+	                label: '重做'
+	                role: 'redo'
+	                },*/ /*{
+	                     type: 'separator'
+	                     },*/{
+							label: '剪切',
+							role: 'cut'
+						}, {
+							label: '复制',
+							role: 'copy'
+						}, {
+							label: '粘贴',
+							role: 'paste'
+						}, {
+							label: '删除',
+							role: 'delete'
+						}, {
+							label: '全选',
+							role: 'selectall'
+						}].concat(subMenu);
 					}
 					var thisMenu = {
 						label: menuItem.title,
@@ -42670,7 +42700,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.menubar[data-v-4]{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden[data-v-4]{\n\tdisplay: none;\n}\n.menubar ul[data-v-4]{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li[data-v-4]{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active[data-v-4]{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span[data-v-4]{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul[data-v-4]{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul[data-v-4]{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li[data-v-4]{\n\tmargin:0;\n}\n.menubar ul > li > ul > li[data-v-4]:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span[data-v-4]{\n\tpadding:0 20px;\n}\n", "", {"version":3,"sources":["/./component/menubar.vue?45f51880"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,eAAA;CACA,kBAAA;CACA,0CAAA;CACA,gBAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,eAAA;CACA,iBAAA;CACA;AACA;CACA,sBAAA;CACA,kBAAA;CACA;AACA;CACA,2BAAA;CACA,aAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,mBAAA;CACA,mBAAA;CACA,WAAA;CACA,YAAA;CACA,cAAA;CACA,0CAAA;CACA,UAAA;CACA,sBAAA;CACA;AACA;CACA,eAAA;CACA;AACA;CACA,SAAA;CACA;AACA;CACA,YAAA;CACA,2BAAA;CACA;AACA;CACA,eAAA;CACA","file":"menubar.vue","sourcesContent":["<style scoped>\n.menubar{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden{\n\tdisplay: none;\n}\n.menubar ul{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li{\n\tmargin:0;\n}\n.menubar ul > li > ul > li:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span{\n\tpadding:0 20px;\n}\n</style>\n\n<template>\n<section class=\"menubar\">\n\t<ul>\n\t\t<li v-for=\"menu in menuList\" v-bind:class=\"{active:menu.isActive}\" v-on:click=\"menuClick(menu.title)\">\n\t\t\t<span>{{menu.title}}</span>\n\t\t\t<ul v-if=\"menu.subMenu && menu.subMenu.length\">\n\t\t\t\t<li v-for=\"subMenu in menu.subMenu\" v-on:click=\"subMenuClick(subMenu.event)\"><span>{{subMenu.title}}</span></li>\n\t\t\t</ul>\n\t\t</li>\n\t</ul>\n</section>\n</template>\n\n\n<script>\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\nlet menu = new Menu(util.platform);\nexport default {\n\tmethods:{\n\t\tmenuClick(title){\n\t\t\tthis.menuList.forEach(function(menu){\n\t\t\t\tif(menu.title === title){\n\t\t\t\t\tmenu.isActive = !menu.isActive;\n\t\t\t\t}else{\n\t\t\t\t\tmenu.isActive = false;\n\t\t\t\t}\n\t\t\t});\n\t\t\t// 触发vue更新\n\t\t\t// this.menuList = this.menuList.concat([]);\n\t\t},\n\t\tsubMenuClick(event){\n\t\t\tmenu.onClick(event);\n\t\t}\n\t},\n\tdata(){\n\t\tlet data = {\n\t\t\tisShow:menu.isVue,\n\t\t\tmenuList:[{\n\t\t\t\ttitle:'TooNote',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'File',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'New',\n\t\t\t\t\tevent:'newNote',\n\t\t\t\t\thotKey:'cmd+n'\n\t\t\t\t}]\n\t\t\t}]\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tmenu.buildMenu(this.menuList);\n\t\t/*this.$nextTick(()=>{\n\t\t\tthis.$dispatch('toggleMenubar', menu.isVue);\n\t\t});*/\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.menubar[data-v-4]{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden[data-v-4]{\n\tdisplay: none;\n}\n.menubar ul[data-v-4]{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li[data-v-4]{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active[data-v-4]{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span[data-v-4]{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul[data-v-4]{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul[data-v-4]{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li[data-v-4]{\n\tmargin:0;\n}\n.menubar ul > li > ul > li[data-v-4]:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span[data-v-4]{\n\tpadding:0 20px;\n}\n", "", {"version":3,"sources":["/./component/menubar.vue?7155967a"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,eAAA;CACA,kBAAA;CACA,0CAAA;CACA,gBAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,eAAA;CACA,iBAAA;CACA;AACA;CACA,sBAAA;CACA,kBAAA;CACA;AACA;CACA,2BAAA;CACA,aAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,mBAAA;CACA,mBAAA;CACA,WAAA;CACA,YAAA;CACA,cAAA;CACA,0CAAA;CACA,UAAA;CACA,sBAAA;CACA;AACA;CACA,eAAA;CACA;AACA;CACA,SAAA;CACA;AACA;CACA,YAAA;CACA,2BAAA;CACA;AACA;CACA,eAAA;CACA","file":"menubar.vue","sourcesContent":["<style scoped>\n.menubar{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden{\n\tdisplay: none;\n}\n.menubar ul{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li{\n\tmargin:0;\n}\n.menubar ul > li > ul > li:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span{\n\tpadding:0 20px;\n}\n</style>\n\n<template>\n<section class=\"menubar\">\n\t<ul>\n\t\t<li v-for=\"menu in menuList\" v-bind:class=\"{active:menu.isActive}\" v-on:click=\"menuClick(menu.title)\">\n\t\t\t<span>{{menu.title}}</span>\n\t\t\t<ul v-if=\"menu.subMenu && menu.subMenu.length\">\n\t\t\t\t<li v-for=\"subMenu in menu.subMenu\" v-on:click=\"subMenuClick(subMenu.event)\"><span>{{subMenu.title}}</span></li>\n\t\t\t</ul>\n\t\t</li>\n\t</ul>\n</section>\n</template>\n\n\n<script>\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\nlet menu = new Menu(util.platform);\nexport default {\n\tmethods:{\n\t\tmenuClick(title){\n\t\t\tthis.menuList.forEach(function(menu){\n\t\t\t\tif(menu.title === title){\n\t\t\t\t\tmenu.isActive = !menu.isActive;\n\t\t\t\t}else{\n\t\t\t\t\tmenu.isActive = false;\n\t\t\t\t}\n\t\t\t});\n\t\t\t// 触发vue更新\n\t\t\t// this.menuList = this.menuList.concat([]);\n\t\t},\n\t\tsubMenuClick(event){\n\t\t\tmenu.onClick(event);\n\t\t}\n\t},\n\tdata(){\n\t\tlet data = {\n\t\t\tisShow:menu.isVue,\n\t\t\tmenuList:[{\n\t\t\t\ttitle:'TooNote',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'File',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'新建',\n\t\t\t\t\tevent:'newNote',\n\t\t\t\t\thotKey:'cmd+n'\n\t\t\t\t}]\n\t\t\t},{\n\t\t\t\ttitle:'Edit',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t}]\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tmenu.buildMenu(this.menuList);\n\t\t/*this.$nextTick(()=>{\n\t\t\tthis.$dispatch('toggleMenubar', menu.isVue);\n\t\t});*/\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -42791,10 +42821,14 @@
 					title: 'File',
 					isActive: false,
 					subMenu: [{
-						title: 'New',
+						title: '新建',
 						event: 'newNote',
 						hotKey: 'cmd+n'
 					}]
+				}, {
+					title: 'Edit',
+					isActive: false,
+					subMenu: []
 				}]
 			};
 			return data;
