@@ -22,13 +22,15 @@ const store = new Vuex.Store({
 		},
 		switchContextMenuNote (state, noteId) {
 			state.contextMenuNoteId = noteId;
-			console.log('[store]',state);
 		},
 		switchCurrentNotebook (state, notebook) {
 			state.currentNotebook = notebook;
 		},
 		changeCurrentNoteContent (state, content) {
 			state.currentNote.content = content;
+		},
+		changeCurrentNoteTitle (state, title) {
+			state.currentNote.title = title;
 		},
 		updateNotebooks (state, notebooks) {
 			state.notebooks = notebooks;
@@ -58,7 +60,21 @@ const store = new Vuex.Store({
 	actions:{
 		async changeCurrentNoteContent(context, content) {
 			context.commit('changeCurrentNoteContent', content);
+			let title = note.getTitleFromContent(content);
+			context.commit('changeCurrentNoteTitle', title);
+
 			await note.saveNoteContent(context.state.currentNote);
+
+			// 找到目标笔记并修改标题
+			context.state.notebooks.forEach((notebook) => {
+				notebook.notes.forEach((note, index) => {
+					if(note.id === context.state.currentNote.id){
+						note.title = title;
+					}
+				});
+			});
+
+			await meta.updateNote(context.state.currentNote.id, title);
 		},
 		async switchCurrentNoteById(context, noteId) {
 			console.log('[store switchCurrentNoteById]', noteId);

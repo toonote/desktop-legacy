@@ -4,6 +4,12 @@ import Store from '../api/store/index';
 let note = {};
 let store = new Store(util.platform);
 
+note.getTitleFromContent = function(content){
+	let firstLine = content.split('\n', 2)[0];
+	if(!firstLine) return '';
+	return firstLine.replace(/[#\s]/g, '');
+};
+
 note.getNote = async function(id){
 	return await store.readFile(`/note-${id}.md`);
 };
