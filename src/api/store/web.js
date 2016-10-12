@@ -25,6 +25,17 @@ class WebStore extends Store{
 			}
 		});
 	}
+	async deleteFile(fileName){
+		return new Promise((resolve,reject) => {
+			var path = this._normalizePath(fileName);
+			try{
+				localStorage.removeItem(this._getPathKey(path));
+				resolve();
+			}catch(e){
+				reject(e);
+			}
+		});
+	}
 	async readFile(fileName){
 		return new Promise((resolve,reject) => {
 			var path = this._normalizePath(fileName);

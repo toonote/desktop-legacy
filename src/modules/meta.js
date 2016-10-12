@@ -51,6 +51,17 @@ class Meta{
 		await store.writeFile('/meta.json', JSON.stringify(data));
 		return note;
 	}
+	async deleteNote(noteId){
+		let data = await this.data;
+		data.notebook.forEach((notebook)=>{
+			notebook.notes.forEach((note, index)=>{
+				if(note.id === noteId){
+					notebook.notes.splice(index, 1);
+				}
+			});
+		});
+		await store.writeFile('/meta.json', JSON.stringify(data));
+	}
 	async updateNote(noteId,noteTitle){
 		let data = await this.data;
 		data.notebook.forEach((notebook)=>{

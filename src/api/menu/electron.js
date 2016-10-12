@@ -13,19 +13,12 @@ class ElectronMenu extends Menu{
 		ElectronMenu._instance = this;
 	}
 	_getMenu(menuList){
-		let template = menuList.map((menuItem) => {
+		let buildMenu = (menuItem)=>{
 			let subMenu;
+
 			if(menuItem.subMenu){
 				subMenu = menuItem.subMenu.map((menuItem) => {
-					return {
-						label: menuItem.title,
-						accelerator: menuItem.hotKey,
-						click: ((event) => {
-							return (item, focusWindow) => {
-								this.trigger('click', event)
-							}
-						})(menuItem.event)
-					}
+					return buildMenu(menuItem);
 				});
 			}
 			if(menuItem.title === 'TooNote'){
@@ -42,9 +35,21 @@ class ElectronMenu extends Menu{
 			}
 			let thisMenu = {
 				label:menuItem.title,
+				accelerator: menuItem.hotKey,
+				click: menuItem.event?
+					((event) => {
+						console.log('[menu electron] bind click', event);
+						return (item, focusWindow) => {
+							console.log('[menu electron] click', event);
+							this.trigger('click', event)
+						}
+					})(menuItem.event):undefined,
 				submenu:subMenu
 			};
 			return thisMenu;
+		};
+		let template = menuList.map((menuItem) => {
+			return buildMenu(menuItem);
 		});
 		let menu = remote.Menu.buildFromTemplate(template);
 		return menu;

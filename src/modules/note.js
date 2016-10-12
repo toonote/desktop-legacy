@@ -13,6 +13,10 @@ note.addNote = async function(note){
 	return await this.saveNoteContent(note);
 };
 
+note.deleteNote = async function(id){
+	return await store.deleteFile(`./note-${id}.md`);
+};
+
 note.saveNoteContent = async function(note, shouldThrottle){
 	return await store.writeFile(`/note-${note.id}.md`,note.content);
 };

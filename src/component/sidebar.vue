@@ -40,7 +40,7 @@
 </style>
 
 <template>
-<section class="sidebar" v-on:click="hideContextMenu()">
+<section class="sidebar">
 	<section class="wrapper" v-for="notebook in notebooks">
 		<h2>{{notebook.title}}</h2>
 		<ul>
@@ -96,12 +96,15 @@ export default {
 					title:'删除',
 					event:'noteDelete'
 				}]);
-			},50);
+				setTimeout(()=>{
+					this.$store.commit('switchContextMenuNote', 0);
+				},30);
+			},30);
 		},
-		hideContextMenu(){
+		/*hideContextMenu(){
 			// 会自动关闭，这里主要是将当前右键笔记置空
 			this.$store.commit('switchContextMenuNote', 0);
-		}
+		}*/
 	},
 	data(){
 		var data = {};

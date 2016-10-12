@@ -61,6 +61,7 @@ const store = new Vuex.Store({
 			await note.saveNoteContent(context.state.currentNote);
 		},
 		async switchCurrentNoteById(context, noteId) {
+			console.log('[store switchCurrentNoteById]', noteId);
 			let targetNote = context.getters.allNotes.filter((note)=>note.id === noteId)[0];
 			if(targetNote){
 				let content = await note.getNote(targetNote.id);
@@ -79,6 +80,31 @@ const store = new Vuex.Store({
 			context.commit('newNote', noteMeta);
 			context.commit('switchCurrentNote', noteMeta);
 			// eventHub.$emit('currentNoteDidChange', app.currentNote);
+		},
+		async openContextMenuNote(context) {
+			context.dispatch('switchCurrentNoteById', context.state.contextMenuNoteId);
+		},
+		async deleteContextMenuNote(context) {
+			let targetId = context.state.contextMenuNoteId;
+			if(!targetId) return;
+			// 如果删除的是当前笔记，切换到第一条笔记
+			if(targetId === context.state.currentNote.id){
+				context.dispatch('switchCurrentNoteById', context.state.allNotes[0].id);
+			}
+
+			// 找到目标笔记并删除
+			context.state.notebooks.forEach((notebook) => {
+				notebook.notes.forEach((note, index) => {
+					if(note.id === targetId){
+						notebook.notes.splice(index, 1);
+					}
+				});
+			});
+
+			await meta.deleteNote(targetId);
+			await note.deleteNote(targetId);
+
+			context.dispatch('switchCurrentNoteById', );
 		}
 	}
 });

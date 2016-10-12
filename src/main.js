@@ -30,6 +30,12 @@ let app = new Vue({
 		switchCurrentNote(note){
 			store.commit('switchCurrentNote', note);
 		},
+		openContextMenuNote(){
+			store.dispatch('openContextMenuNote');
+		},
+		deleteContextMenuNote(){
+			store.dispatch('deleteContextMenuNote');
+		},
 		switchCurrentNotebook(notebook){
 			store.commit('switchCurrentNotebook', notebook);
 		},
@@ -87,6 +93,14 @@ let app = new Vue({
 				break;
 			case 'devReload':
 				location.reload(true);
+				break;
+			case 'noteOpen':
+				app.openContextMenuNote();
+				break;
+			case 'noteDelete':
+				if(confirm('确定要删除该笔记吗？删除后将无法找回该笔记内容')){
+					app.deleteContextMenuNote();
+				}
 				break;
 		}
 
