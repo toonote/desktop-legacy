@@ -1,4 +1,4 @@
-import Vue from 'vue/dist/vue.js';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 Vue.use(Vuex);
@@ -15,7 +15,7 @@ import menu from './modules/menu';
 import meta from './modules/meta';
 import note from './modules/note';
 
-window.eventHub = new Vue();
+// window.eventHub = new Vue();
 
 let app = new Vue({
 	el: '#wrapper',
