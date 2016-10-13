@@ -23,8 +23,12 @@
 }
 .wrapper li{
 	font-size:13px;
-	padding-left:25px;
+	text-indent: 25px;
+	/*padding-left:25px;*/
 	cursor:default;
+}
+.wrapper li li{
+	text-indent: 44px;
 }
 .wrapper li.active{
 	background: #CECECE;

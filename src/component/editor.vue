@@ -57,7 +57,7 @@ export default {
 		session.setUseWrapMode(true);
 		aceEditor.renderer.setHScrollBarAlwaysVisible(false);
 		aceEditor.renderer.setShowGutter(false);
-		aceEditor.renderer.setPadding(10);
+		aceEditor.renderer.setPadding(20);
 		aceEditor.setShowPrintMargin(false);
 		aceEditor.$blockScrolling = Infinity;
 		aceEditor.on('input', () => {
