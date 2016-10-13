@@ -15,7 +15,9 @@ note.getNote = async function(id){
 };
 
 note.addNote = async function(note){
-	note.content = '# Untitled Note';
+	if(!note.content){
+		note.content = '# Untitled Note';
+	}
 	return await this.saveNoteContent(note);
 };
 

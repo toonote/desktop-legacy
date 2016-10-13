@@ -41,7 +41,10 @@ let app = new Vue({
 		},
 		updateMeta(metaData){
 			store.commit('updateNotebooks', metaData.notebook);
-		}
+		},
+		importBackup(){
+			store.dispatch('importBackup');
+		},
 	},
 	data:{
 		currentNote:{},
@@ -101,6 +104,9 @@ let app = new Vue({
 				if(confirm('确定要删除该笔记吗？删除后将无法找回该笔记内容')){
 					app.deleteContextMenuNote();
 				}
+				break;
+			case 'importBackup':
+				app.importBackup();
 				break;
 		}
 

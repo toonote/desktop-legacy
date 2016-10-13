@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 import meta from '../modules/meta';
 import note from '../modules/note';
+import io from '../modules/io';
 
 // Vue.use(Vuex);
 
@@ -86,15 +87,15 @@ const store = new Vuex.Store({
 				context.commit('switchCurrentNote', targetNote);
 			}
 		},
-		async newNote(context) {
-			var noteMeta = await meta.addNote(context.state.currentNotebook.id);
+		async newNote(context, newNote) {
+			newNote = await meta.addNote(context.state.currentNotebook.id, newNote);
+			await note.addNote(newNote);
 			// let metaData = await meta.data;
 			// eventHub.$emit('metaDidChange', app.metaData);
-			await note.addNote(noteMeta);
 
 			// eventHub.$emit('currentNoteWillChange', app.currentNote);
-			context.commit('newNote', noteMeta);
-			context.commit('switchCurrentNote', noteMeta);
+			context.commit('newNote', newNote);
+			context.commit('switchCurrentNote', newNote);
 			// eventHub.$emit('currentNoteDidChange', app.currentNote);
 		},
 		async openContextMenuNote(context) {
@@ -105,7 +106,7 @@ const store = new Vuex.Store({
 			if(!targetId) return;
 			// 如果删除的是当前笔记，切换到第一条笔记
 			if(targetId === context.state.currentNote.id){
-				context.dispatch('switchCurrentNoteById', context.state.allNotes[0].id);
+				context.dispatch('switchCurrentNoteById', context.getters.allNotes[0].id);
 			}
 
 			// 找到目标笔记并删除
@@ -121,6 +122,14 @@ const store = new Vuex.Store({
 			await note.deleteNote(targetId);
 
 			context.dispatch('switchCurrentNoteById', );
+		},
+		async importBackup(context) {
+			let newNotes = await io.getNotesFromBackUp();
+			if(!confirm('备份文件含有'+newNotes.length+'条笔记，确认导入？')) return;
+
+			newNotes.forEach((newNote) => {
+				context.dispatch('newNote', newNote);
+			});
 		}
 	}
 });

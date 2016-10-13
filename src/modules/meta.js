@@ -37,16 +37,18 @@ class Meta{
 		data.init = true;
 		await store.writeFile('/meta.json',JSON.stringify(data));
 	}
-	async addNote(notebookId){
+	async addNote(notebookId, note){
 		let data = await this.data;
 		var targetNotebook = data.notebook.filter(function(metaNotebook){
 			return metaNotebook.id === notebookId;
 		})[0];
 
-		var note = {
-			id:Date.now()+((Math.random()*10000)>>0),
-			title:'Unititled Note'
-		};
+		if(!note){
+			note = {
+				id:Date.now()+((Math.random()*10000)>>0),
+				title:'Unititled Note'
+			};
+		}
 		targetNotebook.notes.push(note);
 		await store.writeFile('/meta.json', JSON.stringify(data));
 		return note;

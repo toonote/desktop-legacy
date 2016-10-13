@@ -99,6 +99,9 @@ export default {
 					title:'新建',
 					event:'newNote',
 					hotKey:'cmd+n'
+				},{
+					title:'导入备份',
+					event:'importBackup'
 				}]
 			},{
 				title:'Edit',
