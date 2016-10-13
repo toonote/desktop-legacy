@@ -46,14 +46,29 @@ export default {
 		var Remarkable = require('remarkable');
 		var previewRenderer = new Remarkable();
 		var index = 0;
-		previewRenderer.renderer.rules.paragraph_open = function (tokens, idx) {
-			var line;
-			if (tokens[idx].lines && tokens[idx].level === 0) {
-				line = tokens[idx].lines[0];
-				return '<p class="line" data-line="' + line + '">';
-			}
-			return '<p>';
+
+		let customerRulesMap = {
+			paragraph: 'p',
+			table: 'table',
+			// list_item: 'li',
+			tr: 'tr',
 		};
+
+		for(let token in customerRulesMap){
+			console.log('[preview]',token);
+			let tag = customerRulesMap[token];
+			previewRenderer.renderer.rules[`${token}_open`] = function (tokens, idx) {
+				var line;
+				if(tag === 'tr'){
+					console.log(tokens[idx]);
+				}
+				if (tokens[idx].lines/* && tokens[idx].level === 0*/) {
+					line = tokens[idx].lines[0];
+					return `<${tag} class="line" data-line="${line}">`;
+				}
+				return `<${tag}>`;
+			};
+		}
 
 		previewRenderer.renderer.rules.heading_open = function (tokens, idx) {
 			var line;
