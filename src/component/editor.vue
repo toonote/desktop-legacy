@@ -66,6 +66,20 @@ export default {
 			// eventHub.$emit('currentNoteContentChange', content);
 		});
 
+		// 同步滚动
+		session.on('changeScrollTop', (scroll) => {
+			let targetRow = aceEditor.getFirstVisibleRow();
+			this.$store.dispatch('syncScroll', targetRow);
+		});
+		// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);
+		// timing = setTimeout(function(){
+			// console.log(targetRow,scrollMap[targetRow]);
+			/*animatedScroll($preview, scrollMap[targetRow], 500);
+			waitStart = Date.now();
+			timing = 0;*/
+			// },100);
+			// console.log('scroll',scroll);
+
 		// 重新计算大小
 		setTimeout(function(){
 			aceEditor.resize();

@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 import meta from '../modules/meta';
 import note from '../modules/note';
 import io from '../modules/io';
+import scroll from '../modules/scroll';
 
 // Vue.use(Vuex);
 
@@ -12,7 +13,9 @@ const store = new Vuex.Store({
 		contextMenuNoteId: null,
 		currentNote: null,
 		currentNotebook: null,
-		notebooks: []
+		notebooks: [],
+		// 同步滚动位置数据
+		scrollMap: []
 	},
 	mutations: {
 		newNote(state, note) {
@@ -35,6 +38,9 @@ const store = new Vuex.Store({
 		},
 		updateNotebooks (state, notebooks) {
 			state.notebooks = notebooks;
+		},
+		changeScrollMap (state, scrollMap) {
+			state.scrollMap = scrollMap;
 		}
 	},
 	getters: {
@@ -158,6 +164,12 @@ const store = new Vuex.Store({
 			if(!confirm('备份文件含有'+newNotes.length+'条笔记，确认导入？')) return;
 
 			context.dispatch('importNotes', newNotes);
+		},
+		async syncScroll(context, row) {
+			// todo：节流
+			let targetPosition = context.state.scrollMap[row];
+			if(typeof targetPosition === 'undefined') return;
+			scroll.doScroll(document.querySelector('.preview'), targetPosition, 500);
 		}
 	}
 });

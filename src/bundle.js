@@ -94,7 +94,7 @@
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	_vue2.default.use(_vuex2.default);
-	let store = __webpack_require__(51);
+	let store = __webpack_require__(53);
 	
 	// Vue.config.debug = true;
 	
@@ -292,7 +292,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\tpadding-left:25px;\n\tcursor:default;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?023eb0ee"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,eAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\tpadding-left:25px;\n\tcursor:default;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"wrapper\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\nexport default {\n\tcomputed: {\n\t\t...mapGetters(['notebooks', 'currentNote', 'contextMenuNoteId', 'notebooksWithCategories'])\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\tconsole.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li[data-v-114b24d1]{\n\ttext-indent: 44px;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?371959eb"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li{\n\ttext-indent: 44px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"wrapper\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\nexport default {\n\tcomputed: {\n\t\t...mapGetters(['notebooks', 'currentNote', 'contextMenuNoteId', 'notebooksWithCategories'])\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\tconsole.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -598,6 +598,10 @@
 	});
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //
+	//
+	//
+	//
+	//
 	//
 	//
 	//
@@ -1182,7 +1186,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?19515acc"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div id=\"ace_container\"></div>\n</section>\n</template>\n\n\n<script>\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex'\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note || (!note.content && note.content !== '')) return\n\t\t\tif(_content !== note.content){\n\t\t\t\t_aceEditor.setValue(note.content, -1);\n\t\t\t}\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(10);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', () => {\n\t\t\t_content = aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t});\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?0619abae"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div id=\"ace_container\"></div>\n</section>\n</template>\n\n\n<script>\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex'\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note || (!note.content && note.content !== '')) return\n\t\t\tif(_content !== note.content){\n\t\t\t\t_aceEditor.setValue(note.content, -1);\n\t\t\t}\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', () => {\n\t\t\t_content = aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t});\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', (scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t});\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -1262,7 +1266,7 @@
 			session.setUseWrapMode(true);
 			aceEditor.renderer.setHScrollBarAlwaysVisible(false);
 			aceEditor.renderer.setShowGutter(false);
-			aceEditor.renderer.setPadding(10);
+			aceEditor.renderer.setPadding(20);
 			aceEditor.setShowPrintMargin(false);
 			aceEditor.$blockScrolling = Infinity;
 			aceEditor.on('input', () => {
@@ -1270,6 +1274,20 @@
 				this.$store.dispatch('changeCurrentNoteContent', _content);
 				// eventHub.$emit('currentNoteContentChange', content);
 			});
+	
+			// 同步滚动
+			session.on('changeScrollTop', scroll => {
+				let targetRow = aceEditor.getFirstVisibleRow();
+				this.$store.dispatch('syncScroll', targetRow);
+			});
+			// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);
+			// timing = setTimeout(function(){
+			// console.log(targetRow,scrollMap[targetRow]);
+			/*animatedScroll($preview, scrollMap[targetRow], 500);
+	  waitStart = Date.now();
+	  timing = 0;*/
+			// },100);
+			// console.log('scroll',scroll);
 	
 			// 重新计算大小
 			setTimeout(function () {
@@ -4717,7 +4735,7 @@
 	exports.i(__webpack_require__(35), "");
 	
 	// module
-	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?674ce495"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\"></div>\n</section>\n</template>\n\n\n<script>\nimport {mapGetters} from 'vuex'\nlet _render;\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn _render.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tconsole.log('[preview] mounted', this, this.$store);\n\t\tvar Remarkable = require('remarkable');\n\t\tvar previewRenderer = new Remarkable();\n\t\tvar index = 0;\n\t\tpreviewRenderer.renderer.rules.paragraph_open = function (tokens, idx) {\n\t\t\tvar line;\n\t\t\tif (tokens[idx].lines && tokens[idx].level === 0) {\n\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\treturn '<p class=\"line\" data-line=\"' + line + '\">';\n\t\t\t}\n\t\t\treturn '<p>';\n\t\t};\n\n\t\tpreviewRenderer.renderer.rules.heading_open = function (tokens, idx) {\n\t\t\tvar line;\n\t\t\tif (tokens[idx].lines && tokens[idx].level === 0) {\n\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\treturn '<h' + tokens[idx].hLevel + ' class=\"line\" data-line=\"' + line + '\"><a name=\"anchor'+(index++)+'\">';\n\t\t\t}\n\t\t\treturn '<h' + tokens[idx].hLevel + '>';\n\t\t};\n\n\t\tpreviewRenderer.renderer.rules.heading_close = function (tokens, idx) {\n\t\t\treturn '</a></h'+ tokens[idx].hLevel + '>';\n\t\t};\n\t\t_render = previewRenderer;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?4e123922"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\"></div>\n</section>\n</template>\n\n\n<script>\nimport {mapGetters} from 'vuex'\nlet _render;\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn _render.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\thtml(){\n\t\t\tthis.$nextTick(() => {\n\t\t\t\tlet scrollMap = [];\n\n\t\t\t\tlet $preview = this.$el;\n\t\t\t\tlet $previewAnchors = $preview.querySelectorAll('.line');\n\t\t\t\tArray.prototype.forEach.call($previewAnchors, function($previewAnchor){\n\t\t\t\t\tlet top = $previewAnchor.offsetTop;\n\t\t\t\t\tif(top && top > scrollMap[$previewAnchor.dataset.line]){\n\t\t\t\t\t\tscrollMap[$previewAnchor.dataset.line] = top;\n\t\t\t\t\t}\n\t\t\t\t})\n\n\t\t\t\tlet contentLines = this.currentNote.content.split('\\n').length;\n\t\t\t\tif(!scrollMap[0]) scrollMap[0] = 0;\n\t\t\t\tif(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;\n\n\t\t\t\tfor(var i = 1; i<contentLines -1; i++){\n\t\t\t\t\tif(!scrollMap[i]){\n\t\t\t\t\t\tvar j = i+1;\n\t\t\t\t\t\twhile(!scrollMap[j] && j < contentLines - 1){\n\t\t\t\t\t\t\tj++;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tthis.$store.commit('changeScrollMap', scrollMap);\n\t\t\t\t// console.log(scrollMap);\n\t\t\t\t// console.log('html changed');\n\t\t\t});\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tconsole.log('[preview] mounted', this, this.$store);\n\t\tvar Remarkable = require('remarkable');\n\t\tvar previewRenderer = new Remarkable();\n\t\tvar index = 0;\n\n\t\tlet customerRulesMap = {\n\t\t\tparagraph: 'p',\n\t\t\ttable: 'table',\n\t\t\t// list_item: 'li',\n\t\t\t// tr: 'tr',\n\t\t};\n\n\t\tfor(let token in customerRulesMap){\n\t\t\tconsole.log('[preview]',token);\n\t\t\tlet tag = customerRulesMap[token];\n\t\t\tpreviewRenderer.renderer.rules[`${token}_open`] = function (tokens, idx) {\n\t\t\t\tvar line;\n\t\t\t\tif(tag === 'tr'){\n\t\t\t\t\tconsole.log(tokens[idx]);\n\t\t\t\t}\n\t\t\t\tif (tokens[idx].lines/* && tokens[idx].level === 0*/) {\n\t\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\t\treturn `<${tag} class=\"line\" data-line=\"${line}\">`;\n\t\t\t\t}\n\t\t\t\treturn `<${tag}>`;\n\t\t\t};\n\t\t}\n\n\t\tpreviewRenderer.renderer.rules.heading_open = function (tokens, idx) {\n\t\t\tvar line;\n\t\t\tif (tokens[idx].lines && tokens[idx].level === 0) {\n\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\treturn '<h' + tokens[idx].hLevel + ' class=\"line\" data-line=\"' + line + '\"><a name=\"anchor'+(index++)+'\">';\n\t\t\t}\n\t\t\treturn '<h' + tokens[idx].hLevel + '>';\n\t\t};\n\n\t\tpreviewRenderer.renderer.rules.heading_close = function (tokens, idx) {\n\t\t\treturn '</a></h'+ tokens[idx].hLevel + '>';\n\t\t};\n\t\t_render = previewRenderer;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -4731,7 +4749,7 @@
 	
 	
 	// module
-	exports.push([module.id, ".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 10px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;;AAED,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 10px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, ".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;;AAED,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -4779,6 +4797,40 @@
 				return _render.render(this.currentNote.content);
 			}
 		}, (0, _vuex.mapGetters)(['currentNote'])),
+		watch: {
+			html() {
+				this.$nextTick(() => {
+					let scrollMap = [];
+	
+					let $preview = this.$el;
+					let $previewAnchors = $preview.querySelectorAll('.line');
+					Array.prototype.forEach.call($previewAnchors, function ($previewAnchor) {
+						let top = $previewAnchor.offsetTop;
+						if (top && top > scrollMap[$previewAnchor.dataset.line]) {
+							scrollMap[$previewAnchor.dataset.line] = top;
+						}
+					});
+	
+					let contentLines = this.currentNote.content.split('\n').length;
+					if (!scrollMap[0]) scrollMap[0] = 0;
+					if (!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;
+	
+					for (var i = 1; i < contentLines - 1; i++) {
+						if (!scrollMap[i]) {
+							var j = i + 1;
+							while (!scrollMap[j] && j < contentLines - 1) {
+								j++;
+							}
+							scrollMap[i] = scrollMap[i - 1] + (scrollMap[j] - scrollMap[i - 1]) / (j - i + 1);
+						}
+					}
+	
+					this.$store.commit('changeScrollMap', scrollMap);
+					// console.log(scrollMap);
+					// console.log('html changed');
+				});
+			}
+		},
 		data() {
 			var data = {
 				// content:'',
@@ -4791,14 +4843,27 @@
 			var Remarkable = __webpack_require__(37);
 			var previewRenderer = new Remarkable();
 			var index = 0;
-			previewRenderer.renderer.rules.paragraph_open = function (tokens, idx) {
-				var line;
-				if (tokens[idx].lines && tokens[idx].level === 0) {
-					line = tokens[idx].lines[0];
-					return '<p class="line" data-line="' + line + '">';
-				}
-				return '<p>';
+	
+			let customerRulesMap = {
+				paragraph: 'p',
+				table: 'table'
 			};
+	
+			for (let token in customerRulesMap) {
+				console.log('[preview]', token);
+				let tag = customerRulesMap[token];
+				previewRenderer.renderer.rules[`${ token }_open`] = function (tokens, idx) {
+					var line;
+					if (tag === 'tr') {
+						console.log(tokens[idx]);
+					}
+					if (tokens[idx].lines /* && tokens[idx].level === 0*/) {
+							line = tokens[idx].lines[0];
+							return `<${ tag } class="line" data-line="${ line }">`;
+						}
+					return `<${ tag }>`;
+				};
+			}
 	
 			previewRenderer.renderer.rules.heading_open = function (tokens, idx) {
 				var line;
@@ -5549,6 +5614,76 @@
 		value: true
 	});
 	
+	var _cubicInOut = __webpack_require__(52);
+	
+	var _cubicInOut2 = _interopRequireDefault(_cubicInOut);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	let scroll = {};
+	
+	class TooAnimate {
+		constructor(options) {
+			this.start = options.start;
+			this.end = options.end;
+			this.during = options.during;
+			this.onTick = options.onTick;
+			this._value = this.start;
+			this.doAnimate();
+		}
+		doAnimate() {
+			let delta = this.end - this.start;
+			let startTime;
+			let tick = time => {
+				if (!startTime) startTime = time;
+				let progress = (0, _cubicInOut2.default)((time - startTime) / this.during);
+				if (progress > 1) progress = 1;
+				this._value = progress * delta + this.start;
+				this.onTick(this._value);
+				if (progress < 1) {
+					requestAnimationFrame(tick);
+				}
+			};
+			requestAnimationFrame(tick);
+		}
+	}
+	
+	scroll.doScroll = ($target, end, during) => {
+		var tooAnimate = new TooAnimate({
+			start: $target.scrollTop,
+			end: end,
+			during: during,
+			onTick: function (value) {
+				$target.scrollTop = value;
+			}
+		});
+	};
+	
+	exports.default = scroll;
+	module.exports = exports['default'];
+
+/***/ },
+/* 52 */
+/***/ function(module, exports) {
+
+	function cubicInOut(t) {
+	  return t < 0.5
+	    ? 4.0 * t * t * t
+	    : 0.5 * Math.pow(2.0 * t - 2.0, 3.0) + 1.0
+	}
+	
+	module.exports = cubicInOut
+
+/***/ },
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
 	var _vue = __webpack_require__(2);
 	
 	var _vue2 = _interopRequireDefault(_vue);
@@ -5565,9 +5700,13 @@
 	
 	var _note2 = _interopRequireDefault(_note);
 	
-	var _io = __webpack_require__(52);
+	var _io = __webpack_require__(54);
 	
 	var _io2 = _interopRequireDefault(_io);
+	
+	var _scroll = __webpack_require__(51);
+	
+	var _scroll2 = _interopRequireDefault(_scroll);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -5580,7 +5719,9 @@
 			contextMenuNoteId: null,
 			currentNote: null,
 			currentNotebook: null,
-			notebooks: []
+			notebooks: [],
+			// 同步滚动位置数据
+			scrollMap: []
 		},
 		mutations: {
 			newNote(state, note) {
@@ -5603,6 +5744,9 @@
 			},
 			updateNotebooks(state, notebooks) {
 				state.notebooks = notebooks;
+			},
+			changeScrollMap(state, scrollMap) {
+				state.scrollMap = scrollMap;
 			}
 		},
 		getters: {
@@ -5742,6 +5886,14 @@
 	
 					context.dispatch('importNotes', newNotes);
 				})();
+			},
+			syncScroll(context, row) {
+				return _asyncToGenerator(function* () {
+					// todo：节流
+					let targetPosition = context.state.scrollMap[row];
+					if (typeof targetPosition === 'undefined') return;
+					_scroll2.default.doScroll(document.querySelector('.preview'), targetPosition, 500);
+				})();
 			}
 		}
 	});
@@ -5750,7 +5902,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5759,7 +5911,7 @@
 		value: true
 	});
 	
-	var _jszip = __webpack_require__(53);
+	var _jszip = __webpack_require__(55);
 	
 	var _jszip2 = _interopRequireDefault(_jszip);
 	
@@ -5780,7 +5932,7 @@
 		if (!filePath || !filePath.length) return;
 		filePath = filePath[0];
 	
-		var fs = __webpack_require__(54);
+		var fs = __webpack_require__(56);
 		return fs.readFileSync(filePath, 'binary');
 	};
 	
@@ -5809,13 +5961,13 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports) {
 
 	module.exports = require("jszip");
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports) {
 
 	module.exports = require("fs");
