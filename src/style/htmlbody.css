@@ -12,16 +12,35 @@
 	color:#718C00;
 	font-weight: normal;
 }
+/*表格*/
+.htmlBody table{
+	margin-bottom: 28px;
+	margin-left:auto;
+	margin-right:auto;
+	/*width:80%;*/
+	width:100%;
+	border:1px solid #E0E0E0;
+	border-collapse: collapse;
+}
+.htmlBody table th,
+.htmlBody table td{
+	padding: 3px;
+	border:1px solid #E0E0E0;
+}
+.htmlBody table th{
+	background:#F0F0F0;
+}
+
 /*段落*/
 .htmlBody p{
 	margin-bottom: 28px;
-	text-indent: 34px;
+	/*text-indent: 34px;*/
 }
 
 /*列表*/
 .htmlBody ul,ol{
 	margin-bottom: 28px;
-	padding-left:34px;
+	/*padding-left:34px;*/
 	list-style-position: inside;
 }
 .htmlBody li > p{
@@ -32,24 +51,27 @@
 .htmlBody ul ol,
 .htmlBody ol ol,
 .htmlBody ol ul{
+	padding-left: 34px;
 	margin-bottom: 0;
 }
 
 /*代码*/
 .htmlBody code{
-	background:#E0E0E0;
-	padding:0 5px;
+	background:#F0F0F0;
+	padding:0 5px;;
+	font-family: source-code-pro, Monaco, Menlo, "Ubuntu Mono", Consolas, monospace;
 }
 .htmlBody pre code{
-	margin-left:34px;
+	/*margin-left:34px;*/
 	margin-bottom: 28px;
 	display: block;
 	background:#fff;
 	border:1px solid #E0E0E0;
+	overflow-x: scroll;
 }
 /*引用*/
 .htmlBody blockquote{
-	margin-left:34px;
+	/*margin-left:34px;*/
 	font-size:13px;
 	margin-bottom: 28px;
 	padding:0 10px;

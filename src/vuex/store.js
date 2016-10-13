@@ -78,7 +78,7 @@ const store = new Vuex.Store({
 			await meta.updateNote(context.state.currentNote.id, title);
 		},
 		async switchCurrentNoteById(context, noteId) {
-			console.log('[store switchCurrentNoteById]', noteId);
+			// console.log('[store switchCurrentNoteById]', noteId);
 			let targetNote = context.getters.allNotes.filter((note)=>note.id === noteId)[0];
 			if(targetNote){
 				let content = await note.getNote(targetNote.id);
@@ -87,8 +87,19 @@ const store = new Vuex.Store({
 				context.commit('switchCurrentNote', targetNote);
 			}
 		},
-		async newNote(context, newNote) {
-			newNote = await meta.addNote(context.state.currentNotebook.id, newNote);
+		async importNotes(context, newNotes) {
+			for(let i=0; i<newNotes.length; i++){
+				let newNote = newNotes[i];
+				await meta.addNote(context.state.currentNotebook.id, {
+					id:newNote.id,
+					title:newNote.title
+				});
+				await note.addNote(newNote);
+				context.commit('newNote', newNote);
+			}
+		},
+		async newNote(context) {
+			let newNote = await meta.addNote(context.state.currentNotebook.id);
 			await note.addNote(newNote);
 			// let metaData = await meta.data;
 			// eventHub.$emit('metaDidChange', app.metaData);
@@ -127,9 +138,7 @@ const store = new Vuex.Store({
 			let newNotes = await io.getNotesFromBackUp();
 			if(!confirm('备份文件含有'+newNotes.length+'条笔记，确认导入？')) return;
 
-			newNotes.forEach((newNote) => {
-				context.dispatch('newNote', newNote);
-			});
+			context.dispatch('importNotes', newNotes);
 		}
 	}
 });
