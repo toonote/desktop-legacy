@@ -51,6 +51,25 @@ const store = new Vuex.Store({
 			});
 			return ret;
 		},
+		notebooksWithCategories(state){
+			let ret = state.notebooks.map((notebook) => {
+				let ret = {
+					title:notebook.title
+				};
+				ret.categories = {};
+				notebook.notes.forEach((noteItem) => {
+					let category = note.getCategoryFromTitle(noteItem.title);
+					let title = note.getTitleWithoutCategory(noteItem.title);
+					if(!ret.categories[category]) ret.categories[category] = [];
+					ret.categories[category].push({
+						title:title,
+						id:noteItem.id
+					});
+				});
+				return ret;
+			});
+			return ret;
+		},
 		notebooks(state){
 			return state.notebooks
 		}

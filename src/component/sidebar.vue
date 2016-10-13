@@ -41,16 +41,23 @@
 
 <template>
 <section class="sidebar">
-	<section class="wrapper" v-for="notebook in notebooks">
+	<section class="wrapper" v-for="notebook in notebooksWithCategories">
 		<h2>{{notebook.title}}</h2>
 		<ul>
 			<li
-				class="icon note"
-				v-bind:class="{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}"
-				v-for="note in notebook.notes"
-				v-on:click="switchCurrentNote(note.id)"
-				v-on:contextmenu="showContextMenu(note.id)"
-			>{{note.title}}</li>
+				class="icon folder"
+				v-for="(notes,category) in notebook.categories"
+			>{{category}}
+				<ul>
+					<li
+						class="icon note"
+						v-bind:class="{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}"
+						v-for="note in notes"
+						v-on:click="switchCurrentNote(note.id)"
+						v-on:contextmenu="showContextMenu(note.id)"
+					>{{note.title}}</li>
+				</ul>
+			</li>
 		</ul>
 	</section>
 </section>
@@ -65,7 +72,7 @@ import util from '../modules/util';
 let menu = new Menu(util.platform);
 export default {
 	computed: {
-		...mapGetters(['notebooks', 'currentNote', 'contextMenuNoteId'])
+		...mapGetters(['notebooks', 'currentNote', 'contextMenuNoteId', 'notebooksWithCategories'])
 	},
 	methods: {
 		isActive(noteId){

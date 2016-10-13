@@ -10,6 +10,24 @@ note.getTitleFromContent = function(content){
 	return firstLine.replace(/[#\s]/g, '');
 };
 
+note.getTitleWithoutCategory = function(title){
+	let titlePart = title.split('\\', 2);
+	if(titlePart.length === 1){
+		return title;
+	}else{
+		return title.replace(titlePart[0]+'\\','');
+	}
+};
+
+note.getCategoryFromTitle = function(title){
+	let titlePart = title.split('\\', 2);
+	if(titlePart.length === 1){
+		return '未分类';
+	}else{
+		return titlePart[0];
+	}
+};
+
 note.getNote = async function(id){
 	return await store.readFile(`/note-${id}.md`);
 };
