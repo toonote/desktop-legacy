@@ -41,6 +41,7 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.16.0",
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "css-loader": "^0.23.1",
+    "electron-devtools-installer": "^2.0.1",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.8.5",
     "url-loader": "^0.5.7",

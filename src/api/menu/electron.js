@@ -64,6 +64,7 @@ class ElectronMenu extends Menu{
 				}].concat(subMenu);
 			}
 			let thisMenu = {
+				type:menuItem.type,
 				label:menuItem.title,
 				accelerator: menuItem.hotKey,
 				click: menuItem.event?

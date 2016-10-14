@@ -96,9 +96,15 @@ export default {
 				title:'File',
 				isActive:false,
 				subMenu:[{
-					title:'新建',
+					title:'新建笔记',
 					event:'newNote',
 					hotKey:'cmd+n'
+				},{
+					title:'保存',
+					event:'saveNote',
+					hotKey:'cmd+s'
+				},{
+					type: 'separator'
 				},{
 					title:'导入备份',
 					event:'importBackup'
@@ -107,6 +113,22 @@ export default {
 				title:'Edit',
 				isActive:false,
 				subMenu:[]
+			},{
+				title:'View',
+				isActive:false,
+				subMenu:[{
+					title:'切换笔记列表',
+					event:'switchLayoutSidebar',
+					hotKey:'cmd+1'
+				},{
+					title:'切换编辑区',
+					event:'switchLayoutEditor',
+					hotKey:'cmd+2'
+				},{
+					title:'切换预览区',
+					event:'switchLayoutPreview',
+					hotKey:'cmd+3'
+				}]
 			}]
 		};
 		return data;

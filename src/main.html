@@ -9,9 +9,9 @@
 <div id="wrapper">
 	<menubar v-bind:class="{hidden:!withMenubar}"></menubar>
 	<div class="main" v-bind:class="{withMenubar:withMenubar}">
-		<sidebar></sidebar>
-		<editor></editor>
-		<preview></preview>
+		<sidebar v-show="layout.sidebar"></sidebar>
+		<editor v-show="layout.editor"></editor>
+		<preview v-show="layout.preview"></preview>
 	</div>
 </div>
 <script src="./bundle.js"></script>

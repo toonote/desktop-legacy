@@ -15,7 +15,12 @@ const store = new Vuex.Store({
 		currentNotebook: null,
 		notebooks: [],
 		// 同步滚动位置数据
-		scrollMap: []
+		scrollMap: [],
+		layout:{
+			sidebar: true,
+			editor: true,
+			preview: true
+		}
 	},
 	mutations: {
 		newNote(state, note) {
@@ -41,6 +46,9 @@ const store = new Vuex.Store({
 		},
 		changeScrollMap (state, scrollMap) {
 			state.scrollMap = scrollMap;
+		},
+		switchLayout (state, component) {
+			state.layout[component] = !state.layout[component];
 		}
 	},
 	getters: {
@@ -78,6 +86,9 @@ const store = new Vuex.Store({
 		},
 		notebooks(state){
 			return state.notebooks
+		},
+		layout(state){
+			return state.layout
 		}
 		/*currentNoteContent(state, getters){
 			return getters.content;

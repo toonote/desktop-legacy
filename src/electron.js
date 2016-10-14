@@ -27,6 +27,13 @@ app.on('ready', function() {
 	// 开发环境打开调试工具
 	if(!/app$/.test(__dirname)){
 		mainWindow.openDevTools();
+		let devInstaller = require('electron-devtools-installer');
+		console.log(devInstaller);
+		// import installExtension, { REACT_DEVELOPER_TOOLS } from ;
+
+		devInstaller.default(devInstaller.VUEJS_DEVTOOLS)
+		    .then((name) => console.log(`Added Extension:  ${name}`))
+		    .catch((err) => console.log('An error occurred: ', err));
 	}
 });
 

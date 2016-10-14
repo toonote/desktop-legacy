@@ -81,7 +81,7 @@ export default {
 		return data;
 	},
 	mounted(){
-		console.log('[preview] mounted', this, this.$store);
+		// console.log('[preview] mounted', this, this.$store);
 		var Remarkable = require('remarkable');
 		var previewRenderer = new Remarkable();
 		var index = 0;

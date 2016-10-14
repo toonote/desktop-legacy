@@ -20,6 +20,14 @@ import note from './modules/note';
 let app = new Vue({
 	el: '#wrapper',
 	store,
+	computed:{
+		...Vuex.mapGetters(['layout'])
+	},
+	watch:{
+		layout(){
+			console.log('layout changed', this.layout);
+		}
+	},
 	methods:{
 		_getTitle(content){
 			return content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
@@ -45,10 +53,11 @@ let app = new Vue({
 		importBackup(){
 			store.dispatch('importBackup');
 		},
+		switchLayout(component){
+			store.commit('switchLayout', component);
+		}
 	},
 	data:{
-		currentNote:{},
-		currentNotebook:{},
 		withMenubar:false
 	},
 	components: {
@@ -61,6 +70,7 @@ let app = new Vue({
 
 (async function(){
 	try{
+		console.log(app.$store);
 		// eventHub.$emit('metaWillChange');
 		app.metaData = await meta.data;
 
@@ -107,6 +117,15 @@ let app = new Vue({
 				break;
 			case 'importBackup':
 				app.importBackup();
+				break;
+			case 'switchLayoutSidebar':
+				app.switchLayout('sidebar');
+				break;
+			case 'switchLayoutEditor':
+				app.switchLayout('editor');
+				break;
+			case 'switchLayoutPreview':
+				app.switchLayout('preview');
 				break;
 		}
 
