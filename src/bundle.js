@@ -94,7 +94,7 @@
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	_vue2.default.use(_vuex2.default);
-	let store = __webpack_require__(53);
+	let store = __webpack_require__(51);
 	
 	// Vue.config.debug = true;
 	
@@ -1186,7 +1186,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?0619abae"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div id=\"ace_container\"></div>\n</section>\n</template>\n\n\n<script>\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex'\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note || (!note.content && note.content !== '')) return\n\t\t\tif(_content !== note.content){\n\t\t\t\t_aceEditor.setValue(note.content, -1);\n\t\t\t}\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', () => {\n\t\t\t_content = aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t});\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', (scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t});\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?4e732d58"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div id=\"ace_container\"></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex'\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note || (!note.content && note.content !== '')) return\n\t\t\tif(_content !== note.content){\n\t\t\t\t_aceEditor.setValue(note.content, -1);\n\t\t\t}\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', () => {\n\t\t\t_content = aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t});\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -1222,6 +1222,10 @@
 	//
 	//
 	//
+	
+	var _lodash = __webpack_require__(57);
+	
+	var _lodash2 = _interopRequireDefault(_lodash);
 	
 	var _brace = __webpack_require__(24);
 	
@@ -1276,10 +1280,10 @@
 			});
 	
 			// 同步滚动
-			session.on('changeScrollTop', scroll => {
+			session.on('changeScrollTop', (0, _lodash2.default)(scroll => {
 				let targetRow = aceEditor.getFirstVisibleRow();
 				this.$store.dispatch('syncScroll', targetRow);
-			});
+			}, 500));
 			// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);
 			// timing = setTimeout(function(){
 			// console.log(targetRow,scrollMap[targetRow]);
@@ -4735,7 +4739,7 @@
 	exports.i(__webpack_require__(35), "");
 	
 	// module
-	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?4e123922"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\"></div>\n</section>\n</template>\n\n\n<script>\nimport {mapGetters} from 'vuex'\nlet _render;\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn _render.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\thtml(){\n\t\t\tthis.$nextTick(() => {\n\t\t\t\tlet scrollMap = [];\n\n\t\t\t\tlet $preview = this.$el;\n\t\t\t\tlet $previewAnchors = $preview.querySelectorAll('.line');\n\t\t\t\tArray.prototype.forEach.call($previewAnchors, function($previewAnchor){\n\t\t\t\t\tlet top = $previewAnchor.offsetTop;\n\t\t\t\t\tif(top && top > scrollMap[$previewAnchor.dataset.line]){\n\t\t\t\t\t\tscrollMap[$previewAnchor.dataset.line] = top;\n\t\t\t\t\t}\n\t\t\t\t})\n\n\t\t\t\tlet contentLines = this.currentNote.content.split('\\n').length;\n\t\t\t\tif(!scrollMap[0]) scrollMap[0] = 0;\n\t\t\t\tif(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;\n\n\t\t\t\tfor(var i = 1; i<contentLines -1; i++){\n\t\t\t\t\tif(!scrollMap[i]){\n\t\t\t\t\t\tvar j = i+1;\n\t\t\t\t\t\twhile(!scrollMap[j] && j < contentLines - 1){\n\t\t\t\t\t\t\tj++;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tthis.$store.commit('changeScrollMap', scrollMap);\n\t\t\t\t// console.log(scrollMap);\n\t\t\t\t// console.log('html changed');\n\t\t\t});\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tconsole.log('[preview] mounted', this, this.$store);\n\t\tvar Remarkable = require('remarkable');\n\t\tvar previewRenderer = new Remarkable();\n\t\tvar index = 0;\n\n\t\tlet customerRulesMap = {\n\t\t\tparagraph: 'p',\n\t\t\ttable: 'table',\n\t\t\t// list_item: 'li',\n\t\t\t// tr: 'tr',\n\t\t};\n\n\t\tfor(let token in customerRulesMap){\n\t\t\tconsole.log('[preview]',token);\n\t\t\tlet tag = customerRulesMap[token];\n\t\t\tpreviewRenderer.renderer.rules[`${token}_open`] = function (tokens, idx) {\n\t\t\t\tvar line;\n\t\t\t\tif(tag === 'tr'){\n\t\t\t\t\tconsole.log(tokens[idx]);\n\t\t\t\t}\n\t\t\t\tif (tokens[idx].lines/* && tokens[idx].level === 0*/) {\n\t\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\t\treturn `<${tag} class=\"line\" data-line=\"${line}\">`;\n\t\t\t\t}\n\t\t\t\treturn `<${tag}>`;\n\t\t\t};\n\t\t}\n\n\t\tpreviewRenderer.renderer.rules.heading_open = function (tokens, idx) {\n\t\t\tvar line;\n\t\t\tif (tokens[idx].lines && tokens[idx].level === 0) {\n\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\treturn '<h' + tokens[idx].hLevel + ' class=\"line\" data-line=\"' + line + '\"><a name=\"anchor'+(index++)+'\">';\n\t\t\t}\n\t\t\treturn '<h' + tokens[idx].hLevel + '>';\n\t\t};\n\n\t\tpreviewRenderer.renderer.rules.heading_close = function (tokens, idx) {\n\t\t\treturn '</a></h'+ tokens[idx].hLevel + '>';\n\t\t};\n\t\t_render = previewRenderer;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?d6bd9874"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\"></div>\n</section>\n</template>\n\n\n<script>\nimport {mapGetters} from 'vuex'\nlet _render;\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn _render.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\thtml(){\n\t\t\tthis.$nextTick(() => {\n\t\t\t\tlet scrollMap = [];\n\n\t\t\t\tlet $preview = this.$el;\n\t\t\t\tlet $previewAnchors = $preview.querySelectorAll('.line');\n\t\t\t\tArray.prototype.forEach.call($previewAnchors, function($previewAnchor){\n\t\t\t\t\tlet line = $previewAnchor.dataset.line;\n\t\t\t\t\tlet top = $previewAnchor.offsetTop;\n\t\t\t\t\t/*if(line == 8){\n\t\t\t\t\t\tconsole.log(line, top, $previewAnchor);\n\t\t\t\t\t}*/\n\t\t\t\t\tif(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){\n\t\t\t\t\t\tscrollMap[line] = top;\n\t\t\t\t\t}\n\t\t\t\t});\n\n\t\t\t\tlet contentLines = this.currentNote.content.split('\\n').length;\n\t\t\t\tif(!scrollMap[0]) scrollMap[0] = 0;\n\t\t\t\tif(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;\n\n\t\t\t\tfor(var i = 1; i<contentLines -1; i++){\n\t\t\t\t\tif(!scrollMap[i]){\n\t\t\t\t\t\tvar j = i+1;\n\t\t\t\t\t\twhile(!scrollMap[j] && j < contentLines - 1){\n\t\t\t\t\t\t\tj++;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t// console.log(scrollMap[8]);\n\n\t\t\t\tthis.$store.commit('changeScrollMap', scrollMap);\n\t\t\t\t// console.log(scrollMap);\n\t\t\t\t// console.log('html changed');\n\t\t\t});\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tconsole.log('[preview] mounted', this, this.$store);\n\t\tvar Remarkable = require('remarkable');\n\t\tvar previewRenderer = new Remarkable();\n\t\tvar index = 0;\n\n\t\tlet customerRulesMap = {\n\t\t\tparagraph: 'p',\n\t\t\ttable: 'table',\n\t\t\t// list_item: 'li',\n\t\t\t// tr: 'tr',\n\t\t};\n\n\t\tfor(let token in customerRulesMap){\n\t\t\tconsole.log('[preview]',token);\n\t\t\tlet tag = customerRulesMap[token];\n\t\t\tpreviewRenderer.renderer.rules[`${token}_open`] = function (tokens, idx) {\n\t\t\t\tvar line;\n\t\t\t\tif(tag === 'tr'){\n\t\t\t\t\tconsole.log(tokens[idx]);\n\t\t\t\t}\n\t\t\t\tif (tokens[idx].lines/* && tokens[idx].level === 0*/) {\n\t\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\t\treturn `<${tag} class=\"line\" data-line=\"${line}\">`;\n\t\t\t\t}\n\t\t\t\treturn `<${tag}>`;\n\t\t\t};\n\t\t}\n\n\t\tpreviewRenderer.renderer.rules.heading_open = function (tokens, idx) {\n\t\t\tvar line;\n\t\t\tif (tokens[idx].lines && tokens[idx].level === 0) {\n\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\treturn '<h' + tokens[idx].hLevel + ' class=\"line\" data-line=\"' + line + '\"><a name=\"anchor'+(index++)+'\">';\n\t\t\t}\n\t\t\treturn '<h' + tokens[idx].hLevel + '>';\n\t\t};\n\n\t\tpreviewRenderer.renderer.rules.heading_close = function (tokens, idx) {\n\t\t\treturn '</a></h'+ tokens[idx].hLevel + '>';\n\t\t};\n\t\t_render = previewRenderer;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -4805,9 +4809,13 @@
 					let $preview = this.$el;
 					let $previewAnchors = $preview.querySelectorAll('.line');
 					Array.prototype.forEach.call($previewAnchors, function ($previewAnchor) {
+						let line = $previewAnchor.dataset.line;
 						let top = $previewAnchor.offsetTop;
-						if (top && top > scrollMap[$previewAnchor.dataset.line]) {
-							scrollMap[$previewAnchor.dataset.line] = top;
+						/*if(line == 8){
+	     	console.log(line, top, $previewAnchor);
+	     }*/
+						if (top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')) {
+							scrollMap[line] = top;
 						}
 					});
 	
@@ -4824,6 +4832,7 @@
 							scrollMap[i] = scrollMap[i - 1] + (scrollMap[j] - scrollMap[i - 1]) / (j - i + 1);
 						}
 					}
+					// console.log(scrollMap[8]);
 	
 					this.$store.commit('changeScrollMap', scrollMap);
 					// console.log(scrollMap);
@@ -5614,76 +5623,6 @@
 		value: true
 	});
 	
-	var _cubicInOut = __webpack_require__(52);
-	
-	var _cubicInOut2 = _interopRequireDefault(_cubicInOut);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	let scroll = {};
-	
-	class TooAnimate {
-		constructor(options) {
-			this.start = options.start;
-			this.end = options.end;
-			this.during = options.during;
-			this.onTick = options.onTick;
-			this._value = this.start;
-			this.doAnimate();
-		}
-		doAnimate() {
-			let delta = this.end - this.start;
-			let startTime;
-			let tick = time => {
-				if (!startTime) startTime = time;
-				let progress = (0, _cubicInOut2.default)((time - startTime) / this.during);
-				if (progress > 1) progress = 1;
-				this._value = progress * delta + this.start;
-				this.onTick(this._value);
-				if (progress < 1) {
-					requestAnimationFrame(tick);
-				}
-			};
-			requestAnimationFrame(tick);
-		}
-	}
-	
-	scroll.doScroll = ($target, end, during) => {
-		var tooAnimate = new TooAnimate({
-			start: $target.scrollTop,
-			end: end,
-			during: during,
-			onTick: function (value) {
-				$target.scrollTop = value;
-			}
-		});
-	};
-	
-	exports.default = scroll;
-	module.exports = exports['default'];
-
-/***/ },
-/* 52 */
-/***/ function(module, exports) {
-
-	function cubicInOut(t) {
-	  return t < 0.5
-	    ? 4.0 * t * t * t
-	    : 0.5 * Math.pow(2.0 * t - 2.0, 3.0) + 1.0
-	}
-	
-	module.exports = cubicInOut
-
-/***/ },
-/* 53 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
 	var _vue = __webpack_require__(2);
 	
 	var _vue2 = _interopRequireDefault(_vue);
@@ -5700,11 +5639,11 @@
 	
 	var _note2 = _interopRequireDefault(_note);
 	
-	var _io = __webpack_require__(54);
+	var _io = __webpack_require__(52);
 	
 	var _io2 = _interopRequireDefault(_io);
 	
-	var _scroll = __webpack_require__(51);
+	var _scroll = __webpack_require__(55);
 	
 	var _scroll2 = _interopRequireDefault(_scroll);
 	
@@ -5889,8 +5828,8 @@
 			},
 			syncScroll(context, row) {
 				return _asyncToGenerator(function* () {
-					// todo：节流
 					let targetPosition = context.state.scrollMap[row];
+					// console.log(row, targetPosition);
 					if (typeof targetPosition === 'undefined') return;
 					_scroll2.default.doScroll(document.querySelector('.preview'), targetPosition, 500);
 				})();
@@ -5902,7 +5841,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 54 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5911,7 +5850,7 @@
 		value: true
 	});
 	
-	var _jszip = __webpack_require__(55);
+	var _jszip = __webpack_require__(53);
 	
 	var _jszip2 = _interopRequireDefault(_jszip);
 	
@@ -5932,7 +5871,7 @@
 		if (!filePath || !filePath.length) return;
 		filePath = filePath[0];
 	
-		var fs = __webpack_require__(56);
+		var fs = __webpack_require__(54);
 		return fs.readFileSync(filePath, 'binary');
 	};
 	
@@ -5961,16 +5900,92 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 55 */
+/* 53 */
 /***/ function(module, exports) {
 
 	module.exports = require("jszip");
 
 /***/ },
-/* 56 */
+/* 54 */
 /***/ function(module, exports) {
 
 	module.exports = require("fs");
+
+/***/ },
+/* 55 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _cubicInOut = __webpack_require__(56);
+	
+	var _cubicInOut2 = _interopRequireDefault(_cubicInOut);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	let scroll = {};
+	
+	class TooAnimate {
+		constructor(options) {
+			this.start = options.start;
+			this.end = options.end;
+			this.during = options.during;
+			this.onTick = options.onTick;
+			this._value = this.start;
+			this.doAnimate();
+		}
+		doAnimate() {
+			let delta = this.end - this.start;
+			let startTime;
+			let tick = time => {
+				if (!startTime) startTime = time;
+				let progress = (0, _cubicInOut2.default)((time - startTime) / this.during);
+				if (progress > 1) progress = 1;
+				this._value = progress * delta + this.start;
+				this.onTick(this._value);
+				if (progress < 1) {
+					requestAnimationFrame(tick);
+				}
+			};
+			requestAnimationFrame(tick);
+		}
+	}
+	
+	scroll.doScroll = ($target, end, during) => {
+		var tooAnimate = new TooAnimate({
+			start: $target.scrollTop,
+			end: end,
+			during: during,
+			onTick: function (value) {
+				$target.scrollTop = value;
+			}
+		});
+	};
+	
+	exports.default = scroll;
+	module.exports = exports['default'];
+
+/***/ },
+/* 56 */
+/***/ function(module, exports) {
+
+	function cubicInOut(t) {
+	  return t < 0.5
+	    ? 4.0 * t * t * t
+	    : 0.5 * Math.pow(2.0 * t - 2.0, 3.0) + 1.0
+	}
+	
+	module.exports = cubicInOut
+
+/***/ },
+/* 57 */
+/***/ function(module, exports) {
+
+	module.exports = require("lodash.throttle");
 
 /***/ }
 /******/ ]);

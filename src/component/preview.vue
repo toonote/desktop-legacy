@@ -42,11 +42,15 @@ export default {
 				let $preview = this.$el;
 				let $previewAnchors = $preview.querySelectorAll('.line');
 				Array.prototype.forEach.call($previewAnchors, function($previewAnchor){
+					let line = $previewAnchor.dataset.line;
 					let top = $previewAnchor.offsetTop;
-					if(top && top > scrollMap[$previewAnchor.dataset.line]){
-						scrollMap[$previewAnchor.dataset.line] = top;
+					/*if(line == 8){
+						console.log(line, top, $previewAnchor);
+					}*/
+					if(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){
+						scrollMap[line] = top;
 					}
-				})
+				});
 
 				let contentLines = this.currentNote.content.split('\n').length;
 				if(!scrollMap[0]) scrollMap[0] = 0;
@@ -61,6 +65,7 @@ export default {
 						scrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);
 					}
 				}
+				// console.log(scrollMap[8]);
 
 				this.$store.commit('changeScrollMap', scrollMap);
 				// console.log(scrollMap);

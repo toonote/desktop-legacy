@@ -20,6 +20,7 @@
 
 
 <script>
+import throttle from 'lodash.throttle';
 import ace from 'brace';
 import 'brace/theme/tomorrow';
 import 'brace/mode/markdown';
@@ -67,10 +68,10 @@ export default {
 		});
 
 		// 同步滚动
-		session.on('changeScrollTop', (scroll) => {
+		session.on('changeScrollTop', throttle((scroll) => {
 			let targetRow = aceEditor.getFirstVisibleRow();
 			this.$store.dispatch('syncScroll', targetRow);
-		});
+		}, 500));
 		// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);
 		// timing = setTimeout(function(){
 			// console.log(targetRow,scrollMap[targetRow]);

@@ -166,8 +166,8 @@ const store = new Vuex.Store({
 			context.dispatch('importNotes', newNotes);
 		},
 		async syncScroll(context, row) {
-			// todo：节流
 			let targetPosition = context.state.scrollMap[row];
+			// console.log(row, targetPosition);
 			if(typeof targetPosition === 'undefined') return;
 			scroll.doScroll(document.querySelector('.preview'), targetPosition, 500);
 		}
