@@ -51,9 +51,9 @@ export default {
 						scrollMap[line] = top;
 					}
 				});
+				scrollMap[0] = 0;
 
 				let contentLines = this.currentNote.content.split('\n').length;
-				if(!scrollMap[0]) scrollMap[0] = 0;
 				if(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;
 
 				for(var i = 1; i<contentLines -1; i++){
