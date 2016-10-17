@@ -14,7 +14,12 @@
 
 <template>
 <section class="editor">
-	<div id="ace_container"></div>
+	<div
+		id="ace_container"
+		v-on:dragover.prevent="onDragOver"
+		v-on:drop.prevent.stop="onDrop"
+		v-on:paste="onPaste"
+	></div>
 </section>
 </template>
 
@@ -24,12 +29,55 @@ import throttle from 'lodash.throttle';
 import ace from 'brace';
 import 'brace/theme/tomorrow';
 import 'brace/mode/markdown';
-import {mapGetters} from 'vuex'
+import {mapGetters} from 'vuex';
+import io from '../modules/io';
 let _aceEditor;
 let _id,_content;
 export default {
 	computed:{
 		...mapGetters(['currentNote'])
+	},
+	methods:{
+		onDragOver(){
+			// console.log('dragover');
+		},
+		onDrop(e){
+			let img = e.dataTransfer.files[0];
+			if(!img || !/^image/.test(img.type)) return;
+			let ext = io.getExt(img.name);
+			let imagePath = io.saveImage(img.path, ext);
+			this.insertImg(imagePath);
+		},
+		onPaste(e){
+			if(!e.clipboardData.items || !e.clipboardData.items.length) return;
+			let hasImage = false;
+			for(let i = e.clipboardData.items.length;i--;){
+				let item = e.clipboardData.items[i];
+				if(/^image/.test(item.type)){
+					hasImage = true;
+				}
+			}
+			if(!hasImage) return;
+
+			let imagePath = io.saveImageFromClipboard();
+
+			this.insertImg(imagePath);
+		},
+		insertImg(imagePath){
+
+			if(imagePath){
+				imagePath = encodeURI(imagePath);
+				_aceEditor.insert(`\n\n![${name}](${imagePath})\n\n`);
+			}else{
+				_aceEditor.insert(`拖拽插入图片出错！`);
+			}
+			this.onEditorInput();
+		},
+		onEditorInput(){
+			_content = _aceEditor.getValue();
+			this.$store.dispatch('changeCurrentNoteContent', _content);
+			// eventHub.$emit('currentNoteContentChange', content);
+		}
 	},
 	watch:{
 		currentNote(note){
@@ -61,11 +109,7 @@ export default {
 		aceEditor.renderer.setPadding(20);
 		aceEditor.setShowPrintMargin(false);
 		aceEditor.$blockScrolling = Infinity;
-		aceEditor.on('input', () => {
-			_content = aceEditor.getValue();
-			this.$store.dispatch('changeCurrentNoteContent', _content);
-			// eventHub.$emit('currentNoteContentChange', content);
-		});
+		aceEditor.on('input', this.onEditorInput);
 
 		// 同步滚动
 		session.on('changeScrollTop', throttle((scroll) => {

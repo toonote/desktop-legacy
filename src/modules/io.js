@@ -1,6 +1,48 @@
 import Zip from 'jszip';
 let io = {};
+let fs = require('fs');
+let path = require('path');
 
+io.getExt = (filename) => {
+	return path.extname(filename);
+};
+
+io.saveFile = (data, ext) => {
+	let userDataPath = require('electron').remote.app.getPath('userData');
+	let savePath = path.join(userDataPath, 'images');
+	let saveFilePath = path.join(savePath, (Date.now() + '' + Math.random()).replace('.',''));
+	if(ext){
+		saveFilePath += ext;
+	}
+
+	if(!fs.existsSync(savePath)){
+		fs.mkdirSync(savePath);
+	}
+
+	try{
+		fs.writeFileSync(saveFilePath, data, 'binary');
+	}catch(e){
+		console.log('saveFile Error', e);
+		return false;
+	}
+	return saveFilePath;
+};
+
+io.saveImageFromClipboard = () => {
+	let img = require('electron').clipboard.readImage();
+	let imgData = img.toPng();
+
+	return io.saveFile(imgData, '.png');
+};
+
+io.saveImage = (imagePath, ext) => {
+
+	let data = fs.readFileSync(imagePath);
+	return io.saveFile(data, ext);
+};
+
+
+// 选择文件
 io.selectFile = (filters) => {
 	var remote = require('electron').remote;
 	var dialog = remote.dialog;
