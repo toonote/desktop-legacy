@@ -13,7 +13,7 @@
 
 <template>
 <section class="preview">
-	<div class="htmlBody" v-html="html"></div>
+	<div class="htmlBody" v-html="html" v-on:click="handleContent"></div>
 </section>
 </template>
 
@@ -35,6 +35,17 @@ export default {
 			return this.$store.getters.currentNote
 		},*/
 		...mapGetters(['currentNote'])
+	},
+	methods: {
+		handleContent(e) {
+			let $target = e.target;
+			// 链接
+			if($target.tagName === 'A' && /^https?:\/\//.test($target.href)){
+				let shell = require('electron').shell;
+				shell.openExternal($target.href);
+				e.preventDefault();
+			}
+		}
 	},
 	watch:{
 		html(){
