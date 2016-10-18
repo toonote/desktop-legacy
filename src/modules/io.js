@@ -7,6 +7,12 @@ io.getExt = (filename) => {
 	return path.extname(filename);
 };
 
+io.getFileText = (filePath) => {
+	filePath = path.join(require('electron').remote.app.getAppPath(), filePath);
+	console.log(filePath);
+	return fs.readFileSync(filePath, 'utf8');
+};
+
 io.saveFile = (data, ext) => {
 	let userDataPath = require('electron').remote.app.getPath('userData');
 	let savePath = path.join(userDataPath, 'images');

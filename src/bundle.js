@@ -140,6 +140,9 @@
 			importBackup() {
 				store.dispatch('importBackup');
 			},
+			export(format) {
+				store.dispatch('export', format);
+			},
 			switchLayout(component) {
 				store.commit('switchLayout', component);
 			}
@@ -202,6 +205,18 @@
 					break;
 				case 'importBackup':
 					app.importBackup();
+					break;
+				case 'exportMd':
+					app.export('md');
+					break;
+				case 'exportHtmlBody':
+					app.export('htmlBody');
+					break;
+				case 'exportHtml':
+					app.export('html');
+					break;
+				case 'exportPdf':
+					app.export('pdf');
 					break;
 				case 'switchLayoutSidebar':
 					app.switchLayout('sidebar');
@@ -1206,7 +1221,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?4e732d58"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div id=\"ace_container\"></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex'\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note || (!note.content && note.content !== '')) return\n\t\t\tif(_content !== note.content){\n\t\t\t\t_aceEditor.setValue(note.content, -1);\n\t\t\t}\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', () => {\n\t\t\t_content = aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t});\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?3b453496"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div\n\t\tid=\"ace_container\"\n\t\tv-on:dragover.prevent=\"onDragOver\"\n\t\tv-on:drop.prevent.stop=\"onDrop\"\n\t\tv-on:paste=\"onPaste\"\n\t></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex';\nimport io from '../modules/io';\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\tmethods:{\n\t\tonDragOver(){\n\t\t\t// console.log('dragover');\n\t\t},\n\t\tonDrop(e){\n\t\t\tlet img = e.dataTransfer.files[0];\n\t\t\tif(!img || !/^image/.test(img.type)) return;\n\t\t\tlet ext = io.getExt(img.name);\n\t\t\tlet imagePath = io.saveImage(img.path, ext);\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tonPaste(e){\n\t\t\tif(!e.clipboardData.items || !e.clipboardData.items.length) return;\n\t\t\tlet hasImage = false;\n\t\t\tfor(let i = e.clipboardData.items.length;i--;){\n\t\t\t\tlet item = e.clipboardData.items[i];\n\t\t\t\tif(/^image/.test(item.type)){\n\t\t\t\t\thasImage = true;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(!hasImage) return;\n\n\t\t\tlet imagePath = io.saveImageFromClipboard();\n\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tinsertImg(imagePath){\n\n\t\t\tif(imagePath){\n\t\t\t\timagePath = encodeURI(imagePath);\n\t\t\t\t_aceEditor.insert(`\\n\\n![${name}](${imagePath})\\n\\n`);\n\t\t\t}else{\n\t\t\t\t_aceEditor.insert(`拖拽插入图片出错！`);\n\t\t\t}\n\t\t\tthis.onEditorInput();\n\t\t},\n\t\tonEditorInput(){\n\t\t\t_content = _aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t}\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note || (!note.content && note.content !== '')) return\n\t\t\tif(_content !== note.content){\n\t\t\t\t_aceEditor.setValue(note.content, -1);\n\t\t\t}\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', this.onEditorInput);\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -1242,6 +1257,11 @@
 	//
 	//
 	//
+	//
+	//
+	//
+	//
+	//
 	
 	var _lodash = __webpack_require__(24);
 	
@@ -1257,12 +1277,58 @@
 	
 	var _vuex = __webpack_require__(3);
 	
+	var _io = __webpack_require__(53);
+	
+	var _io2 = _interopRequireDefault(_io);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	let _aceEditor;
 	let _id, _content;
 	exports.default = {
 		computed: _extends({}, (0, _vuex.mapGetters)(['currentNote'])),
+		methods: {
+			onDragOver() {
+				// console.log('dragover');
+			},
+			onDrop(e) {
+				let img = e.dataTransfer.files[0];
+				if (!img || !/^image/.test(img.type)) return;
+				let ext = _io2.default.getExt(img.name);
+				let imagePath = _io2.default.saveImage(img.path, ext);
+				this.insertImg(imagePath);
+			},
+			onPaste(e) {
+				if (!e.clipboardData.items || !e.clipboardData.items.length) return;
+				let hasImage = false;
+				for (let i = e.clipboardData.items.length; i--;) {
+					let item = e.clipboardData.items[i];
+					if (/^image/.test(item.type)) {
+						hasImage = true;
+					}
+				}
+				if (!hasImage) return;
+	
+				let imagePath = _io2.default.saveImageFromClipboard();
+	
+				this.insertImg(imagePath);
+			},
+			insertImg(imagePath) {
+	
+				if (imagePath) {
+					imagePath = encodeURI(imagePath);
+					_aceEditor.insert(`\n\n![${ name }](${ imagePath })\n\n`);
+				} else {
+					_aceEditor.insert(`拖拽插入图片出错！`);
+				}
+				this.onEditorInput();
+			},
+			onEditorInput() {
+				_content = _aceEditor.getValue();
+				this.$store.dispatch('changeCurrentNoteContent', _content);
+				// eventHub.$emit('currentNoteContentChange', content);
+			}
+		},
 		watch: {
 			currentNote(note) {
 				if (!note || !note.content && note.content !== '') return;
@@ -1293,11 +1359,7 @@
 			aceEditor.renderer.setPadding(20);
 			aceEditor.setShowPrintMargin(false);
 			aceEditor.$blockScrolling = Infinity;
-			aceEditor.on('input', () => {
-				_content = aceEditor.getValue();
-				this.$store.dispatch('changeCurrentNoteContent', _content);
-				// eventHub.$emit('currentNoteContentChange', content);
-			});
+			aceEditor.on('input', this.onEditorInput);
 	
 			// 同步滚动
 			session.on('changeScrollTop', (0, _lodash2.default)(scroll => {
@@ -4665,16 +4727,26 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
-	  return _m(0)
-	}},staticRenderFns: [function (){with(this) {
 	  return _h('section', {
 	    staticClass: "editor"
 	  }, [_h('div', {
 	    attrs: {
 	      "id": "ace_container"
+	    },
+	    on: {
+	      "dragover": function($event) {
+	        $event.preventDefault();
+	        onDragOver($event)
+	      },
+	      "drop": function($event) {
+	        $event.preventDefault();
+	        $event.stopPropagation();
+	        onDrop($event)
+	      },
+	      "paste": onPaste
 	    }
 	  })])
-	}}]}
+	}},staticRenderFns: []}
 	if (false) {
 	  module.hot.accept()
 	  if (module.hot.data) {
@@ -4765,7 +4837,7 @@
 	exports.i(__webpack_require__(36), "");
 	
 	// module
-	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?02186b0c"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\"></div>\n</section>\n</template>\n\n\n<script>\nimport {mapGetters} from 'vuex'\nlet _render;\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn _render.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\thtml(){\n\t\t\tthis.$nextTick(() => {\n\t\t\t\tlet scrollMap = [];\n\n\t\t\t\tlet $preview = this.$el;\n\t\t\t\tlet $previewAnchors = $preview.querySelectorAll('.line');\n\t\t\t\tArray.prototype.forEach.call($previewAnchors, function($previewAnchor){\n\t\t\t\t\tlet line = $previewAnchor.dataset.line;\n\t\t\t\t\tlet top = $previewAnchor.offsetTop;\n\t\t\t\t\t/*if(line == 8){\n\t\t\t\t\t\tconsole.log(line, top, $previewAnchor);\n\t\t\t\t\t}*/\n\t\t\t\t\tif(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){\n\t\t\t\t\t\tscrollMap[line] = top;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\tscrollMap[0] = 0;\n\n\t\t\t\tlet contentLines = this.currentNote.content.split('\\n').length;\n\t\t\t\tif(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;\n\n\t\t\t\tfor(var i = 1; i<contentLines -1; i++){\n\t\t\t\t\tif(!scrollMap[i]){\n\t\t\t\t\t\tvar j = i+1;\n\t\t\t\t\t\twhile(!scrollMap[j] && j < contentLines - 1){\n\t\t\t\t\t\t\tj++;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t// console.log(scrollMap[8]);\n\n\t\t\t\tthis.$store.commit('changeScrollMap', scrollMap);\n\t\t\t\t// console.log(scrollMap);\n\t\t\t\t// console.log('html changed');\n\t\t\t});\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\t// console.log('[preview] mounted', this, this.$store);\n\t\tvar Remarkable = require('remarkable');\n\t\tvar previewRenderer = new Remarkable();\n\t\tvar index = 0;\n\n\t\tlet customerRulesMap = {\n\t\t\tparagraph: 'p',\n\t\t\ttable: 'table',\n\t\t\t// list_item: 'li',\n\t\t\t// tr: 'tr',\n\t\t};\n\n\t\tfor(let token in customerRulesMap){\n\t\t\tconsole.log('[preview]',token);\n\t\t\tlet tag = customerRulesMap[token];\n\t\t\tpreviewRenderer.renderer.rules[`${token}_open`] = function (tokens, idx) {\n\t\t\t\tvar line;\n\t\t\t\tif(tag === 'tr'){\n\t\t\t\t\tconsole.log(tokens[idx]);\n\t\t\t\t}\n\t\t\t\tif (tokens[idx].lines/* && tokens[idx].level === 0*/) {\n\t\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\t\treturn `<${tag} class=\"line\" data-line=\"${line}\">`;\n\t\t\t\t}\n\t\t\t\treturn `<${tag}>`;\n\t\t\t};\n\t\t}\n\n\t\tpreviewRenderer.renderer.rules.heading_open = function (tokens, idx) {\n\t\t\tvar line;\n\t\t\tif (tokens[idx].lines && tokens[idx].level === 0) {\n\t\t\t\tline = tokens[idx].lines[0];\n\t\t\t\treturn '<h' + tokens[idx].hLevel + ' class=\"line\" data-line=\"' + line + '\"><a name=\"anchor'+(index++)+'\">';\n\t\t\t}\n\t\t\treturn '<h' + tokens[idx].hLevel + '>';\n\t\t};\n\n\t\tpreviewRenderer.renderer.rules.heading_close = function (tokens, idx) {\n\t\t\treturn '</a></h'+ tokens[idx].hLevel + '>';\n\t\t};\n\t\t_render = previewRenderer;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?5135495a"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\"></div>\n</section>\n</template>\n\n\n<script>\nimport {mapGetters} from 'vuex';\nimport renderer from '../modules/renderer';\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn renderer.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\thtml(){\n\t\t\tthis.$nextTick(() => {\n\t\t\t\tlet scrollMap = [];\n\n\t\t\t\tlet $preview = this.$el;\n\t\t\t\tlet $previewAnchors = $preview.querySelectorAll('.line');\n\t\t\t\tArray.prototype.forEach.call($previewAnchors, function($previewAnchor){\n\t\t\t\t\tlet line = $previewAnchor.dataset.line;\n\t\t\t\t\tlet top = $previewAnchor.offsetTop;\n\t\t\t\t\t/*if(line == 8){\n\t\t\t\t\t\tconsole.log(line, top, $previewAnchor);\n\t\t\t\t\t}*/\n\t\t\t\t\tif(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){\n\t\t\t\t\t\tscrollMap[line] = top;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\tscrollMap[0] = 0;\n\n\t\t\t\tlet contentLines = this.currentNote.content.split('\\n').length;\n\t\t\t\tif(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;\n\n\t\t\t\tfor(var i = 1; i<contentLines -1; i++){\n\t\t\t\t\tif(!scrollMap[i]){\n\t\t\t\t\t\tvar j = i+1;\n\t\t\t\t\t\twhile(!scrollMap[j] && j < contentLines - 1){\n\t\t\t\t\t\t\tj++;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t// console.log(scrollMap[8]);\n\n\t\t\t\tthis.$store.commit('changeScrollMap', scrollMap);\n\t\t\t\t// console.log(scrollMap);\n\t\t\t\t// console.log('html changed');\n\t\t\t});\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\t// console.log('[preview] mounted', this, this.$store);\n\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -4817,14 +4889,19 @@
 	
 	var _vuex = __webpack_require__(3);
 	
-	let _render;
+	var _renderer = __webpack_require__(60);
+	
+	var _renderer2 = _interopRequireDefault(_renderer);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	exports.default = {
 		computed: _extends({
 			html() {
 				if (!this.currentNote || !this.currentNote.content) {
 					return '';
 				}
-				return _render.render(this.currentNote.content);
+				return _renderer2.default.render(this.currentNote.content);
 			}
 		}, (0, _vuex.mapGetters)(['currentNote'])),
 		watch: {
@@ -4875,44 +4952,7 @@
 		},
 		mounted() {
 			// console.log('[preview] mounted', this, this.$store);
-			var Remarkable = __webpack_require__(38);
-			var previewRenderer = new Remarkable();
-			var index = 0;
 	
-			let customerRulesMap = {
-				paragraph: 'p',
-				table: 'table'
-			};
-	
-			for (let token in customerRulesMap) {
-				console.log('[preview]', token);
-				let tag = customerRulesMap[token];
-				previewRenderer.renderer.rules[`${ token }_open`] = function (tokens, idx) {
-					var line;
-					if (tag === 'tr') {
-						console.log(tokens[idx]);
-					}
-					if (tokens[idx].lines /* && tokens[idx].level === 0*/) {
-							line = tokens[idx].lines[0];
-							return `<${ tag } class="line" data-line="${ line }">`;
-						}
-					return `<${ tag }>`;
-				};
-			}
-	
-			previewRenderer.renderer.rules.heading_open = function (tokens, idx) {
-				var line;
-				if (tokens[idx].lines && tokens[idx].level === 0) {
-					line = tokens[idx].lines[0];
-					return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor' + index++ + '">';
-				}
-				return '<h' + tokens[idx].hLevel + '>';
-			};
-	
-			previewRenderer.renderer.rules.heading_close = function (tokens, idx) {
-				return '</a></h' + tokens[idx].hLevel + '>';
-			};
-			_render = previewRenderer;
 		}
 	};
 	module.exports = exports['default'];
@@ -5027,7 +5067,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.menubar[data-v-0b8853c9]{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden[data-v-0b8853c9]{\n\tdisplay: none;\n}\n.menubar ul[data-v-0b8853c9]{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li[data-v-0b8853c9]{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active[data-v-0b8853c9]{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span[data-v-0b8853c9]{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul[data-v-0b8853c9]{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul[data-v-0b8853c9]{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li[data-v-0b8853c9]{\n\tmargin:0;\n}\n.menubar ul > li > ul > li[data-v-0b8853c9]:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span[data-v-0b8853c9]{\n\tpadding:0 20px;\n}\n", "", {"version":3,"sources":["/./component/menubar.vue?3253cdd8"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,eAAA;CACA,kBAAA;CACA,0CAAA;CACA,gBAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,eAAA;CACA,iBAAA;CACA;AACA;CACA,sBAAA;CACA,kBAAA;CACA;AACA;CACA,2BAAA;CACA,aAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,mBAAA;CACA,mBAAA;CACA,WAAA;CACA,YAAA;CACA,cAAA;CACA,0CAAA;CACA,UAAA;CACA,sBAAA;CACA;AACA;CACA,eAAA;CACA;AACA;CACA,SAAA;CACA;AACA;CACA,YAAA;CACA,2BAAA;CACA;AACA;CACA,eAAA;CACA","file":"menubar.vue","sourcesContent":["<style scoped>\n.menubar{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden{\n\tdisplay: none;\n}\n.menubar ul{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li{\n\tmargin:0;\n}\n.menubar ul > li > ul > li:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span{\n\tpadding:0 20px;\n}\n</style>\n\n<template>\n<section class=\"menubar\">\n\t<ul>\n\t\t<li v-for=\"menu in menuList\" v-bind:class=\"{active:menu.isActive}\" v-on:click=\"menuClick(menu.title)\">\n\t\t\t<span>{{menu.title}}</span>\n\t\t\t<ul v-if=\"menu.subMenu && menu.subMenu.length\">\n\t\t\t\t<li v-for=\"subMenu in menu.subMenu\" v-on:click=\"subMenuClick(subMenu.event)\"><span>{{subMenu.title}}</span></li>\n\t\t\t</ul>\n\t\t</li>\n\t</ul>\n</section>\n</template>\n\n\n<script>\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\nlet menu = new Menu(util.platform);\nexport default {\n\tmethods:{\n\t\tmenuClick(title){\n\t\t\tthis.menuList.forEach(function(menu){\n\t\t\t\tif(menu.title === title){\n\t\t\t\t\tmenu.isActive = !menu.isActive;\n\t\t\t\t}else{\n\t\t\t\t\tmenu.isActive = false;\n\t\t\t\t}\n\t\t\t});\n\t\t\t// 触发vue更新\n\t\t\t// this.menuList = this.menuList.concat([]);\n\t\t},\n\t\tsubMenuClick(event){\n\t\t\tmenu.onClick(event);\n\t\t}\n\t},\n\tdata(){\n\t\tlet data = {\n\t\t\tisShow:menu.isVue,\n\t\t\tmenuList:[{\n\t\t\t\ttitle:'TooNote',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'File',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'新建笔记',\n\t\t\t\t\tevent:'newNote',\n\t\t\t\t\thotKey:'cmd+n'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'保存',\n\t\t\t\t\tevent:'saveNote',\n\t\t\t\t\thotKey:'cmd+s'\n\t\t\t\t},{\n\t\t\t\t\ttype: 'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导入备份',\n\t\t\t\t\tevent:'importBackup'\n\t\t\t\t}]\n\t\t\t},{\n\t\t\t\ttitle:'Edit',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'View',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'切换笔记列表',\n\t\t\t\t\tevent:'switchLayoutSidebar',\n\t\t\t\t\thotKey:'cmd+1'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'切换编辑区',\n\t\t\t\t\tevent:'switchLayoutEditor',\n\t\t\t\t\thotKey:'cmd+2'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'切换预览区',\n\t\t\t\t\tevent:'switchLayoutPreview',\n\t\t\t\t\thotKey:'cmd+3'\n\t\t\t\t}]\n\t\t\t}]\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tmenu.buildMenu(this.menuList);\n\t\t/*this.$nextTick(()=>{\n\t\t\tthis.$dispatch('toggleMenubar', menu.isVue);\n\t\t});*/\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.menubar[data-v-0b8853c9]{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden[data-v-0b8853c9]{\n\tdisplay: none;\n}\n.menubar ul[data-v-0b8853c9]{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li[data-v-0b8853c9]{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active[data-v-0b8853c9]{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span[data-v-0b8853c9]{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul[data-v-0b8853c9]{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul[data-v-0b8853c9]{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li[data-v-0b8853c9]{\n\tmargin:0;\n}\n.menubar ul > li > ul > li[data-v-0b8853c9]:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span[data-v-0b8853c9]{\n\tpadding:0 20px;\n}\n", "", {"version":3,"sources":["/./component/menubar.vue?02b52470"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,eAAA;CACA,kBAAA;CACA,0CAAA;CACA,gBAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,eAAA;CACA,iBAAA;CACA;AACA;CACA,sBAAA;CACA,kBAAA;CACA;AACA;CACA,2BAAA;CACA,aAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,mBAAA;CACA,mBAAA;CACA,WAAA;CACA,YAAA;CACA,cAAA;CACA,0CAAA;CACA,UAAA;CACA,sBAAA;CACA;AACA;CACA,eAAA;CACA;AACA;CACA,SAAA;CACA;AACA;CACA,YAAA;CACA,2BAAA;CACA;AACA;CACA,eAAA;CACA","file":"menubar.vue","sourcesContent":["<style scoped>\n.menubar{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden{\n\tdisplay: none;\n}\n.menubar ul{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li{\n\tmargin:0;\n}\n.menubar ul > li > ul > li:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span{\n\tpadding:0 20px;\n}\n</style>\n\n<template>\n<section class=\"menubar\">\n\t<ul>\n\t\t<li v-for=\"menu in menuList\" v-bind:class=\"{active:menu.isActive}\" v-on:click=\"menuClick(menu.title)\">\n\t\t\t<span>{{menu.title}}</span>\n\t\t\t<ul v-if=\"menu.subMenu && menu.subMenu.length\">\n\t\t\t\t<li v-for=\"subMenu in menu.subMenu\" v-on:click=\"subMenuClick(subMenu.event)\"><span>{{subMenu.title}}</span></li>\n\t\t\t</ul>\n\t\t</li>\n\t</ul>\n</section>\n</template>\n\n\n<script>\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\nlet menu = new Menu(util.platform);\nexport default {\n\tmethods:{\n\t\tmenuClick(title){\n\t\t\tthis.menuList.forEach(function(menu){\n\t\t\t\tif(menu.title === title){\n\t\t\t\t\tmenu.isActive = !menu.isActive;\n\t\t\t\t}else{\n\t\t\t\t\tmenu.isActive = false;\n\t\t\t\t}\n\t\t\t});\n\t\t\t// 触发vue更新\n\t\t\t// this.menuList = this.menuList.concat([]);\n\t\t},\n\t\tsubMenuClick(event){\n\t\t\tmenu.onClick(event);\n\t\t}\n\t},\n\tdata(){\n\t\tlet data = {\n\t\t\tisShow:menu.isVue,\n\t\t\tmenuList:[{\n\t\t\t\ttitle:'TooNote',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'File',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'新建笔记',\n\t\t\t\t\tevent:'newNote',\n\t\t\t\t\thotKey:'cmd+n'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'保存',\n\t\t\t\t\tevent:'saveNote',\n\t\t\t\t\thotKey:'cmd+s'\n\t\t\t\t},{\n\t\t\t\t\ttype: 'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出MarkDown',\n\t\t\t\t\tevent:'exportMd',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出HTML Body',\n\t\t\t\t\tevent:'exportHtmlBody',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出完整HTML',\n\t\t\t\t\tevent:'exportHtml',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出PDF',\n\t\t\t\t\tevent:'exportPdf',\n\t\t\t\t},{\n\t\t\t\t\ttype: 'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导入备份',\n\t\t\t\t\tevent:'importBackup'\n\t\t\t\t}]\n\t\t\t},{\n\t\t\t\ttitle:'Edit',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'View',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'切换笔记列表',\n\t\t\t\t\tevent:'switchLayoutSidebar',\n\t\t\t\t\thotKey:'cmd+1'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'切换编辑区',\n\t\t\t\t\tevent:'switchLayoutEditor',\n\t\t\t\t\thotKey:'cmd+2'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'切换预览区',\n\t\t\t\t\tevent:'switchLayoutPreview',\n\t\t\t\t\thotKey:'cmd+3'\n\t\t\t\t}]\n\t\t\t}]\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tmenu.buildMenu(this.menuList);\n\t\t/*this.$nextTick(()=>{\n\t\t\tthis.$dispatch('toggleMenubar', menu.isVue);\n\t\t});*/\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -5155,6 +5195,20 @@
 						title: '保存',
 						event: 'saveNote',
 						hotKey: 'cmd+s'
+					}, {
+						type: 'separator'
+					}, {
+						title: '导出MarkDown',
+						event: 'exportMd'
+					}, {
+						title: '导出HTML Body',
+						event: 'exportHtmlBody'
+					}, {
+						title: '导出完整HTML',
+						event: 'exportHtml'
+					}, {
+						title: '导出PDF',
+						event: 'exportPdf'
 					}, {
 						type: 'separator'
 					}, {
@@ -5695,6 +5749,10 @@
 	
 	var _scroll2 = _interopRequireDefault(_scroll);
 	
+	var _renderer = __webpack_require__(60);
+	
+	var _renderer2 = _interopRequireDefault(_renderer);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -5885,6 +5943,35 @@
 					context.dispatch('importNotes', newNotes);
 				})();
 			},
+			export(context, format) {
+				return _asyncToGenerator(function* () {
+					let content = '';
+					switch (format) {
+						case 'md':
+							content = context.state.currentNote.content;
+							break;
+						case 'htmlBody':
+							content = _renderer2.default.render(context.state.currentNote.content);
+							break;
+						case 'html':
+							let body = _renderer2.default.render(context.state.currentNote.content);
+							// var postcss = require('postcss');
+							// var atImport = require('postcss-import');
+							let css = _io2.default.getFileText('/style/htmlbody.css');
+	
+							/*var outputCss = postcss()
+	      	.use(atImport())
+	      	.process(css, {
+	      		from: __dirname + '/render.css'
+	      	})
+	      	.css;*/
+	
+							content = '<!doctype html><html>\n' + '<head>\n' + '<meta charset="utf-8">\n' + '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' + '<meta name="author" content="TooNote">\n' + '<title>' + context.state.currentNote.title + '</title>\n' + '<style>\n' + css + '</style>\n' + '</head>\n' + '<body class="htmlBody">\n' + body + '</body>\n</html>';
+							break;
+					}
+					_io2.default.export(format, content);
+				})();
+			},
 			syncScroll(context, row) {
 				return _asyncToGenerator(function* () {
 					let targetPosition = context.state.scrollMap[row];
@@ -5918,8 +6005,55 @@
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	let io = {};
+	let fs = __webpack_require__(55);
+	let path = __webpack_require__(50);
 	
-	io.selectFile = filters => {
+	io.getExt = filename => {
+		return path.extname(filename);
+	};
+	
+	io.getFileText = filePath => {
+		filePath = path.join(__webpack_require__(17).remote.app.getAppPath(), filePath);
+		console.log(filePath);
+		return fs.readFileSync(filePath, 'utf8');
+	};
+	
+	io.saveFile = (data, ext) => {
+		let userDataPath = __webpack_require__(17).remote.app.getPath('userData');
+		let savePath = path.join(userDataPath, 'images');
+		let saveFilePath = path.join(savePath, (Date.now() + '' + Math.random()).replace('.', ''));
+		if (ext) {
+			saveFilePath += ext;
+		}
+	
+		if (!fs.existsSync(savePath)) {
+			fs.mkdirSync(savePath);
+		}
+	
+		try {
+			fs.writeFileSync(saveFilePath, data, 'binary');
+		} catch (e) {
+			console.log('saveFile Error', e);
+			return false;
+		}
+		return saveFilePath;
+	};
+	
+	io.saveImageFromClipboard = () => {
+		let img = __webpack_require__(17).clipboard.readImage();
+		let imgData = img.toPng();
+	
+		return io.saveFile(imgData, '.png');
+	};
+	
+	io.saveImage = (imagePath, ext) => {
+	
+		let data = fs.readFileSync(imagePath);
+		return io.saveFile(data, ext);
+	};
+	
+	// 选择文件
+	io.selectFileContent = filters => {
 		var remote = __webpack_require__(17).remote;
 		var dialog = remote.dialog;
 		var filePath = dialog.showOpenDialog({
@@ -5934,9 +6068,22 @@
 		return fs.readFileSync(filePath, 'binary');
 	};
 	
+	// 选择写入路径
+	io.selectPathForWrite = filters => {
+		var remote = __webpack_require__(17).remote;
+		var dialog = remote.dialog;
+		var filePath = dialog.showSaveDialog({
+			filters: filters,
+			properties: ['createDirectory']
+		});
+		if (!filePath) return;
+	
+		return filePath;
+	};
+	
 	// 从备份文件恢复
 	io.getNotesFromBackUp = _asyncToGenerator(function* () {
-		let fileContent = io.selectFile([{
+		let fileContent = io.selectFileContent([{
 			name: 'TooNote备份文件',
 			extensions: ['tnt']
 		}]);
@@ -5955,6 +6102,123 @@
 		}
 		return newNotes;
 	});
+	
+	// 导出为各种格式文件
+	io.export = function (format, content) {
+		var filters = [];
+		if (format === 'md') {
+			filters.push({
+				name: 'Markdown文件',
+				extensions: ['md']
+			});
+		} else if (format === 'htmlBody' || format === 'html') {
+			filters.push({
+				name: 'HTML文件',
+				extensions: ['html']
+			});
+		} else if (format === 'pdf') {
+			filters.push({
+				name: 'PDF文件',
+				extensions: ['pdf']
+			});
+		}
+		let filePath = io.selectPathForWrite(filters);
+	
+		fs.writeFileSync(filePath, content, 'utf8');
+		// console.log(filePath);
+		/*var content = currentNote.content;
+	 if(format !== 'markdown'){
+	 	isExporting = true;
+	 	view.renderPreview(currentNote);
+	 	content = $preview.innerHTML;
+	 	isExporting = false;
+	 }
+	 if(format === 'htmlfile' || format === 'pdf'){
+	 	var postcss = require('postcss');
+	 	var atImport = require('postcss-import');
+	 		var css = fs.readFileSync(__dirname + '/render.css', 'utf8');
+	 		var outputCss = postcss()
+	 		.use(atImport())
+	 		.process(css, {
+	 			from: __dirname + '/render.css'
+	 		})
+	 		.css;
+	 		// console.log(outputCss);
+	 	content = '<!doctype html><html>\n' +
+	 			'<head>\n' +
+	 			'<meta charset="utf-8">\n' +
+	 			'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+	 			'<title>' + noteIndex[currentNote.id] + '</title>\n' +
+	 			'<style>\n' + outputCss + '</style>\n' +
+	 			'</head>\n' +
+	 			'<body class="preview">\n' + content + '</body>\n</html>';
+	 }
+	 	if(format === 'pdf'){
+	 	var pdfPath = filePath;
+	 	var path = require('path');
+	 	var cwd = path.dirname(filePath);
+	 	// 如果是pdf，先生成一个临时HTML文件
+	 	filePath = path.join(cwd,'tmp.htm');
+	 }
+	 fs.writeFile(filePath,JSON.parse(JSON.stringify(content)),function(err){
+	 	if(err){
+	 		alert('保存失败：\n' + err.message);
+	 	}else if(format === 'pdf'){
+	 		// 生成pdf
+	 		var spawn = require('child_process').spawn;
+	 		var pdfprocess = spawn(__dirname + '/lib/phantomjs',[
+	 			__dirname + '/html2pdf.js',
+	 			encodeURI(filePath),
+	 			pdfPath
+	 		],{
+	 			cwd:cwd
+	 		});
+	 		pdfprocess.stdout.on('data',function(data){
+	 			console.log('stdout'+data);
+	 		});
+	 		pdfprocess.stderr.on('data',function(data){
+	 			console.log('stderr'+data);
+	 		});
+	 		pdfprocess.on('close',function(){
+	 			console.log('closed');
+	 			// 删除HTML文件
+	 			fs.unlink(filePath,function(){
+	 				console.log('htm deleted');
+	 			});
+	 		});
+	 	}
+	 });*/
+	};
+	
+	/*// 创建备份文件
+	function createBackUp(){
+		var filters = [{
+			name: 'TooNote备份文件',
+			extensions: ['tnt']
+		}];
+		var remote = require('remote');
+		var dialog = remote.require('dialog');
+		var filePath = dialog.showSaveDialog({
+			filters: filters,
+			properties: ['createDirectory']
+		});
+		if(!filePath) return;
+		var zip = new require('jszip')();
+		zip.file('index',JSON.stringify(noteIndex));
+		for(var id in noteIndex){
+			zip.file(id,JSON.stringify(localStorage.getItem('note_' + id)),{binary:false});
+		}
+		var data = zip.generate({base64:false,compression:'DEFLATE'});
+		var fs = require('fs');
+		fs.writeFile(filePath,data,'binary',function(err,result){
+			if(!err){
+				console.log('tnt create successed.');
+			}else{
+				console.log('tnt create fail.' + err.message);
+			}
+		});
+	}*/
+	
 	exports.default = io;
 	module.exports = exports['default'];
 
@@ -6039,6 +6303,64 @@
 	}
 	
 	module.exports = cubicInOut
+
+/***/ },
+/* 58 */,
+/* 59 */,
+/* 60 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _remarkable = __webpack_require__(38);
+	
+	var _remarkable2 = _interopRequireDefault(_remarkable);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	let renderer = new _remarkable2.default();
+	let index = 0;
+	
+	let customerRulesMap = {
+		paragraph: 'p',
+		table: 'table'
+	};
+	
+	for (let token in customerRulesMap) {
+		console.log('[preview]', token);
+		let tag = customerRulesMap[token];
+		renderer.renderer.rules[`${ token }_open`] = function (tokens, idx) {
+			var line;
+			if (tag === 'tr') {
+				console.log(tokens[idx]);
+			}
+			if (tokens[idx].lines /* && tokens[idx].level === 0*/) {
+					line = tokens[idx].lines[0];
+					return `<${ tag } class="line" data-line="${ line }">`;
+				}
+			return `<${ tag }>`;
+		};
+	}
+	
+	renderer.renderer.rules.heading_open = function (tokens, idx) {
+		var line;
+		if (tokens[idx].lines && tokens[idx].level === 0) {
+			line = tokens[idx].lines[0];
+			return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor' + index++ + '">';
+		}
+		return '<h' + tokens[idx].hLevel + '>';
+	};
+	
+	renderer.renderer.rules.heading_close = function (tokens, idx) {
+		return '</a></h' + tokens[idx].hLevel + '>';
+	};
+	
+	exports.default = renderer;
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

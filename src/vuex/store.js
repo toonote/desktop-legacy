@@ -186,6 +186,29 @@ const store = new Vuex.Store({
 				case 'htmlBody':
 					content = renderer.render(context.state.currentNote.content);
 					break;
+				case 'html':
+					let body = renderer.render(context.state.currentNote.content);
+					// var postcss = require('postcss');
+					// var atImport = require('postcss-import');
+					let css = io.getFileText('/style/htmlbody.css');
+
+					/*var outputCss = postcss()
+						.use(atImport())
+						.process(css, {
+							from: __dirname + '/render.css'
+						})
+						.css;*/
+
+					content = '<!doctype html><html>\n' +
+							'<head>\n' +
+							'<meta charset="utf-8">\n' +
+							'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+							'<meta name="author" content="TooNote">\n' +
+							'<title>' + context.state.currentNote.title + '</title>\n' +
+							'<style>\n' + css + '</style>\n' +
+							'</head>\n' +
+							'<body class="htmlBody">\n' + body + '</body>\n</html>';
+							break;
 			}
 			io.export(format, content);
 		},
