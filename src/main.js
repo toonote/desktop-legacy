@@ -53,6 +53,9 @@ let app = new Vue({
 		importBackup(){
 			store.dispatch('importBackup');
 		},
+		export(format){
+			store.dispatch('export', format);
+		},
 		switchLayout(component){
 			store.commit('switchLayout', component);
 		}
@@ -117,6 +120,18 @@ let app = new Vue({
 				break;
 			case 'importBackup':
 				app.importBackup();
+				break;
+			case 'exportMd':
+				app.export('md');
+				break;
+			case 'exportHtmlBody':
+				app.export('htmlBody');
+				break;
+			case 'exportHtml':
+				app.export('html');
+				break;
+			case 'exportPdf':
+				app.export('pdf');
 				break;
 			case 'switchLayoutSidebar':
 				app.switchLayout('sidebar');

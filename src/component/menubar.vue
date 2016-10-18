@@ -106,6 +106,20 @@ export default {
 				},{
 					type: 'separator'
 				},{
+					title:'导出MarkDown',
+					event:'exportMd',
+				},{
+					title:'导出HTML Body',
+					event:'exportHtmlBody',
+				},{
+					title:'导出完整HTML',
+					event:'exportHtml',
+				},{
+					title:'导出PDF',
+					event:'exportPdf',
+				},{
+					type: 'separator'
+				},{
 					title:'导入备份',
 					event:'importBackup'
 				}]

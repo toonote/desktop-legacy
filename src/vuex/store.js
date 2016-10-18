@@ -5,6 +5,7 @@ import meta from '../modules/meta';
 import note from '../modules/note';
 import io from '../modules/io';
 import scroll from '../modules/scroll';
+import renderer from '../modules/renderer';
 
 // Vue.use(Vuex);
 
@@ -176,12 +177,24 @@ const store = new Vuex.Store({
 
 			context.dispatch('importNotes', newNotes);
 		},
+		async export(context, format) {
+			let content = '';
+			switch(format){
+				case 'md':
+					content = context.state.currentNote.content;
+					break;
+				case 'htmlBody':
+					content = renderer.render(context.state.currentNote.content);
+					break;
+			}
+			io.export(format, content);
+		},
 		async syncScroll(context, row) {
 			let targetPosition = context.state.scrollMap[row];
 			// console.log(row, targetPosition);
 			if(typeof targetPosition === 'undefined') return;
 			scroll.doScroll(document.querySelector('.preview'), targetPosition, 500);
-		}
+		},
 	}
 });
 

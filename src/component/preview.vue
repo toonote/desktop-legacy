@@ -19,15 +19,15 @@
 
 
 <script>
-import {mapGetters} from 'vuex'
-let _render;
+import {mapGetters} from 'vuex';
+import renderer from '../modules/renderer';
 export default {
 	computed:{
 		html(){
 			if(!this.currentNote || !this.currentNote.content){
 				return ''
 			}
-			return _render.render(this.currentNote.content)
+			return renderer.render(this.currentNote.content)
 		},
 		/*currentNote(){
 			return this.$store.getters.currentNote
@@ -82,46 +82,7 @@ export default {
 	},
 	mounted(){
 		// console.log('[preview] mounted', this, this.$store);
-		var Remarkable = require('remarkable');
-		var previewRenderer = new Remarkable();
-		var index = 0;
 
-		let customerRulesMap = {
-			paragraph: 'p',
-			table: 'table',
-			// list_item: 'li',
-			// tr: 'tr',
-		};
-
-		for(let token in customerRulesMap){
-			console.log('[preview]',token);
-			let tag = customerRulesMap[token];
-			previewRenderer.renderer.rules[`${token}_open`] = function (tokens, idx) {
-				var line;
-				if(tag === 'tr'){
-					console.log(tokens[idx]);
-				}
-				if (tokens[idx].lines/* && tokens[idx].level === 0*/) {
-					line = tokens[idx].lines[0];
-					return `<${tag} class="line" data-line="${line}">`;
-				}
-				return `<${tag}>`;
-			};
-		}
-
-		previewRenderer.renderer.rules.heading_open = function (tokens, idx) {
-			var line;
-			if (tokens[idx].lines && tokens[idx].level === 0) {
-				line = tokens[idx].lines[0];
-				return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor'+(index++)+'">';
-			}
-			return '<h' + tokens[idx].hLevel + '>';
-		};
-
-		previewRenderer.renderer.rules.heading_close = function (tokens, idx) {
-			return '</a></h'+ tokens[idx].hLevel + '>';
-		};
-		_render = previewRenderer;
 	}
 };
 </script>
