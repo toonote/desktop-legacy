@@ -40,7 +40,7 @@ module.exports = {
 		}]
 	},
 	plugins: [
-        new ExtractTextPlugin('[name].css')
+        new ExtractTextPlugin('style/bundle.css')
     ],
 	externals: externals,
     devtool: '#source-map'

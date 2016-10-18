@@ -71,23 +71,23 @@
 	
 	var _editor2 = _interopRequireDefault(_editor);
 	
-	var _preview = __webpack_require__(33);
+	var _preview = __webpack_require__(37);
 	
 	var _preview2 = _interopRequireDefault(_preview);
 	
-	var _menubar = __webpack_require__(40);
+	var _menubar = __webpack_require__(49);
 	
 	var _menubar2 = _interopRequireDefault(_menubar);
 	
-	var _menu = __webpack_require__(45);
+	var _menu = __webpack_require__(54);
 	
 	var _menu2 = _interopRequireDefault(_menu);
 	
-	var _meta = __webpack_require__(51);
+	var _meta = __webpack_require__(59);
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
-	var _note = __webpack_require__(46);
+	var _note = __webpack_require__(55);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
@@ -96,7 +96,7 @@
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	_vue2.default.use(_vuex2.default);
-	let store = __webpack_require__(52);
+	let store = __webpack_require__(60);
 	
 	// Vue.config.debug = true;
 	
@@ -1151,7 +1151,7 @@
 	__vue_exports__ = __webpack_require__(23)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(32)
+	var __vue_template__ = __webpack_require__(36)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -1277,7 +1277,7 @@
 	
 	var _vuex = __webpack_require__(3);
 	
-	var _io = __webpack_require__(53);
+	var _io = __webpack_require__(32);
 	
 	var _io2 = _interopRequireDefault(_io);
 	
@@ -4726,6 +4726,260 @@
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _jszip = __webpack_require__(33);
+	
+	var _jszip2 = _interopRequireDefault(_jszip);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+	
+	let io = {};
+	let fs = __webpack_require__(34);
+	let path = __webpack_require__(35);
+	
+	io.getExt = filename => {
+		return path.extname(filename);
+	};
+	
+	io.getFileText = filePath => {
+		filePath = path.join(__webpack_require__(17).remote.app.getAppPath(), filePath);
+		console.log(filePath);
+		return fs.readFileSync(filePath, 'utf8');
+	};
+	
+	io.saveFile = (data, ext) => {
+		let userDataPath = __webpack_require__(17).remote.app.getPath('userData');
+		let savePath = path.join(userDataPath, 'images');
+		let saveFilePath = path.join(savePath, (Date.now() + '' + Math.random()).replace('.', ''));
+		if (ext) {
+			saveFilePath += ext;
+		}
+	
+		if (!fs.existsSync(savePath)) {
+			fs.mkdirSync(savePath);
+		}
+	
+		try {
+			fs.writeFileSync(saveFilePath, data, 'binary');
+		} catch (e) {
+			console.log('saveFile Error', e);
+			return false;
+		}
+		return saveFilePath;
+	};
+	
+	io.saveImageFromClipboard = () => {
+		let img = __webpack_require__(17).clipboard.readImage();
+		let imgData = img.toPng();
+	
+		return io.saveFile(imgData, '.png');
+	};
+	
+	io.saveImage = (imagePath, ext) => {
+	
+		let data = fs.readFileSync(imagePath);
+		return io.saveFile(data, ext);
+	};
+	
+	// 选择文件
+	io.selectFileContent = filters => {
+		var remote = __webpack_require__(17).remote;
+		var dialog = remote.dialog;
+		var filePath = dialog.showOpenDialog({
+			filters,
+			properties: ['openFile']
+		});
+	
+		if (!filePath || !filePath.length) return;
+		filePath = filePath[0];
+	
+		var fs = __webpack_require__(34);
+		return fs.readFileSync(filePath, 'binary');
+	};
+	
+	// 选择写入路径
+	io.selectPathForWrite = filters => {
+		var remote = __webpack_require__(17).remote;
+		var dialog = remote.dialog;
+		var filePath = dialog.showSaveDialog({
+			filters: filters,
+			properties: ['createDirectory']
+		});
+		if (!filePath) return;
+	
+		return filePath;
+	};
+	
+	// 从备份文件恢复
+	io.getNotesFromBackUp = _asyncToGenerator(function* () {
+		let fileContent = io.selectFileContent([{
+			name: 'TooNote备份文件',
+			extensions: ['tnt']
+		}]);
+		let zip = yield _jszip2.default.loadAsync(fileContent);
+		let indexFile = yield zip.file('index').async('string');
+		let zipNoteIndex = JSON.parse(indexFile || '{}');
+	
+		let newNotes = [];
+		for (let id in zipNoteIndex) {
+			let content = yield zip.file(id).async('string');
+			newNotes.push({
+				id: id,
+				title: zipNoteIndex[id],
+				content: JSON.parse(content)
+			});
+		}
+		return newNotes;
+	});
+	
+	// 导出为各种格式文件
+	io.export = function (format, content) {
+		var filters = [];
+		if (format === 'md') {
+			filters.push({
+				name: 'Markdown文件',
+				extensions: ['md']
+			});
+		} else if (format === 'htmlBody' || format === 'html') {
+			filters.push({
+				name: 'HTML文件',
+				extensions: ['html']
+			});
+		} else if (format === 'pdf') {
+			filters.push({
+				name: 'PDF文件',
+				extensions: ['pdf']
+			});
+		}
+		let filePath = io.selectPathForWrite(filters);
+	
+		fs.writeFileSync(filePath, content, 'utf8');
+		// console.log(filePath);
+		/*var content = currentNote.content;
+	 if(format !== 'markdown'){
+	 	isExporting = true;
+	 	view.renderPreview(currentNote);
+	 	content = $preview.innerHTML;
+	 	isExporting = false;
+	 }
+	 if(format === 'htmlfile' || format === 'pdf'){
+	 	var postcss = require('postcss');
+	 	var atImport = require('postcss-import');
+	 		var css = fs.readFileSync(__dirname + '/render.css', 'utf8');
+	 		var outputCss = postcss()
+	 		.use(atImport())
+	 		.process(css, {
+	 			from: __dirname + '/render.css'
+	 		})
+	 		.css;
+	 		// console.log(outputCss);
+	 	content = '<!doctype html><html>\n' +
+	 			'<head>\n' +
+	 			'<meta charset="utf-8">\n' +
+	 			'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+	 			'<title>' + noteIndex[currentNote.id] + '</title>\n' +
+	 			'<style>\n' + outputCss + '</style>\n' +
+	 			'</head>\n' +
+	 			'<body class="preview">\n' + content + '</body>\n</html>';
+	 }
+	 	if(format === 'pdf'){
+	 	var pdfPath = filePath;
+	 	var path = require('path');
+	 	var cwd = path.dirname(filePath);
+	 	// 如果是pdf，先生成一个临时HTML文件
+	 	filePath = path.join(cwd,'tmp.htm');
+	 }
+	 fs.writeFile(filePath,JSON.parse(JSON.stringify(content)),function(err){
+	 	if(err){
+	 		alert('保存失败：\n' + err.message);
+	 	}else if(format === 'pdf'){
+	 		// 生成pdf
+	 		var spawn = require('child_process').spawn;
+	 		var pdfprocess = spawn(__dirname + '/lib/phantomjs',[
+	 			__dirname + '/html2pdf.js',
+	 			encodeURI(filePath),
+	 			pdfPath
+	 		],{
+	 			cwd:cwd
+	 		});
+	 		pdfprocess.stdout.on('data',function(data){
+	 			console.log('stdout'+data);
+	 		});
+	 		pdfprocess.stderr.on('data',function(data){
+	 			console.log('stderr'+data);
+	 		});
+	 		pdfprocess.on('close',function(){
+	 			console.log('closed');
+	 			// 删除HTML文件
+	 			fs.unlink(filePath,function(){
+	 				console.log('htm deleted');
+	 			});
+	 		});
+	 	}
+	 });*/
+	};
+	
+	/*// 创建备份文件
+	function createBackUp(){
+		var filters = [{
+			name: 'TooNote备份文件',
+			extensions: ['tnt']
+		}];
+		var remote = require('remote');
+		var dialog = remote.require('dialog');
+		var filePath = dialog.showSaveDialog({
+			filters: filters,
+			properties: ['createDirectory']
+		});
+		if(!filePath) return;
+		var zip = new require('jszip')();
+		zip.file('index',JSON.stringify(noteIndex));
+		for(var id in noteIndex){
+			zip.file(id,JSON.stringify(localStorage.getItem('note_' + id)),{binary:false});
+		}
+		var data = zip.generate({base64:false,compression:'DEFLATE'});
+		var fs = require('fs');
+		fs.writeFile(filePath,data,'binary',function(err,result){
+			if(!err){
+				console.log('tnt create successed.');
+			}else{
+				console.log('tnt create fail.' + err.message);
+			}
+		});
+	}*/
+	
+	exports.default = io;
+	module.exports = exports['default'];
+
+/***/ },
+/* 33 */
+/***/ function(module, exports) {
+
+	module.exports = require("jszip");
+
+/***/ },
+/* 34 */
+/***/ function(module, exports) {
+
+	module.exports = require("fs");
+
+/***/ },
+/* 35 */
+/***/ function(module, exports) {
+
+	module.exports = require("path");
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
 	module.exports={render:function (){with(this) {
 	  return _h('section', {
 	    staticClass: "editor"
@@ -4755,19 +5009,19 @@
 	}
 
 /***/ },
-/* 33 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	
 	/* styles */
-	__webpack_require__(34)
+	__webpack_require__(38)
 	
 	/* script */
-	__vue_exports__ = __webpack_require__(37)
+	__vue_exports__ = __webpack_require__(41)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(39)
+	var __vue_template__ = __webpack_require__(48)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -4803,13 +5057,13 @@
 
 
 /***/ },
-/* 34 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(35);
+	var content = __webpack_require__(39);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -4829,21 +5083,21 @@
 	}
 
 /***/ },
-/* 35 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
 	// imports
-	exports.i(__webpack_require__(36), "");
+	exports.i(__webpack_require__(40), "");
 	
 	// module
-	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?5135495a"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\"></div>\n</section>\n</template>\n\n\n<script>\nimport {mapGetters} from 'vuex';\nimport renderer from '../modules/renderer';\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn renderer.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\thtml(){\n\t\t\tthis.$nextTick(() => {\n\t\t\t\tlet scrollMap = [];\n\n\t\t\t\tlet $preview = this.$el;\n\t\t\t\tlet $previewAnchors = $preview.querySelectorAll('.line');\n\t\t\t\tArray.prototype.forEach.call($previewAnchors, function($previewAnchor){\n\t\t\t\t\tlet line = $previewAnchor.dataset.line;\n\t\t\t\t\tlet top = $previewAnchor.offsetTop;\n\t\t\t\t\t/*if(line == 8){\n\t\t\t\t\t\tconsole.log(line, top, $previewAnchor);\n\t\t\t\t\t}*/\n\t\t\t\t\tif(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){\n\t\t\t\t\t\tscrollMap[line] = top;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\tscrollMap[0] = 0;\n\n\t\t\t\tlet contentLines = this.currentNote.content.split('\\n').length;\n\t\t\t\tif(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;\n\n\t\t\t\tfor(var i = 1; i<contentLines -1; i++){\n\t\t\t\t\tif(!scrollMap[i]){\n\t\t\t\t\t\tvar j = i+1;\n\t\t\t\t\t\twhile(!scrollMap[j] && j < contentLines - 1){\n\t\t\t\t\t\t\tj++;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t// console.log(scrollMap[8]);\n\n\t\t\t\tthis.$store.commit('changeScrollMap', scrollMap);\n\t\t\t\t// console.log(scrollMap);\n\t\t\t\t// console.log('html changed');\n\t\t\t});\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\t// console.log('[preview] mounted', this, this.$store);\n\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?0f5f88b0"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\"></div>\n</section>\n</template>\n\n\n<script>\n// import 'highlight.js/styles/github-gist.css';\nimport 'highlight.js/styles/tomorrow.css';\nimport {mapGetters} from 'vuex';\nimport renderer from '../modules/renderer';\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn renderer.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\twatch:{\n\t\thtml(){\n\t\t\tthis.$nextTick(() => {\n\t\t\t\tlet scrollMap = [];\n\n\t\t\t\tlet $preview = this.$el;\n\t\t\t\tlet $previewAnchors = $preview.querySelectorAll('.line');\n\t\t\t\tArray.prototype.forEach.call($previewAnchors, function($previewAnchor){\n\t\t\t\t\tlet line = $previewAnchor.dataset.line;\n\t\t\t\t\tlet top = $previewAnchor.offsetTop;\n\t\t\t\t\t/*if(line == 8){\n\t\t\t\t\t\tconsole.log(line, top, $previewAnchor);\n\t\t\t\t\t}*/\n\t\t\t\t\tif(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){\n\t\t\t\t\t\tscrollMap[line] = top;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\tscrollMap[0] = 0;\n\n\t\t\t\tlet contentLines = this.currentNote.content.split('\\n').length;\n\t\t\t\tif(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;\n\n\t\t\t\tfor(var i = 1; i<contentLines -1; i++){\n\t\t\t\t\tif(!scrollMap[i]){\n\t\t\t\t\t\tvar j = i+1;\n\t\t\t\t\t\twhile(!scrollMap[j] && j < contentLines - 1){\n\t\t\t\t\t\t\tj++;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t// console.log(scrollMap[8]);\n\n\t\t\t\tthis.$store.commit('changeScrollMap', scrollMap);\n\t\t\t\t// console.log(scrollMap);\n\t\t\t\t// console.log('html changed');\n\t\t\t});\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\t// console.log('[preview] mounted', this, this.$store);\n\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
 
 /***/ },
-/* 36 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
@@ -4851,13 +5105,13 @@
 	
 	
 	// module
-	exports.push([module.id, ".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;;AAED,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, ".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;;AAED,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB,gBAAgB;CAChB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
 
 /***/ },
-/* 37 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4887,9 +5141,14 @@
 	//
 	//
 	
+	// import 'highlight.js/styles/github-gist.css';
+	
+	
+	__webpack_require__(63);
+	
 	var _vuex = __webpack_require__(3);
 	
-	var _renderer = __webpack_require__(60);
+	var _renderer = __webpack_require__(45);
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
@@ -4958,13 +5217,97 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 38 */
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _remarkable = __webpack_require__(46);
+	
+	var _remarkable2 = _interopRequireDefault(_remarkable);
+	
+	var _highlight = __webpack_require__(47);
+	
+	var _highlight2 = _interopRequireDefault(_highlight);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	let renderer = new _remarkable2.default({
+		highlight: function (str, lang) {
+			if (lang && _highlight2.default.getLanguage(lang)) {
+				try {
+					return _highlight2.default.highlight(lang, str).value;
+				} catch (err) {}
+			}
+	
+			try {
+				return _highlight2.default.highlightAuto(str).value;
+			} catch (err) {}
+	
+			return ''; // use external default escaping
+		}
+	});
+	
+	let index = 0;
+	
+	let customerRulesMap = {
+		paragraph: 'p',
+		table: 'table'
+	};
+	
+	for (let token in customerRulesMap) {
+		console.log('[preview]', token);
+		let tag = customerRulesMap[token];
+		renderer.renderer.rules[`${ token }_open`] = function (tokens, idx) {
+			var line;
+			if (tag === 'tr') {
+				console.log(tokens[idx]);
+			}
+			if (tokens[idx].lines /* && tokens[idx].level === 0*/) {
+					line = tokens[idx].lines[0];
+					return `<${ tag } class="line" data-line="${ line }">`;
+				}
+			return `<${ tag }>`;
+		};
+	}
+	
+	renderer.renderer.rules.heading_open = function (tokens, idx) {
+		var line;
+		if (tokens[idx].lines && tokens[idx].level === 0) {
+			line = tokens[idx].lines[0];
+			return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor' + index++ + '">';
+		}
+		return '<h' + tokens[idx].hLevel + '>';
+	};
+	
+	renderer.renderer.rules.heading_close = function (tokens, idx) {
+		return '</a></h' + tokens[idx].hLevel + '>';
+	};
+	
+	exports.default = renderer;
+	module.exports = exports['default'];
+
+/***/ },
+/* 46 */
 /***/ function(module, exports) {
 
 	module.exports = require("remarkable");
 
 /***/ },
-/* 39 */
+/* 47 */
+/***/ function(module, exports) {
+
+	module.exports = require("highlight.js");
+
+/***/ },
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -4985,19 +5328,19 @@
 	}
 
 /***/ },
-/* 40 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	
 	/* styles */
-	__webpack_require__(41)
+	__webpack_require__(50)
 	
 	/* script */
-	__vue_exports__ = __webpack_require__(43)
+	__vue_exports__ = __webpack_require__(52)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(44)
+	var __vue_template__ = __webpack_require__(53)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -5033,13 +5376,13 @@
 
 
 /***/ },
-/* 41 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(42);
+	var content = __webpack_require__(51);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -5059,7 +5402,7 @@
 	}
 
 /***/ },
-/* 42 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
@@ -5073,7 +5416,7 @@
 
 
 /***/ },
-/* 43 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5249,7 +5592,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 44 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -5284,7 +5627,7 @@
 	}
 
 /***/ },
-/* 45 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5297,11 +5640,11 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _note = __webpack_require__(46);
+	var _note = __webpack_require__(55);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
-	var _meta = __webpack_require__(51);
+	var _meta = __webpack_require__(59);
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
@@ -5324,7 +5667,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 46 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5337,7 +5680,7 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _index = __webpack_require__(47);
+	var _index = __webpack_require__(56);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
@@ -5430,7 +5773,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 47 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5439,7 +5782,7 @@
 		value: true
 	});
 	
-	var _web = __webpack_require__(48);
+	var _web = __webpack_require__(57);
 	
 	var _web2 = _interopRequireDefault(_web);
 	
@@ -5455,7 +5798,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 48 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5464,7 +5807,7 @@
 		value: true
 	});
 	
-	var _base = __webpack_require__(49);
+	var _base = __webpack_require__(58);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
@@ -5530,7 +5873,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 49 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5539,7 +5882,7 @@
 		value: true
 	});
 	
-	var _path = __webpack_require__(50);
+	var _path = __webpack_require__(35);
 	
 	var _path2 = _interopRequireDefault(_path);
 	
@@ -5558,13 +5901,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 50 */
-/***/ function(module, exports) {
-
-	module.exports = require("path");
-
-/***/ },
-/* 51 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5577,7 +5914,7 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _index = __webpack_require__(47);
+	var _index = __webpack_require__(56);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
@@ -5716,7 +6053,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 52 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5733,23 +6070,23 @@
 	
 	var _vuex2 = _interopRequireDefault(_vuex);
 	
-	var _meta = __webpack_require__(51);
+	var _meta = __webpack_require__(59);
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
-	var _note = __webpack_require__(46);
+	var _note = __webpack_require__(55);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
-	var _io = __webpack_require__(53);
+	var _io = __webpack_require__(32);
 	
 	var _io2 = _interopRequireDefault(_io);
 	
-	var _scroll = __webpack_require__(56);
+	var _scroll = __webpack_require__(61);
 	
 	var _scroll2 = _interopRequireDefault(_scroll);
 	
-	var _renderer = __webpack_require__(60);
+	var _renderer = __webpack_require__(45);
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
@@ -5958,6 +6295,8 @@
 							// var postcss = require('postcss');
 							// var atImport = require('postcss-import');
 							let css = _io2.default.getFileText('/style/htmlbody.css');
+							// css += io.getFileText('/node_modules/highlight.js/styles/github-gist.css');
+							css += _io2.default.getFileText('/node_modules/highlight.js/styles/tomorrow.css');
 	
 							/*var outputCss = postcss()
 	      	.use(atImport())
@@ -5987,7 +6326,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 53 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5996,255 +6335,7 @@
 		value: true
 	});
 	
-	var _jszip = __webpack_require__(54);
-	
-	var _jszip2 = _interopRequireDefault(_jszip);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-	
-	let io = {};
-	let fs = __webpack_require__(55);
-	let path = __webpack_require__(50);
-	
-	io.getExt = filename => {
-		return path.extname(filename);
-	};
-	
-	io.getFileText = filePath => {
-		filePath = path.join(__webpack_require__(17).remote.app.getAppPath(), filePath);
-		console.log(filePath);
-		return fs.readFileSync(filePath, 'utf8');
-	};
-	
-	io.saveFile = (data, ext) => {
-		let userDataPath = __webpack_require__(17).remote.app.getPath('userData');
-		let savePath = path.join(userDataPath, 'images');
-		let saveFilePath = path.join(savePath, (Date.now() + '' + Math.random()).replace('.', ''));
-		if (ext) {
-			saveFilePath += ext;
-		}
-	
-		if (!fs.existsSync(savePath)) {
-			fs.mkdirSync(savePath);
-		}
-	
-		try {
-			fs.writeFileSync(saveFilePath, data, 'binary');
-		} catch (e) {
-			console.log('saveFile Error', e);
-			return false;
-		}
-		return saveFilePath;
-	};
-	
-	io.saveImageFromClipboard = () => {
-		let img = __webpack_require__(17).clipboard.readImage();
-		let imgData = img.toPng();
-	
-		return io.saveFile(imgData, '.png');
-	};
-	
-	io.saveImage = (imagePath, ext) => {
-	
-		let data = fs.readFileSync(imagePath);
-		return io.saveFile(data, ext);
-	};
-	
-	// 选择文件
-	io.selectFileContent = filters => {
-		var remote = __webpack_require__(17).remote;
-		var dialog = remote.dialog;
-		var filePath = dialog.showOpenDialog({
-			filters,
-			properties: ['openFile']
-		});
-	
-		if (!filePath || !filePath.length) return;
-		filePath = filePath[0];
-	
-		var fs = __webpack_require__(55);
-		return fs.readFileSync(filePath, 'binary');
-	};
-	
-	// 选择写入路径
-	io.selectPathForWrite = filters => {
-		var remote = __webpack_require__(17).remote;
-		var dialog = remote.dialog;
-		var filePath = dialog.showSaveDialog({
-			filters: filters,
-			properties: ['createDirectory']
-		});
-		if (!filePath) return;
-	
-		return filePath;
-	};
-	
-	// 从备份文件恢复
-	io.getNotesFromBackUp = _asyncToGenerator(function* () {
-		let fileContent = io.selectFileContent([{
-			name: 'TooNote备份文件',
-			extensions: ['tnt']
-		}]);
-		let zip = yield _jszip2.default.loadAsync(fileContent);
-		let indexFile = yield zip.file('index').async('string');
-		let zipNoteIndex = JSON.parse(indexFile || '{}');
-	
-		let newNotes = [];
-		for (let id in zipNoteIndex) {
-			let content = yield zip.file(id).async('string');
-			newNotes.push({
-				id: id,
-				title: zipNoteIndex[id],
-				content: JSON.parse(content)
-			});
-		}
-		return newNotes;
-	});
-	
-	// 导出为各种格式文件
-	io.export = function (format, content) {
-		var filters = [];
-		if (format === 'md') {
-			filters.push({
-				name: 'Markdown文件',
-				extensions: ['md']
-			});
-		} else if (format === 'htmlBody' || format === 'html') {
-			filters.push({
-				name: 'HTML文件',
-				extensions: ['html']
-			});
-		} else if (format === 'pdf') {
-			filters.push({
-				name: 'PDF文件',
-				extensions: ['pdf']
-			});
-		}
-		let filePath = io.selectPathForWrite(filters);
-	
-		fs.writeFileSync(filePath, content, 'utf8');
-		// console.log(filePath);
-		/*var content = currentNote.content;
-	 if(format !== 'markdown'){
-	 	isExporting = true;
-	 	view.renderPreview(currentNote);
-	 	content = $preview.innerHTML;
-	 	isExporting = false;
-	 }
-	 if(format === 'htmlfile' || format === 'pdf'){
-	 	var postcss = require('postcss');
-	 	var atImport = require('postcss-import');
-	 		var css = fs.readFileSync(__dirname + '/render.css', 'utf8');
-	 		var outputCss = postcss()
-	 		.use(atImport())
-	 		.process(css, {
-	 			from: __dirname + '/render.css'
-	 		})
-	 		.css;
-	 		// console.log(outputCss);
-	 	content = '<!doctype html><html>\n' +
-	 			'<head>\n' +
-	 			'<meta charset="utf-8">\n' +
-	 			'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
-	 			'<title>' + noteIndex[currentNote.id] + '</title>\n' +
-	 			'<style>\n' + outputCss + '</style>\n' +
-	 			'</head>\n' +
-	 			'<body class="preview">\n' + content + '</body>\n</html>';
-	 }
-	 	if(format === 'pdf'){
-	 	var pdfPath = filePath;
-	 	var path = require('path');
-	 	var cwd = path.dirname(filePath);
-	 	// 如果是pdf，先生成一个临时HTML文件
-	 	filePath = path.join(cwd,'tmp.htm');
-	 }
-	 fs.writeFile(filePath,JSON.parse(JSON.stringify(content)),function(err){
-	 	if(err){
-	 		alert('保存失败：\n' + err.message);
-	 	}else if(format === 'pdf'){
-	 		// 生成pdf
-	 		var spawn = require('child_process').spawn;
-	 		var pdfprocess = spawn(__dirname + '/lib/phantomjs',[
-	 			__dirname + '/html2pdf.js',
-	 			encodeURI(filePath),
-	 			pdfPath
-	 		],{
-	 			cwd:cwd
-	 		});
-	 		pdfprocess.stdout.on('data',function(data){
-	 			console.log('stdout'+data);
-	 		});
-	 		pdfprocess.stderr.on('data',function(data){
-	 			console.log('stderr'+data);
-	 		});
-	 		pdfprocess.on('close',function(){
-	 			console.log('closed');
-	 			// 删除HTML文件
-	 			fs.unlink(filePath,function(){
-	 				console.log('htm deleted');
-	 			});
-	 		});
-	 	}
-	 });*/
-	};
-	
-	/*// 创建备份文件
-	function createBackUp(){
-		var filters = [{
-			name: 'TooNote备份文件',
-			extensions: ['tnt']
-		}];
-		var remote = require('remote');
-		var dialog = remote.require('dialog');
-		var filePath = dialog.showSaveDialog({
-			filters: filters,
-			properties: ['createDirectory']
-		});
-		if(!filePath) return;
-		var zip = new require('jszip')();
-		zip.file('index',JSON.stringify(noteIndex));
-		for(var id in noteIndex){
-			zip.file(id,JSON.stringify(localStorage.getItem('note_' + id)),{binary:false});
-		}
-		var data = zip.generate({base64:false,compression:'DEFLATE'});
-		var fs = require('fs');
-		fs.writeFile(filePath,data,'binary',function(err,result){
-			if(!err){
-				console.log('tnt create successed.');
-			}else{
-				console.log('tnt create fail.' + err.message);
-			}
-		});
-	}*/
-	
-	exports.default = io;
-	module.exports = exports['default'];
-
-/***/ },
-/* 54 */
-/***/ function(module, exports) {
-
-	module.exports = require("jszip");
-
-/***/ },
-/* 55 */
-/***/ function(module, exports) {
-
-	module.exports = require("fs");
-
-/***/ },
-/* 56 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _cubicInOut = __webpack_require__(57);
+	var _cubicInOut = __webpack_require__(62);
 	
 	var _cubicInOut2 = _interopRequireDefault(_cubicInOut);
 	
@@ -6293,7 +6384,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 57 */
+/* 62 */
 /***/ function(module, exports) {
 
 	function cubicInOut(t) {
@@ -6305,62 +6396,10 @@
 	module.exports = cubicInOut
 
 /***/ },
-/* 58 */,
-/* 59 */,
-/* 60 */
-/***/ function(module, exports, __webpack_require__) {
+/* 63 */
+/***/ function(module, exports) {
 
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _remarkable = __webpack_require__(38);
-	
-	var _remarkable2 = _interopRequireDefault(_remarkable);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	let renderer = new _remarkable2.default();
-	let index = 0;
-	
-	let customerRulesMap = {
-		paragraph: 'p',
-		table: 'table'
-	};
-	
-	for (let token in customerRulesMap) {
-		console.log('[preview]', token);
-		let tag = customerRulesMap[token];
-		renderer.renderer.rules[`${ token }_open`] = function (tokens, idx) {
-			var line;
-			if (tag === 'tr') {
-				console.log(tokens[idx]);
-			}
-			if (tokens[idx].lines /* && tokens[idx].level === 0*/) {
-					line = tokens[idx].lines[0];
-					return `<${ tag } class="line" data-line="${ line }">`;
-				}
-			return `<${ tag }>`;
-		};
-	}
-	
-	renderer.renderer.rules.heading_open = function (tokens, idx) {
-		var line;
-		if (tokens[idx].lines && tokens[idx].level === 0) {
-			line = tokens[idx].lines[0];
-			return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor' + index++ + '">';
-		}
-		return '<h' + tokens[idx].hLevel + '>';
-	};
-	
-	renderer.renderer.rules.heading_close = function (tokens, idx) {
-		return '</a></h' + tokens[idx].hLevel + '>';
-	};
-	
-	exports.default = renderer;
-	module.exports = exports['default'];
+	// removed by extract-text-webpack-plugin
 
 /***/ }
 /******/ ]);

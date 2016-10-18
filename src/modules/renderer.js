@@ -1,5 +1,22 @@
 import Remarkable from 'remarkable';
-let renderer = new Remarkable();
+import hljs from 'highlight.js';
+
+let renderer = new Remarkable({
+	highlight: function (str, lang) {
+		if (lang && hljs.getLanguage(lang)) {
+			try {
+				return hljs.highlight(lang, str).value;
+			} catch (err) {}
+		}
+
+		try {
+			return hljs.highlightAuto(str).value;
+		} catch (err) {}
+
+		return ''; // use external default escaping
+	}
+});
+
 let index = 0;
 
 let customerRulesMap = {

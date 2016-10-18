@@ -191,6 +191,8 @@ const store = new Vuex.Store({
 					// var postcss = require('postcss');
 					// var atImport = require('postcss-import');
 					let css = io.getFileText('/style/htmlbody.css');
+					// css += io.getFileText('/node_modules/highlight.js/styles/github-gist.css');
+					css += io.getFileText('/node_modules/highlight.js/styles/tomorrow.css');
 
 					/*var outputCss = postcss()
 						.use(atImport())

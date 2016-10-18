@@ -19,6 +19,8 @@
 
 
 <script>
+// import 'highlight.js/styles/github-gist.css';
+import 'highlight.js/styles/tomorrow.css';
 import {mapGetters} from 'vuex';
 import renderer from '../modules/renderer';
 export default {

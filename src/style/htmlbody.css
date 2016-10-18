@@ -68,6 +68,7 @@
 	background:#fff;
 	border:1px solid #E0E0E0;
 	overflow-x: scroll;
+	font-size: 13px;
 }
 /*引用*/
 .htmlBody blockquote{
