@@ -100,6 +100,38 @@ class Meta{
 		});
 		return target;
 	}
+	async exchange(id1, id2){
+		let data = await this.data;
+
+		let notebook1, notebook2;
+		let note1, note2;
+		let index1, index2;
+
+		data.notebook.forEach((notebook) => {
+			notebook.notes.forEach((note, index) => {
+				if(note.id === id1){
+					notebook1 = notebook;
+					note1 = note;
+					index1 = index;
+				}
+				if(note.id === id2){
+					notebook2 = notebook;
+					note2 = note;
+					index2 = index;
+				}
+			});
+		});
+
+		// 只能交换同一笔记本中的笔记
+		if(notebook1 !== notebook2) return data;
+		// 交换
+		notebook1.notes.splice(index1, 1, note2);
+		notebook1.notes.splice(index2, 1, note1);
+
+		await store.writeFile('/meta.json', JSON.stringify(data));
+		return data;
+
+	}
 };
 
 

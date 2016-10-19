@@ -69,9 +69,9 @@ class ElectronMenu extends Menu{
 				accelerator: menuItem.hotKey,
 				click: menuItem.event?
 					((event) => {
-						console.log('[menu electron] bind click', event);
+						// console.log('[menu electron] bind click', event);
 						return (item, focusWindow) => {
-							console.log('[menu electron] click', event);
+							// console.log('[menu electron] click', event);
 							this.trigger('click', event)
 						}
 					})(menuItem.event):undefined,

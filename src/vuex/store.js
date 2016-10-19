@@ -81,6 +81,7 @@ const store = new Vuex.Store({
 						id:noteItem.id
 					});
 				});
+				// console.log(JSON.stringify(ret.categories['富途']));
 				return ret;
 			});
 			return ret;
@@ -220,6 +221,15 @@ const store = new Vuex.Store({
 			if(typeof targetPosition === 'undefined') return;
 			scroll.doScroll(document.querySelector('.preview'), targetPosition, 500);
 		},
+		async exchangeNote(context, ids) {
+
+			// console.log('ids', ids.id1, ids.id2);
+			// 找到目标笔记本和笔记
+			let metaData = await meta.exchange(ids.id1, ids.id2);
+
+			context.commit('updateNotebooks', metaData.notebook);
+
+		}
 	}
 });
 

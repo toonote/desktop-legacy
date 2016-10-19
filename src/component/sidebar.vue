@@ -41,6 +41,9 @@
 	padding-right:3px;
 	background-image:url(../images/icon-folder.png);
 }
+.wrapper .note-list-move {
+	transition: transform .4s;
+}
 </style>
 
 <template>
@@ -52,15 +55,24 @@
 				class="icon folder"
 				v-for="(notes,category) in notebook.categories"
 			>{{category}}
-				<ul>
+				<transition-group
+					name="note-list"
+					tag="ul"
+					droppable="true"
+					v-on:drop="drop"
+					>
 					<li
+						draggable="true"
 						class="icon note"
+						v-bind:key="note.id"
 						v-bind:class="{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}"
 						v-for="note in notes"
 						v-on:click="switchCurrentNote(note.id)"
 						v-on:contextmenu="showContextMenu(note.id)"
+						v-on:dragstart="dragStart($event, note.id)"
+						v-on:dragover.prevent="dragOver($event, note.id)"
 					>{{note.title}}</li>
-				</ul>
+				</transition-group>
 			</li>
 		</ul>
 	</section>
@@ -69,11 +81,15 @@
 
 
 <script>
+import throttle from 'lodash.throttle';
 import {mapGetters} from 'vuex';
 import Menu from '../api/menu/index';
 import util from '../modules/util';
 
 let menu = new Menu(util.platform);
+
+let _doExchange;
+
 export default {
 	computed: {
 		...mapGetters(['notebooks', 'currentNote', 'contextMenuNoteId', 'notebooksWithCategories'])
@@ -96,7 +112,7 @@ export default {
 			// eventHub.$emit('currentNoteChange', noteId);
 		},
 		showContextMenu(noteId){
-			console.log('contextmenu');
+			// console.log('contextmenu');
 			this.$store.commit('switchContextMenuNote', noteId);
 			// this.$nextTick(() => {
 			setTimeout(() => {
@@ -112,13 +128,49 @@ export default {
 				},30);
 			},30);
 		},
+		dragStart(e, noteId){
+			this.currentMovingNoteId = noteId;
+			// e.dataTransfer.dropEffect = 'move';
+			// e.dataTransfer.effectAllowed = 'move';
+			// console.log('start', noteId);
+		},
+		dragOver(e, noteId){
+			if(this.isAnimating) return;
+			if(this.currentMovingNoteId === noteId) return;
+
+			// console.log('over', noteId);
+
+			this.currentTargetingNoteId = noteId;
+
+			if(!_doExchange){
+				_doExchange = throttle(() => {
+					this.isAnimating = true;
+					this.$store.dispatch('exchangeNote', {
+						id1:this.currentMovingNoteId,
+						id2:this.currentTargetingNoteId
+					});
+					setTimeout(() => {
+						this.isAnimating = false;
+					}, 500);
+				}, 500);
+			}
+			_doExchange();
+		},
+		drop(e){
+			this.currentMovingNoteId = 0;
+			// console.log('drop', e);
+		}
 		/*hideContextMenu(){
 			// 会自动关闭，这里主要是将当前右键笔记置空
 			this.$store.commit('switchContextMenuNote', 0);
 		}*/
 	},
 	data(){
-		var data = {};
+		var data = {
+			currentMovingNoteId:0,
+			currentTargetingNoteId:0,
+			isAnimating:false
+		};
 		return data;
 	}
 };
