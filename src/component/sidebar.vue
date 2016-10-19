@@ -13,7 +13,8 @@
 	line-height: 24px;
 	padding-top: 10px;
 }
-.wrapper h2{
+.wrapper h2,
+.wrapper .notFound{
 	font-size:12px;
 	padding-left:15px;
 	font-weight: normal;
@@ -44,11 +45,28 @@
 .wrapper .note-list-move {
 	transition: transform .4s;
 }
+
+.searchWrapper input{
+	display: block;
+    border: 0 none;
+    width: 100%;
+    height: 28px;
+    border-bottom: 1px solid #e0e0e0;
+    background: transparent;
+    padding: 0 10px;
+}
+.searchWrapper input:focus{
+	background: white;
+	outline: 0 none;
+}
 </style>
 
 <template>
 <section class="sidebar">
-	<section class="wrapper" v-for="notebook in notebooksWithCategories">
+	<section class="searchWrapper">
+		<input type="search" v-model.trim="keyword" placeholder="搜索..." />
+	</section>
+	<section class="wrapper" v-show="!isSearching" v-for="notebook in notebooksWithCategories">
 		<h2>{{notebook.title}}</h2>
 		<ul>
 			<li
@@ -76,6 +94,25 @@
 			</li>
 		</ul>
 	</section>
+	<section class="wrapper" v-show="isSearching">
+		<div class="notFound" v-show="!searchResults.length">搜的什么鬼 一篇都没有</div>
+		<ul v-show="searchResults.length">
+			<li
+				class="icon folder"
+				v-for="(notes,category) in searchResultsWithCategories"
+			>{{category}}
+				<ul>
+					<li
+						class="icon note"
+						v-bind:class="{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}"
+						v-for="note in notes"
+						v-on:click="switchCurrentNote(note.id)"
+						v-on:contextmenu="showContextMenu(note.id)"
+					>{{note.title}}</li>
+				</ul>
+			</li>
+		</ul>
+	</section>
 </section>
 </template>
 
@@ -92,7 +129,24 @@ let _doExchange;
 
 export default {
 	computed: {
-		...mapGetters(['notebooks', 'currentNote', 'contextMenuNoteId', 'notebooksWithCategories'])
+		...mapGetters([
+			'notebooks',
+			'currentNote',
+			'contextMenuNoteId',
+			'notebooksWithCategories',
+			'isSearching',
+			'searchResults',
+			'searchResultsWithCategories'
+		])
+	},
+	watch: {
+		keyword(){
+			if(this.keyword){
+				this.$store.dispatch('search', this.keyword);
+			}else{
+				this.$store.commit('switchSearching', false);
+			}
+		}
 	},
 	methods: {
 		isActive(noteId){
@@ -169,7 +223,8 @@ export default {
 		var data = {
 			currentMovingNoteId:0,
 			currentTargetingNoteId:0,
-			isAnimating:false
+			isAnimating:false,
+			keyword:''
 		};
 		return data;
 	}

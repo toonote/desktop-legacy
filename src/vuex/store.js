@@ -21,7 +21,13 @@ const store = new Vuex.Store({
 			sidebar: true,
 			editor: true,
 			preview: true
-		}
+		},
+		isSearching:false,
+		// 搜索结果
+		searchResults:[
+			// {id:'1407215592432',title:'富途\\服务器相关'},
+			// {id:'1471501307415',title:'富途\\前端近期'},
+		]
 	},
 	mutations: {
 		newNote(state, note) {
@@ -50,6 +56,13 @@ const store = new Vuex.Store({
 		},
 		switchLayout (state, component) {
 			state.layout[component] = !state.layout[component];
+		},
+		switchSearching (state, isSearching) {
+			state.isSearching = isSearching;
+		},
+		updateSearchResults (state, results) {
+			state.isSearching = true;
+			state.searchResults = results;
 		}
 	},
 	getters: {
@@ -86,11 +99,30 @@ const store = new Vuex.Store({
 			});
 			return ret;
 		},
+		searchResultsWithCategories(state){
+			let ret = {};
+			state.searchResults.forEach((noteItem) => {
+				let category = note.getCategoryFromTitle(noteItem.title);
+				let title = note.getTitleWithoutCategory(noteItem.title);
+				if(!ret[category]) ret[category] = [];
+				ret[category].push({
+					title:title,
+					id:noteItem.id
+				});
+			});
+			return ret;
+		},
 		notebooks(state){
 			return state.notebooks
 		},
 		layout(state){
 			return state.layout
+		},
+		isSearching(state){
+			return state.isSearching
+		},
+		searchResults(state){
+			return state.searchResults
 		}
 		/*currentNoteContent(state, getters){
 			return getters.content;
@@ -229,6 +261,11 @@ const store = new Vuex.Store({
 
 			context.commit('updateNotebooks', metaData.notebook);
 
+		},
+		async search(context, keyword) {
+			let searchTitleResults = await meta.searchNote(keyword.toLowerCase());
+
+			context.commit('updateSearchResults', searchTitleResults);
 		}
 	}
 });

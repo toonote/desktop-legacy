@@ -326,7 +326,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li[data-v-114b24d1]{\n\ttext-indent: 44px;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-114b24d1] {\n\ttransition: transform .4s;\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?700eb809"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li{\n\ttext-indent: 44px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"wrapper\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<transition-group\n\t\t\t\t\tname=\"note-list\"\n\t\t\t\t\ttag=\"ul\"\n\t\t\t\t\tdroppable=\"true\"\n\t\t\t\t\tv-on:drop=\"drop\"\n\t\t\t\t\t>\n\t\t\t\t\t<li\n\t\t\t\t\t\tdraggable=\"true\"\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:key=\"note.id\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t\tv-on:dragstart=\"dragStart($event, note.id)\"\n\t\t\t\t\t\tv-on:dragover.prevent=\"dragOver($event, note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters(['notebooks', 'currentNote', 'contextMenuNoteId', 'notebooksWithCategories'])\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\tdragStart(e, noteId){\n\t\t\tthis.currentMovingNoteId = noteId;\n\t\t\t// e.dataTransfer.dropEffect = 'move';\n\t\t\t// e.dataTransfer.effectAllowed = 'move';\n\t\t\t// console.log('start', noteId);\n\t\t},\n\t\tdragOver(e, noteId){\n\t\t\tif(this.isAnimating) return;\n\t\t\tif(this.currentMovingNoteId === noteId) return;\n\n\t\t\t// console.log('over', noteId);\n\n\t\t\tthis.currentTargetingNoteId = noteId;\n\n\t\t\tif(!_doExchange){\n\t\t\t\t_doExchange = throttle(() => {\n\t\t\t\t\tthis.isAnimating = true;\n\t\t\t\t\tthis.$store.dispatch('exchangeNote', {\n\t\t\t\t\t\tid1:this.currentMovingNoteId,\n\t\t\t\t\t\tid2:this.currentTargetingNoteId\n\t\t\t\t\t});\n\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\tthis.isAnimating = false;\n\t\t\t\t\t}, 500);\n\t\t\t\t}, 500);\n\t\t\t}\n\t\t\t_doExchange();\n\t\t},\n\t\tdrop(e){\n\t\t\tthis.currentMovingNoteId = 0;\n\t\t\t// console.log('drop', e);\n\t\t}\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\tcurrentMovingNoteId:0,\n\t\t\tcurrentTargetingNoteId:0,\n\t\t\tisAnimating:false\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1],\n.wrapper .notFound[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li[data-v-114b24d1]{\n\ttext-indent: 44px;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-114b24d1] {\n\ttransition: transform .4s;\n}\n.searchWrapper input[data-v-114b24d1]{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input[data-v-114b24d1]:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?d4d0d122"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;;CAEA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AAEA;CACA,eAAA;IACA,eAAA;IACA,YAAA;IACA,aAAA;IACA,iCAAA;IACA,wBAAA;IACA,gBAAA;CACA;AACA;CACA,kBAAA;CACA,gBAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2,\n.wrapper .notFound{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li{\n\ttext-indent: 44px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n\n.searchWrapper input{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"searchWrapper\">\n\t\t<input type=\"search\" v-model.trim=\"keyword\" placeholder=\"搜索...\" />\n\t</section>\n\t<section class=\"wrapper\" v-show=\"!isSearching\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<transition-group\n\t\t\t\t\tname=\"note-list\"\n\t\t\t\t\ttag=\"ul\"\n\t\t\t\t\tdroppable=\"true\"\n\t\t\t\t\tv-on:drop=\"drop\"\n\t\t\t\t\t>\n\t\t\t\t\t<li\n\t\t\t\t\t\tdraggable=\"true\"\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:key=\"note.id\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t\tv-on:dragstart=\"dragStart($event, note.id)\"\n\t\t\t\t\t\tv-on:dragover.prevent=\"dragOver($event, note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"wrapper\" v-show=\"isSearching\">\n\t\t<div class=\"notFound\" v-show=\"!searchResults.length\">搜的什么鬼 一篇都没有</div>\n\t\t<ul v-show=\"searchResults.length\">\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in searchResultsWithCategories\"\n\t\t\t>{{category}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'notebooks',\n\t\t\t'currentNote',\n\t\t\t'contextMenuNoteId',\n\t\t\t'notebooksWithCategories',\n\t\t\t'isSearching',\n\t\t\t'searchResults',\n\t\t\t'searchResultsWithCategories'\n\t\t])\n\t},\n\twatch: {\n\t\tkeyword(){\n\t\t\tif(this.keyword){\n\t\t\t\tthis.$store.dispatch('search', this.keyword);\n\t\t\t}else{\n\t\t\t\tthis.$store.commit('switchSearching', false);\n\t\t\t}\n\t\t}\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\tdragStart(e, noteId){\n\t\t\tthis.currentMovingNoteId = noteId;\n\t\t\t// e.dataTransfer.dropEffect = 'move';\n\t\t\t// e.dataTransfer.effectAllowed = 'move';\n\t\t\t// console.log('start', noteId);\n\t\t},\n\t\tdragOver(e, noteId){\n\t\t\tif(this.isAnimating) return;\n\t\t\tif(this.currentMovingNoteId === noteId) return;\n\n\t\t\t// console.log('over', noteId);\n\n\t\t\tthis.currentTargetingNoteId = noteId;\n\n\t\t\tif(!_doExchange){\n\t\t\t\t_doExchange = throttle(() => {\n\t\t\t\t\tthis.isAnimating = true;\n\t\t\t\t\tthis.$store.dispatch('exchangeNote', {\n\t\t\t\t\t\tid1:this.currentMovingNoteId,\n\t\t\t\t\t\tid2:this.currentTargetingNoteId\n\t\t\t\t\t});\n\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\tthis.isAnimating = false;\n\t\t\t\t\t}, 500);\n\t\t\t\t}, 500);\n\t\t\t}\n\t\t\t_doExchange();\n\t\t},\n\t\tdrop(e){\n\t\t\tthis.currentMovingNoteId = 0;\n\t\t\t// console.log('drop', e);\n\t\t}\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\tcurrentMovingNoteId:0,\n\t\t\tcurrentTargetingNoteId:0,\n\t\t\tisAnimating:false,\n\t\t\tkeyword:''\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -713,6 +713,43 @@
 	//
 	//
 	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	
 	var _lodash = __webpack_require__(24);
 	
@@ -735,7 +772,16 @@
 	let _doExchange;
 	
 	exports.default = {
-		computed: _extends({}, (0, _vuex.mapGetters)(['notebooks', 'currentNote', 'contextMenuNoteId', 'notebooksWithCategories'])),
+		computed: _extends({}, (0, _vuex.mapGetters)(['notebooks', 'currentNote', 'contextMenuNoteId', 'notebooksWithCategories', 'isSearching', 'searchResults', 'searchResultsWithCategories'])),
+		watch: {
+			keyword() {
+				if (this.keyword) {
+					this.$store.dispatch('search', this.keyword);
+				} else {
+					this.$store.commit('switchSearching', false);
+				}
+			}
+		},
 		methods: {
 			isActive(noteId) {
 				let ret = false;
@@ -811,7 +857,8 @@
 			var data = {
 				currentMovingNoteId: 0,
 				currentTargetingNoteId: 0,
-				isAnimating: false
+				isAnimating: false,
+				keyword: ''
 			};
 			return data;
 		}
@@ -1165,8 +1212,39 @@
 	module.exports={render:function (){with(this) {
 	  return _h('section', {
 	    staticClass: "sidebar"
-	  }, [_l((notebooksWithCategories), function(notebook) {
+	  }, [_h('section', {
+	    staticClass: "searchWrapper"
+	  }, [_h('input', {
+	    directives: [{
+	      name: "model",
+	      rawName: "v-model.trim",
+	      value: (keyword),
+	      expression: "keyword",
+	      modifiers: {
+	        "trim": true
+	      }
+	    }],
+	    attrs: {
+	      "type": "search",
+	      "placeholder": "搜索..."
+	    },
+	    domProps: {
+	      "value": _s(keyword)
+	    },
+	    on: {
+	      "input": function($event) {
+	        if ($event.target.composing) return;
+	        keyword = $event.target.value.trim()
+	      }
+	    }
+	  })]), " ", _l((notebooksWithCategories), function(notebook) {
 	    return _h('section', {
+	      directives: [{
+	        name: "show",
+	        rawName: "v-show",
+	        value: (!isSearching),
+	        expression: "!isSearching"
+	      }],
 	      staticClass: "wrapper"
 	    }, [_h('h2', [_s(notebook.title)]), " ", _h('ul', [_l((notebook.categories), function(notes, category) {
 	      return _h('li', {
@@ -1208,7 +1286,49 @@
 	        }, [_s(note.title)])
 	      })])])
 	    })])])
-	  })])
+	  }), " ", _h('section', {
+	    directives: [{
+	      name: "show",
+	      rawName: "v-show",
+	      value: (isSearching),
+	      expression: "isSearching"
+	    }],
+	    staticClass: "wrapper"
+	  }, [_h('div', {
+	    directives: [{
+	      name: "show",
+	      rawName: "v-show",
+	      value: (!searchResults.length),
+	      expression: "!searchResults.length"
+	    }],
+	    staticClass: "notFound"
+	  }, ["搜的什么鬼 一篇都没有"]), " ", _h('ul', {
+	    directives: [{
+	      name: "show",
+	      rawName: "v-show",
+	      value: (searchResults.length),
+	      expression: "searchResults.length"
+	    }]
+	  }, [_l((searchResultsWithCategories), function(notes, category) {
+	    return _h('li', {
+	      staticClass: "icon folder"
+	    }, [_s(category) + "\n\t\t\t\t", _h('ul', [_l((notes), function(note) {
+	      return _h('li', {
+	        staticClass: "icon note",
+	        class: {
+	          active: (currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId
+	        },
+	        on: {
+	          "click": function($event) {
+	            switchCurrentNote(note.id)
+	          },
+	          "contextmenu": function($event) {
+	            showContextMenu(note.id)
+	          }
+	        }
+	      }, [_s(note.title)])
+	    })])])
+	  })])])])
 	}},staticRenderFns: []}
 	if (false) {
 	  module.hot.accept()
@@ -6122,11 +6242,27 @@
 				return target;
 			})();
 		}
-		findNotebookOfNote(noteId) {
+		searchNote(keyword) {
 			var _this6 = this;
 	
 			return _asyncToGenerator(function* () {
 				let data = yield _this6.data;
+				let ret = [];
+				data.notebook.forEach(function (notebook) {
+					notebook.notes.forEach(function (note) {
+						if (note.title.toLowerCase().indexOf(keyword) > -1) {
+							ret.push(note);
+						}
+					});
+				});
+				return ret;
+			})();
+		}
+		findNotebookOfNote(noteId) {
+			var _this7 = this;
+	
+			return _asyncToGenerator(function* () {
+				let data = yield _this7.data;
 				let target;
 				data.notebook.forEach(function (notebook) {
 					notebook.notes.forEach(function (note) {
@@ -6139,10 +6275,10 @@
 			})();
 		}
 		exchange(id1, id2) {
-			var _this7 = this;
+			var _this8 = this;
 	
 			return _asyncToGenerator(function* () {
-				let data = yield _this7.data;
+				let data = yield _this8.data;
 	
 				let notebook1, notebook2;
 				let note1, note2;
@@ -6236,7 +6372,13 @@
 				sidebar: true,
 				editor: true,
 				preview: true
-			}
+			},
+			isSearching: false,
+			// 搜索结果
+			searchResults: [
+				// {id:'1407215592432',title:'富途\\服务器相关'},
+				// {id:'1471501307415',title:'富途\\前端近期'},
+			]
 		},
 		mutations: {
 			newNote(state, note) {
@@ -6265,6 +6407,13 @@
 			},
 			switchLayout(state, component) {
 				state.layout[component] = !state.layout[component];
+			},
+			switchSearching(state, isSearching) {
+				state.isSearching = isSearching;
+			},
+			updateSearchResults(state, results) {
+				state.isSearching = true;
+				state.searchResults = results;
 			}
 		},
 		getters: {
@@ -6301,11 +6450,30 @@
 				});
 				return ret;
 			},
+			searchResultsWithCategories(state) {
+				let ret = {};
+				state.searchResults.forEach(noteItem => {
+					let category = _note2.default.getCategoryFromTitle(noteItem.title);
+					let title = _note2.default.getTitleWithoutCategory(noteItem.title);
+					if (!ret[category]) ret[category] = [];
+					ret[category].push({
+						title: title,
+						id: noteItem.id
+					});
+				});
+				return ret;
+			},
 			notebooks(state) {
 				return state.notebooks;
 			},
 			layout(state) {
 				return state.layout;
+			},
+			isSearching(state) {
+				return state.isSearching;
+			},
+			searchResults(state) {
+				return state.searchResults;
 			}
 			/*currentNoteContent(state, getters){
 	  	return getters.content;
@@ -6456,6 +6624,13 @@
 					let metaData = yield _meta2.default.exchange(ids.id1, ids.id2);
 	
 					context.commit('updateNotebooks', metaData.notebook);
+				})();
+			},
+			search(context, keyword) {
+				return _asyncToGenerator(function* () {
+					let searchTitleResults = yield _meta2.default.searchNote(keyword.toLowerCase());
+	
+					context.commit('updateSearchResults', searchTitleResults);
 				})();
 			}
 		}

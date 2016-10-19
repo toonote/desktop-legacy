@@ -88,6 +88,18 @@ class Meta{
 		});
 		return target;
 	}
+	async searchNote(keyword){
+		let data = await this.data;
+		let ret = [];
+		data.notebook.forEach((notebook)=>{
+			notebook.notes.forEach((note)=>{
+				if(note.title.toLowerCase().indexOf(keyword) > -1){
+					ret.push(note);
+				}
+			});
+		});
+		return ret;
+	}
 	async findNotebookOfNote(noteId){
 		let data = await this.data;
 		let target;
