@@ -62,6 +62,12 @@ let app = new Vue({
 		},
 		switchLayout(component){
 			store.commit('switchLayout', component);
+		},
+		versionOpen(){
+			store.dispatch('switchActiveVersion');
+		},
+		versionRestore(){
+			store.dispatch('restoreActiveVersion');
 		}
 	},
 	data:{
@@ -149,6 +155,12 @@ let app = new Vue({
 				break;
 			case 'switchLayoutPreview':
 				app.switchLayout('preview');
+				break;
+			case 'versionOpen':
+				app.versionOpen();
+				break;
+			case 'versionRestore':
+				app.versionRestore();
 				break;
 		}
 

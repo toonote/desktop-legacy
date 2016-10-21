@@ -9,6 +9,8 @@
 	background:rgba(128,128,128,.4);
 }
 .versions{
+	-webkit-user-select: none;
+	user-select: none;
 	position: absolute;
 	z-index: 2;
 	width: 800px;
@@ -78,7 +80,7 @@
 				<ul>
 					<li
 						class="icon note"
-						v-bind:class="{active:(versions.activeVersionId && versions.activeVersionId === version.id)}"
+						v-bind:class="{active:(versions.activeVersionId && versions.activeVersionId === version.id) || contextMenuVersionId == version.id}"
 						v-for="version in versions.list"
 						v-on:click="switchCurrentVersion(version.id)"
 						v-on:contextmenu="showContextMenu(version.id)"
@@ -106,7 +108,8 @@ let _doExchange;
 export default {
 	computed: {
 		...mapGetters([
-			'versions'
+			'versions',
+			'contextMenuVersionId'
 		])
 	},
 	watch: {
@@ -131,6 +134,23 @@ export default {
 		},
 		hideVersions(){
 			this.$store.commit('hideVersions');
+		},
+		showContextMenu(versionId){
+			// console.log('contextmenu');
+			this.$store.commit('switchContextMenuVersion', versionId);
+			// this.$nextTick(() => {
+			setTimeout(() => {
+				menu.showContextMenu([{
+					title:'打开',
+					event:'versionOpen'
+				},{
+					title:'恢复该版本',
+					event:'versionRestore'
+				}]);
+				setTimeout(()=>{
+					this.$store.commit('switchContextMenuVersion', 0);
+				},30);
+			},30);
 		}
 	},
 	data(){

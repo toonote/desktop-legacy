@@ -17,7 +17,7 @@ let git = new Git({
 
 const store = new Vuex.Store({
 	state: {
-		contextMenuNoteId: null,
+		contextMenuNoteId: '',
 		currentNote: null,
 		currentNotebook: null,
 		notebooks: [],
@@ -39,7 +39,8 @@ const store = new Vuex.Store({
 			activeVersionId:'',
 			activeVersionContent:'',
 			list:[]
-		}
+		},
+		contextMenuVersionId: ''
 	},
 	mutations: {
 		newNote(state, note) {
@@ -55,6 +56,7 @@ const store = new Vuex.Store({
 			state.currentNotebook = notebook;
 		},
 		changeCurrentNoteContent (state, content) {
+			// console.log('[store mutations]', content);
 			state.currentNote.content = content;
 		},
 		changeCurrentNoteTitle (state, title) {
@@ -90,6 +92,9 @@ const store = new Vuex.Store({
 			state.versions.activeVersionContent = '';
 			state.versions.list = [];
 			state.versions.currentNote = null;
+		},
+		switchContextMenuVersion(state, versionId){
+			state.contextMenuVersionId = versionId;
 		}
 	},
 	getters: {
@@ -153,6 +158,9 @@ const store = new Vuex.Store({
 		},
 		versions(state){
 			return state.versions
+		},
+		contextMenuVersionId(state){
+			return state.contextMenuVersionId
 		}
 		/*currentNoteContent(state, getters){
 			return getters.content;
@@ -160,8 +168,8 @@ const store = new Vuex.Store({
 	},
 	actions:{
 		async changeCurrentNoteContent(context, content) {
-			context.commit('changeCurrentNoteContent', content);
 			let title = note.getTitleFromContent(content);
+			context.commit('changeCurrentNoteContent', content);
 			context.commit('changeCurrentNoteTitle', title);
 
 			await note.saveNoteContent(context.state.currentNote);
@@ -252,13 +260,25 @@ const store = new Vuex.Store({
 		},
 		async switchActiveVersion(context, versionId) {
 			if(!versionId) {
-				let activeVersion = context.state.versions.list[0];
-				if(!activeVersion) return;
-				versionId = activeVersion.id;
+				versionId = context.state.contextMenuVersionId;
+				if(!versionId){
+					let activeVersion = context.state.versions.list[0];
+					if(!activeVersion) return;
+					versionId = activeVersion.id;
+				}
 			}
 			let fileName = `note-${context.state.versions.currentNote.id}.md`;
 			let content = git.show(versionId, fileName);
 			context.commit('switchCurrentVersion', {versionId, content});
+		},
+		async restoreActiveVersion(context) {
+			let versionId = context.state.contextMenuVersionId;
+			if(!versionId) return;
+
+			let fileName = `note-${context.state.versions.currentNote.id}.md`;
+			let content = git.show(versionId, fileName);
+
+			await context.dispatch('changeCurrentNoteContent', content);
 		},
 		async importBackup(context) {
 			let newNotes = await io.getNotesFromBackUp();

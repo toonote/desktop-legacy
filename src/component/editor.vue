@@ -81,13 +81,17 @@ export default {
 	},
 	watch:{
 		currentNote(note){
-			if(!note || (!note.content && note.content !== '')) return
-			if(_content !== note.content){
-				_aceEditor.setValue(note.content, -1);
-			}
+			if(!note.id) return;
 			if(_id !== note.id){
 				_content = '';
 				_id = note.id;
+			}
+		},
+		'currentNote.content': function(content){
+			// console.log('watch currentNote.content change');
+			if(!content && content !== '') return
+			if(_content !== content){
+				_aceEditor.setValue(content, -1);
 			}
 		}
 	},

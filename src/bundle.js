@@ -79,19 +79,19 @@
 	
 	var _menubar2 = _interopRequireDefault(_menubar);
 	
-	var _versions = __webpack_require__(65);
+	var _versions = __webpack_require__(54);
 	
 	var _versions2 = _interopRequireDefault(_versions);
 	
-	var _menu = __webpack_require__(54);
+	var _menu = __webpack_require__(59);
 	
 	var _menu2 = _interopRequireDefault(_menu);
 	
-	var _meta = __webpack_require__(59);
+	var _meta = __webpack_require__(66);
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
-	var _note = __webpack_require__(55);
+	var _note = __webpack_require__(60);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
@@ -100,7 +100,7 @@
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	_vue2.default.use(_vuex2.default);
-	let store = __webpack_require__(62);
+	let store = __webpack_require__(67);
 	
 	// Vue.config.debug = true;
 	
@@ -152,6 +152,12 @@
 			},
 			switchLayout(component) {
 				store.commit('switchLayout', component);
+			},
+			versionOpen() {
+				store.dispatch('switchActiveVersion');
+			},
+			versionRestore() {
+				store.dispatch('restoreActiveVersion');
 			}
 		},
 		data: {
@@ -237,6 +243,12 @@
 					break;
 				case 'switchLayoutPreview':
 					app.switchLayout('preview');
+					break;
+				case 'versionOpen':
+					app.versionOpen();
+					break;
+				case 'versionRestore':
+					app.versionRestore();
 					break;
 			}
 		});
@@ -1442,7 +1454,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?3b453496"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div\n\t\tid=\"ace_container\"\n\t\tv-on:dragover.prevent=\"onDragOver\"\n\t\tv-on:drop.prevent.stop=\"onDrop\"\n\t\tv-on:paste=\"onPaste\"\n\t></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex';\nimport io from '../modules/io';\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\tmethods:{\n\t\tonDragOver(){\n\t\t\t// console.log('dragover');\n\t\t},\n\t\tonDrop(e){\n\t\t\tlet img = e.dataTransfer.files[0];\n\t\t\tif(!img || !/^image/.test(img.type)) return;\n\t\t\tlet ext = io.getExt(img.name);\n\t\t\tlet imagePath = io.saveImage(img.path, ext);\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tonPaste(e){\n\t\t\tif(!e.clipboardData.items || !e.clipboardData.items.length) return;\n\t\t\tlet hasImage = false;\n\t\t\tfor(let i = e.clipboardData.items.length;i--;){\n\t\t\t\tlet item = e.clipboardData.items[i];\n\t\t\t\tif(/^image/.test(item.type)){\n\t\t\t\t\thasImage = true;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(!hasImage) return;\n\n\t\t\tlet imagePath = io.saveImageFromClipboard();\n\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tinsertImg(imagePath){\n\n\t\t\tif(imagePath){\n\t\t\t\timagePath = encodeURI(imagePath);\n\t\t\t\t_aceEditor.insert(`\\n\\n![${name}](${imagePath})\\n\\n`);\n\t\t\t}else{\n\t\t\t\t_aceEditor.insert(`拖拽插入图片出错！`);\n\t\t\t}\n\t\t\tthis.onEditorInput();\n\t\t},\n\t\tonEditorInput(){\n\t\t\t_content = _aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t}\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note || (!note.content && note.content !== '')) return\n\t\t\tif(_content !== note.content){\n\t\t\t\t_aceEditor.setValue(note.content, -1);\n\t\t\t}\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', this.onEditorInput);\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?44473011"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div\n\t\tid=\"ace_container\"\n\t\tv-on:dragover.prevent=\"onDragOver\"\n\t\tv-on:drop.prevent.stop=\"onDrop\"\n\t\tv-on:paste=\"onPaste\"\n\t></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex';\nimport io from '../modules/io';\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\tmethods:{\n\t\tonDragOver(){\n\t\t\t// console.log('dragover');\n\t\t},\n\t\tonDrop(e){\n\t\t\tlet img = e.dataTransfer.files[0];\n\t\t\tif(!img || !/^image/.test(img.type)) return;\n\t\t\tlet ext = io.getExt(img.name);\n\t\t\tlet imagePath = io.saveImage(img.path, ext);\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tonPaste(e){\n\t\t\tif(!e.clipboardData.items || !e.clipboardData.items.length) return;\n\t\t\tlet hasImage = false;\n\t\t\tfor(let i = e.clipboardData.items.length;i--;){\n\t\t\t\tlet item = e.clipboardData.items[i];\n\t\t\t\tif(/^image/.test(item.type)){\n\t\t\t\t\thasImage = true;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(!hasImage) return;\n\n\t\t\tlet imagePath = io.saveImageFromClipboard();\n\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tinsertImg(imagePath){\n\n\t\t\tif(imagePath){\n\t\t\t\timagePath = encodeURI(imagePath);\n\t\t\t\t_aceEditor.insert(`\\n\\n![${name}](${imagePath})\\n\\n`);\n\t\t\t}else{\n\t\t\t\t_aceEditor.insert(`拖拽插入图片出错！`);\n\t\t\t}\n\t\t\tthis.onEditorInput();\n\t\t},\n\t\tonEditorInput(){\n\t\t\t_content = _aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t}\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note.id) return;\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t},\n\t\t'currentNote.content': function(content){\n\t\t\t// console.log('watch currentNote.content change');\n\t\t\tif(!content && content !== '') return\n\t\t\tif(_content !== content){\n\t\t\t\t_aceEditor.setValue(content, -1);\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', this.onEditorInput);\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -1552,13 +1564,17 @@
 		},
 		watch: {
 			currentNote(note) {
-				if (!note || !note.content && note.content !== '') return;
-				if (_content !== note.content) {
-					_aceEditor.setValue(note.content, -1);
-				}
+				if (!note.id) return;
 				if (_id !== note.id) {
 					_content = '';
 					_id = note.id;
+				}
+			},
+			'currentNote.content': function (content) {
+				// console.log('watch currentNote.content change');
+				if (!content && content !== '') return;
+				if (_content !== content) {
+					_aceEditor.setValue(content, -1);
 				}
 			}
 		},
@@ -5864,6 +5880,324 @@
 /* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __vue_exports__, __vue_options__
+	
+	/* styles */
+	__webpack_require__(55)
+	
+	/* script */
+	__vue_exports__ = __webpack_require__(57)
+	
+	/* template */
+	var __vue_template__ = __webpack_require__(58)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.name = __vue_options__.name || "versions"
+	__vue_options__.__file = "/Users/TooBug/work/github/TooNote/src/component/versions.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-0bf59276"
+	
+	/* hot reload */
+	if (false) {(function () {
+	  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  module.hot.accept()
+	  if (!module.hot.data) {
+	    hotAPI.createRecord("data-v-0bf59276", __vue_options__)
+	  } else {
+	    hotAPI.reload("data-v-0bf59276", __vue_options__)
+	  }
+	})()}
+	if (__vue_options__.functional) {console.error("[vue-loader] versions.vue: functional components are not supported and should be defined in plain js files using render functions.")}
+	
+	module.exports = __vue_exports__
+
+
+/***/ },
+/* 55 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(56);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./versions.vue", function() {
+				var newContent = require("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./versions.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 56 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(7)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, "\n.mask[data-v-0bf59276]{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions[data-v-0bf59276]{\n\t-webkit-user-select: none;\n\tuser-select: none;\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper[data-v-0bf59276]{\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul[data-v-0bf59276]{\n\tlist-style: none;\n}\n.wrapper li[data-v-0bf59276]{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li[data-v-0bf59276]{\n\ttext-indent: 34px;\n}\n.wrapper li.active[data-v-0bf59276]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-0bf59276] {\n\ttransition: transform .4s;\n}\n.content[data-v-0bf59276]{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n", "", {"version":3,"sources":["/./component/versions.vue?5c071be0"],"names":[],"mappings":";AACA;CACA,mBAAA;CACA,OAAA;CACA,MAAA;CACA,WAAA;CACA,WAAA;CACA,YAAA;CACA,gCAAA;CACA;AACA;CACA,0BAAA;CACA,kBAAA;CACA,mBAAA;CACA,WAAA;CACA,aAAA;CACA,cAAA;CACA,UAAA;CACA,SAAA;CACA,iCAAA;CACA,iBAAA;CACA,sBAAA;CACA,cAAA;CACA,2BAAA;CACA,cAAA;CACA;AACA;CACA,aAAA;CACA,mBAAA;CACA,+BAAA;CACA,kBAAA;CACA,gBAAA;CACA,eAAA;CACA,0BAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA,iBAAA;IACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AACA;CACA,cAAA;CACA,OAAA;CACA,aAAA;CACA,eAAA;CACA","file":"versions.vue","sourcesContent":["<style scoped>\n.mask{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions{\n\t-webkit-user-select: none;\n\tuser-select: none;\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper{\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li{\n\ttext-indent: 34px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n.content{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n</style>\n\n<template>\n<section class=\"mask\" v-on:click=\"hideVersions\" v-show=\"versions.currentNote\">\n<section class=\"versions\" v-on:click.stop=\"()=>{}\">\n\t<section class=\"wrapper\">\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t>{{versions.currentNote && versions.currentNote.title}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(versions.activeVersionId && versions.activeVersionId === version.id) || contextMenuVersionId == version.id}\"\n\t\t\t\t\t\tv-for=\"version in versions.list\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentVersion(version.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(version.id)\"\n\t\t\t\t\t>{{formatDate(version.date)}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"content\"><pre>{{versions.activeVersionContent}}</pre></section>\n</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'versions',\n\t\t\t'contextMenuVersionId'\n\t\t])\n\t},\n\twatch: {\n\t},\n\tmethods: {\n\t\tformatDate(date){\n\t\t\tlet ts = date.getTime() - date.getTimezoneOffset()*60*1000;\n\t\t\tlet s = new Date(ts).toISOString();\n\n\t\t\t// s.replace(/T.+$/,'');\t// 2015-11-24\n\t\t\t// s.replace(/\\-\\d+T.+$/,''); // 2015-11\n\t\t\t// s.replace(/(^\\d+\\-|T.+$)/g,''); // 11-24\n\t\t\t// s.replace(/(^[0-9\\-]+T|\\.\\d+Z$)/g,''); // 14:16:18\n\t\t\t// s.replace(/(^[0-9\\-]+T|:\\d+\\.\\d+Z$)/g,''); // 14:16\n\t\t\t// s.replace(/T/g,' ').replace(/\\.\\d+Z$/,''); // 2015-11-24 14:16:18\n\t\t\t// s.replace(/T/g,' ').replace(/:\\d+\\.\\d+Z$/,''); // 2015-11-24 14:16\n\t\t\treturn s.replace(/T/g,' ').replace(/^\\d+\\-/, '').replace(/:\\d+\\.\\d+Z$/,''); // 11-24 14:16\n\n\t\t},\n\t\tswitchCurrentVersion(versionId){\n\t\t\tthis.$store.dispatch('switchActiveVersion', versionId);\n\t\t},\n\t\thideVersions(){\n\t\t\tthis.$store.commit('hideVersions');\n\t\t},\n\t\tshowContextMenu(versionId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuVersion', versionId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'versionOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'恢复该版本',\n\t\t\t\t\tevent:'versionRestore'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuVersion', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	
+	// exports
+
+
+/***/ },
+/* 57 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	
+	var _lodash = __webpack_require__(12);
+	
+	var _lodash2 = _interopRequireDefault(_lodash);
+	
+	var _vuex = __webpack_require__(3);
+	
+	var _index = __webpack_require__(13);
+	
+	var _index2 = _interopRequireDefault(_index);
+	
+	var _util = __webpack_require__(19);
+	
+	var _util2 = _interopRequireDefault(_util);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	let menu = new _index2.default(_util2.default.platform);
+	
+	let _doExchange;
+	
+	exports.default = {
+		computed: _extends({}, (0, _vuex.mapGetters)(['versions', 'contextMenuVersionId'])),
+		watch: {},
+		methods: {
+			formatDate(date) {
+				let ts = date.getTime() - date.getTimezoneOffset() * 60 * 1000;
+				let s = new Date(ts).toISOString();
+	
+				// s.replace(/T.+$/,'');	// 2015-11-24
+				// s.replace(/\-\d+T.+$/,''); // 2015-11
+				// s.replace(/(^\d+\-|T.+$)/g,''); // 11-24
+				// s.replace(/(^[0-9\-]+T|\.\d+Z$)/g,''); // 14:16:18
+				// s.replace(/(^[0-9\-]+T|:\d+\.\d+Z$)/g,''); // 14:16
+				// s.replace(/T/g,' ').replace(/\.\d+Z$/,''); // 2015-11-24 14:16:18
+				// s.replace(/T/g,' ').replace(/:\d+\.\d+Z$/,''); // 2015-11-24 14:16
+				return s.replace(/T/g, ' ').replace(/^\d+\-/, '').replace(/:\d+\.\d+Z$/, ''); // 11-24 14:16
+			},
+			switchCurrentVersion(versionId) {
+				this.$store.dispatch('switchActiveVersion', versionId);
+			},
+			hideVersions() {
+				this.$store.commit('hideVersions');
+			},
+			showContextMenu(versionId) {
+				// console.log('contextmenu');
+				this.$store.commit('switchContextMenuVersion', versionId);
+				// this.$nextTick(() => {
+				setTimeout(() => {
+					menu.showContextMenu([{
+						title: '打开',
+						event: 'versionOpen'
+					}, {
+						title: '恢复该版本',
+						event: 'versionRestore'
+					}]);
+					setTimeout(() => {
+						this.$store.commit('switchContextMenuVersion', 0);
+					}, 30);
+				}, 30);
+			}
+		},
+		data() {
+			var data = {};
+			return data;
+		}
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 58 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports={render:function (){with(this) {
+	  return _h('section', {
+	    directives: [{
+	      name: "show",
+	      rawName: "v-show",
+	      value: (versions.currentNote),
+	      expression: "versions.currentNote"
+	    }],
+	    staticClass: "mask",
+	    on: {
+	      "click": hideVersions
+	    }
+	  }, [_h('section', {
+	    staticClass: "versions",
+	    on: {
+	      "click": function($event) {
+	        $event.stopPropagation();
+	        () => {}
+	      }
+	    }
+	  }, [_h('section', {
+	    staticClass: "wrapper"
+	  }, [_h('ul', [_h('li', {
+	    staticClass: "icon folder"
+	  }, [_s(versions.currentNote && versions.currentNote.title) + "\n\t\t\t\t", _h('ul', [_l((versions.list), function(version) {
+	    return _h('li', {
+	      staticClass: "icon note",
+	      class: {
+	        active: (versions.activeVersionId && versions.activeVersionId === version.id) || contextMenuVersionId == version.id
+	      },
+	      on: {
+	        "click": function($event) {
+	          switchCurrentVersion(version.id)
+	        },
+	        "contextmenu": function($event) {
+	          showContextMenu(version.id)
+	        }
+	      }
+	    }, [_s(formatDate(version.date))])
+	  }), " "])])])]), " ", _h('section', {
+	    staticClass: "content"
+	  }, [_h('pre', [_s(versions.activeVersionContent)])])])])
+	}},staticRenderFns: []}
+	if (false) {
+	  module.hot.accept()
+	  if (module.hot.data) {
+	     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-0bf59276", module.exports)
+	  }
+	}
+
+/***/ },
+/* 59 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
@@ -5874,11 +6208,11 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _note = __webpack_require__(55);
+	var _note = __webpack_require__(60);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
-	var _meta = __webpack_require__(59);
+	var _meta = __webpack_require__(66);
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
@@ -5901,7 +6235,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 55 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5914,11 +6248,11 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _index = __webpack_require__(56);
+	var _index = __webpack_require__(61);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
-	var _git = __webpack_require__(60);
+	var _git = __webpack_require__(64);
 	
 	var _git2 = _interopRequireDefault(_git);
 	
@@ -6058,7 +6392,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 56 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6067,7 +6401,7 @@
 		value: true
 	});
 	
-	var _web = __webpack_require__(57);
+	var _web = __webpack_require__(62);
 	
 	var _web2 = _interopRequireDefault(_web);
 	
@@ -6083,7 +6417,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 57 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6092,7 +6426,7 @@
 		value: true
 	});
 	
-	var _base = __webpack_require__(58);
+	var _base = __webpack_require__(63);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
@@ -6158,7 +6492,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 58 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6186,7 +6520,91 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 59 */
+/* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _path = __webpack_require__(35);
+	
+	var _path2 = _interopRequireDefault(_path);
+	
+	var _fs = __webpack_require__(34);
+	
+	var _fs2 = _interopRequireDefault(_fs);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	class Git {
+	
+		constructor(options) {
+			this._git = _path2.default.join(__webpack_require__(18).remote.app.getAppPath(), 'lib/git');
+			this._root = options.path;
+			if (!_fs2.default.existsSync(this._root)) {
+				_fs2.default.mkdirSync(this._root);
+			}
+		}
+		runCommand(command) {
+			let execSync = __webpack_require__(65).execSync;
+			try {
+				console.log('[Git runCommand] ' + command);
+				return execSync(`${ this._git } ${ command }`, {
+					cwd: this._root
+				}).toString();
+			} catch (e) {
+				console.log('[Git runCommand Error]', e);
+				return false;
+			}
+		}
+		hasInited() {
+			return _fs2.default.existsSync(_path2.default.join(this._root, '.git'));
+		}
+		init() {
+			return this.runCommand('init');
+		}
+		status() {
+			return this.runCommand('status');
+		}
+		checkout(commitOrPath) {
+			return this.runCommand(`checkout ${ commitOrPath }`);
+		}
+		log(path) {
+			let log = this.runCommand(`log --pretty=format:"%H %ct" ${ path }`);
+			if (!log) {
+				return [];
+			}
+			let logArray = log.trim().split('\n').map(line => {
+				let linePart = line.split(' ');
+				return {
+					id: linePart[0],
+					date: new Date(linePart[1] * 1000)
+				};
+			});
+			return logArray;
+		}
+		commit(msg) {
+			this.runCommand('add .');
+			return this.runCommand(`commit -am "${ msg }"`);
+		}
+		show(version, path) {
+			return this.runCommand(`show ${ version }:${ path }`);
+		}
+	}
+	exports.default = Git;
+	module.exports = exports['default'];
+
+/***/ },
+/* 65 */
+/***/ function(module, exports) {
+
+	module.exports = require("child_process");
+
+/***/ },
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6199,7 +6617,7 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _index = __webpack_require__(56);
+	var _index = __webpack_require__(61);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
@@ -6389,91 +6807,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 60 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _path = __webpack_require__(35);
-	
-	var _path2 = _interopRequireDefault(_path);
-	
-	var _fs = __webpack_require__(34);
-	
-	var _fs2 = _interopRequireDefault(_fs);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	class Git {
-	
-		constructor(options) {
-			this._git = _path2.default.join(__webpack_require__(18).remote.app.getAppPath(), 'lib/git');
-			this._root = options.path;
-			if (!_fs2.default.existsSync(this._root)) {
-				_fs2.default.mkdirSync(this._root);
-			}
-		}
-		runCommand(command) {
-			let execSync = __webpack_require__(61).execSync;
-			try {
-				console.log('[Git runCommand] ' + command);
-				return execSync(`${ this._git } ${ command }`, {
-					cwd: this._root
-				}).toString();
-			} catch (e) {
-				console.log('[Git runCommand Error]', e);
-				return false;
-			}
-		}
-		hasInited() {
-			return _fs2.default.existsSync(_path2.default.join(this._root, '.git'));
-		}
-		init() {
-			return this.runCommand('init');
-		}
-		status() {
-			return this.runCommand('status');
-		}
-		checkout(commitOrPath) {
-			return this.runCommand(`checkout ${ commitOrPath }`);
-		}
-		log(path) {
-			let log = this.runCommand(`log --pretty=format:"%H %ct" ${ path }`);
-			if (!log) {
-				return [];
-			}
-			let logArray = log.trim().split('\n').map(line => {
-				let linePart = line.split(' ');
-				return {
-					id: linePart[0],
-					date: new Date(linePart[1] * 1000)
-				};
-			});
-			return logArray;
-		}
-		commit(msg) {
-			this.runCommand('add .');
-			return this.runCommand(`commit -am "${ msg }"`);
-		}
-		show(version, path) {
-			return this.runCommand(`show ${ version }:${ path }`);
-		}
-	}
-	exports.default = Git;
-	module.exports = exports['default'];
-
-/***/ },
-/* 61 */
-/***/ function(module, exports) {
-
-	module.exports = require("child_process");
-
-/***/ },
-/* 62 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6490,11 +6824,11 @@
 	
 	var _vuex2 = _interopRequireDefault(_vuex);
 	
-	var _meta = __webpack_require__(59);
+	var _meta = __webpack_require__(66);
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
-	var _note = __webpack_require__(55);
+	var _note = __webpack_require__(60);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
@@ -6502,7 +6836,7 @@
 	
 	var _io2 = _interopRequireDefault(_io);
 	
-	var _scroll = __webpack_require__(63);
+	var _scroll = __webpack_require__(68);
 	
 	var _scroll2 = _interopRequireDefault(_scroll);
 	
@@ -6510,7 +6844,7 @@
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
-	var _git = __webpack_require__(60);
+	var _git = __webpack_require__(64);
 	
 	var _git2 = _interopRequireDefault(_git);
 	
@@ -6530,7 +6864,7 @@
 	
 	const store = new _vuex2.default.Store({
 		state: {
-			contextMenuNoteId: null,
+			contextMenuNoteId: '',
 			currentNote: null,
 			currentNotebook: null,
 			notebooks: [],
@@ -6552,7 +6886,8 @@
 				activeVersionId: '',
 				activeVersionContent: '',
 				list: []
-			}
+			},
+			contextMenuVersionId: ''
 		},
 		mutations: {
 			newNote(state, note) {
@@ -6568,6 +6903,7 @@
 				state.currentNotebook = notebook;
 			},
 			changeCurrentNoteContent(state, content) {
+				// console.log('[store mutations]', content);
 				state.currentNote.content = content;
 			},
 			changeCurrentNoteTitle(state, title) {
@@ -6603,6 +6939,9 @@
 				state.versions.activeVersionContent = '';
 				state.versions.list = [];
 				state.versions.currentNote = null;
+			},
+			switchContextMenuVersion(state, versionId) {
+				state.contextMenuVersionId = versionId;
 			}
 		},
 		getters: {
@@ -6666,6 +7005,9 @@
 			},
 			versions(state) {
 				return state.versions;
+			},
+			contextMenuVersionId(state) {
+				return state.contextMenuVersionId;
 			}
 			/*currentNoteContent(state, getters){
 	  	return getters.content;
@@ -6674,8 +7016,8 @@
 		actions: {
 			changeCurrentNoteContent(context, content) {
 				return _asyncToGenerator(function* () {
-					context.commit('changeCurrentNoteContent', content);
 					let title = _note2.default.getTitleFromContent(content);
+					context.commit('changeCurrentNoteContent', content);
 					context.commit('changeCurrentNoteTitle', title);
 	
 					yield _note2.default.saveNoteContent(context.state.currentNote);
@@ -6784,13 +7126,27 @@
 			switchActiveVersion(context, versionId) {
 				return _asyncToGenerator(function* () {
 					if (!versionId) {
-						let activeVersion = context.state.versions.list[0];
-						if (!activeVersion) return;
-						versionId = activeVersion.id;
+						versionId = context.state.contextMenuVersionId;
+						if (!versionId) {
+							let activeVersion = context.state.versions.list[0];
+							if (!activeVersion) return;
+							versionId = activeVersion.id;
+						}
 					}
 					let fileName = `note-${ context.state.versions.currentNote.id }.md`;
 					let content = git.show(versionId, fileName);
 					context.commit('switchCurrentVersion', { versionId, content });
+				})();
+			},
+			restoreActiveVersion(context) {
+				return _asyncToGenerator(function* () {
+					let versionId = context.state.contextMenuVersionId;
+					if (!versionId) return;
+	
+					let fileName = `note-${ context.state.versions.currentNote.id }.md`;
+					let content = git.show(versionId, fileName);
+	
+					yield context.dispatch('changeCurrentNoteContent', content);
 				})();
 			},
 			importBackup(context) {
@@ -6864,7 +7220,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 63 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6873,7 +7229,7 @@
 		value: true
 	});
 	
-	var _cubicInOut = __webpack_require__(64);
+	var _cubicInOut = __webpack_require__(69);
 	
 	var _cubicInOut2 = _interopRequireDefault(_cubicInOut);
 	
@@ -6922,7 +7278,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 64 */
+/* 69 */
 /***/ function(module, exports) {
 
 	function cubicInOut(t) {
@@ -6932,305 +7288,6 @@
 	}
 	
 	module.exports = cubicInOut
-
-/***/ },
-/* 65 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_exports__, __vue_options__
-	
-	/* styles */
-	__webpack_require__(66)
-	
-	/* script */
-	__vue_exports__ = __webpack_require__(68)
-	
-	/* template */
-	var __vue_template__ = __webpack_require__(69)
-	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
-	if (
-	  typeof __vue_exports__.default === "object" ||
-	  typeof __vue_exports__.default === "function"
-	) {
-	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
-	__vue_options__ = __vue_exports__ = __vue_exports__.default
-	}
-	if (typeof __vue_options__ === "function") {
-	  __vue_options__ = __vue_options__.options
-	}
-	__vue_options__.name = __vue_options__.name || "versions"
-	__vue_options__.__file = "/Users/TooBug/work/github/TooNote/src/component/versions.vue"
-	__vue_options__.render = __vue_template__.render
-	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
-	__vue_options__._scopeId = "data-v-0bf59276"
-	
-	/* hot reload */
-	if (false) {(function () {
-	  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  module.hot.accept()
-	  if (!module.hot.data) {
-	    hotAPI.createRecord("data-v-0bf59276", __vue_options__)
-	  } else {
-	    hotAPI.reload("data-v-0bf59276", __vue_options__)
-	  }
-	})()}
-	if (__vue_options__.functional) {console.error("[vue-loader] versions.vue: functional components are not supported and should be defined in plain js files using render functions.")}
-	
-	module.exports = __vue_exports__
-
-
-/***/ },
-/* 66 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(67);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./versions.vue", function() {
-				var newContent = require("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./versions.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 67 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(7)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "\n.mask[data-v-0bf59276]{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions[data-v-0bf59276]{\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper[data-v-0bf59276]{\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul[data-v-0bf59276]{\n\tlist-style: none;\n}\n.wrapper li[data-v-0bf59276]{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li[data-v-0bf59276]{\n\ttext-indent: 34px;\n}\n.wrapper li.active[data-v-0bf59276]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-0bf59276] {\n\ttransition: transform .4s;\n}\n.content[data-v-0bf59276]{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n", "", {"version":3,"sources":["/./component/versions.vue?50be2ed3"],"names":[],"mappings":";AACA;CACA,mBAAA;CACA,OAAA;CACA,MAAA;CACA,WAAA;CACA,WAAA;CACA,YAAA;CACA,gCAAA;CACA;AACA;CACA,mBAAA;CACA,WAAA;CACA,aAAA;CACA,cAAA;CACA,UAAA;CACA,SAAA;CACA,iCAAA;CACA,iBAAA;CACA,sBAAA;CACA,cAAA;CACA,2BAAA;CACA,cAAA;CACA;AACA;CACA,aAAA;CACA,mBAAA;CACA,+BAAA;CACA,kBAAA;CACA,gBAAA;CACA,eAAA;CACA,0BAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA,iBAAA;IACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AACA;CACA,cAAA;CACA,OAAA;CACA,aAAA;CACA,eAAA;CACA","file":"versions.vue","sourcesContent":["<style scoped>\n.mask{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions{\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper{\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li{\n\ttext-indent: 34px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n.content{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n</style>\n\n<template>\n<section class=\"mask\" v-on:click=\"hideVersions\" v-show=\"versions.currentNote\">\n<section class=\"versions\" v-on:click.stop=\"()=>{}\">\n\t<section class=\"wrapper\">\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t>{{versions.currentNote && versions.currentNote.title}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(versions.activeVersionId && versions.activeVersionId === version.id)}\"\n\t\t\t\t\t\tv-for=\"version in versions.list\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentVersion(version.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(version.id)\"\n\t\t\t\t\t>{{formatDate(version.date)}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"content\"><pre>{{versions.activeVersionContent}}</pre></section>\n</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'versions'\n\t\t])\n\t},\n\twatch: {\n\t},\n\tmethods: {\n\t\tformatDate(date){\n\t\t\tlet ts = date.getTime() - date.getTimezoneOffset()*60*1000;\n\t\t\tlet s = new Date(ts).toISOString();\n\n\t\t\t// s.replace(/T.+$/,'');\t// 2015-11-24\n\t\t\t// s.replace(/\\-\\d+T.+$/,''); // 2015-11\n\t\t\t// s.replace(/(^\\d+\\-|T.+$)/g,''); // 11-24\n\t\t\t// s.replace(/(^[0-9\\-]+T|\\.\\d+Z$)/g,''); // 14:16:18\n\t\t\t// s.replace(/(^[0-9\\-]+T|:\\d+\\.\\d+Z$)/g,''); // 14:16\n\t\t\t// s.replace(/T/g,' ').replace(/\\.\\d+Z$/,''); // 2015-11-24 14:16:18\n\t\t\t// s.replace(/T/g,' ').replace(/:\\d+\\.\\d+Z$/,''); // 2015-11-24 14:16\n\t\t\treturn s.replace(/T/g,' ').replace(/^\\d+\\-/, '').replace(/:\\d+\\.\\d+Z$/,''); // 11-24 14:16\n\n\t\t},\n\t\tswitchCurrentVersion(versionId){\n\t\t\tthis.$store.dispatch('switchActiveVersion', versionId);\n\t\t},\n\t\thideVersions(){\n\t\t\tthis.$store.commit('hideVersions');\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
-	
-	// exports
-
-
-/***/ },
-/* 68 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	
-	var _lodash = __webpack_require__(12);
-	
-	var _lodash2 = _interopRequireDefault(_lodash);
-	
-	var _vuex = __webpack_require__(3);
-	
-	var _index = __webpack_require__(13);
-	
-	var _index2 = _interopRequireDefault(_index);
-	
-	var _util = __webpack_require__(19);
-	
-	var _util2 = _interopRequireDefault(_util);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	let menu = new _index2.default(_util2.default.platform);
-	
-	let _doExchange;
-	
-	exports.default = {
-		computed: _extends({}, (0, _vuex.mapGetters)(['versions'])),
-		watch: {},
-		methods: {
-			formatDate(date) {
-				let ts = date.getTime() - date.getTimezoneOffset() * 60 * 1000;
-				let s = new Date(ts).toISOString();
-	
-				// s.replace(/T.+$/,'');	// 2015-11-24
-				// s.replace(/\-\d+T.+$/,''); // 2015-11
-				// s.replace(/(^\d+\-|T.+$)/g,''); // 11-24
-				// s.replace(/(^[0-9\-]+T|\.\d+Z$)/g,''); // 14:16:18
-				// s.replace(/(^[0-9\-]+T|:\d+\.\d+Z$)/g,''); // 14:16
-				// s.replace(/T/g,' ').replace(/\.\d+Z$/,''); // 2015-11-24 14:16:18
-				// s.replace(/T/g,' ').replace(/:\d+\.\d+Z$/,''); // 2015-11-24 14:16
-				return s.replace(/T/g, ' ').replace(/^\d+\-/, '').replace(/:\d+\.\d+Z$/, ''); // 11-24 14:16
-			},
-			switchCurrentVersion(versionId) {
-				this.$store.dispatch('switchActiveVersion', versionId);
-			},
-			hideVersions() {
-				this.$store.commit('hideVersions');
-			}
-		},
-		data() {
-			var data = {};
-			return data;
-		}
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 69 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports={render:function (){with(this) {
-	  return _h('section', {
-	    directives: [{
-	      name: "show",
-	      rawName: "v-show",
-	      value: (versions.currentNote),
-	      expression: "versions.currentNote"
-	    }],
-	    staticClass: "mask",
-	    on: {
-	      "click": hideVersions
-	    }
-	  }, [_h('section', {
-	    staticClass: "versions",
-	    on: {
-	      "click": function($event) {
-	        $event.stopPropagation();
-	        () => {}
-	      }
-	    }
-	  }, [_h('section', {
-	    staticClass: "wrapper"
-	  }, [_h('ul', [_h('li', {
-	    staticClass: "icon folder"
-	  }, [_s(versions.currentNote && versions.currentNote.title) + "\n\t\t\t\t", _h('ul', [_l((versions.list), function(version) {
-	    return _h('li', {
-	      staticClass: "icon note",
-	      class: {
-	        active: (versions.activeVersionId && versions.activeVersionId === version.id)
-	      },
-	      on: {
-	        "click": function($event) {
-	          switchCurrentVersion(version.id)
-	        },
-	        "contextmenu": function($event) {
-	          showContextMenu(version.id)
-	        }
-	      }
-	    }, [_s(formatDate(version.date))])
-	  }), " "])])])]), " ", _h('section', {
-	    staticClass: "content"
-	  }, [_h('pre', [_s(versions.activeVersionContent)])])])])
-	}},staticRenderFns: []}
-	if (false) {
-	  module.hot.accept()
-	  if (module.hot.data) {
-	     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-0bf59276", module.exports)
-	  }
-	}
 
 /***/ }
 /******/ ]);
