@@ -6296,12 +6296,12 @@
 	
 	// app退出前提交git
 	// 无效，待查
-	let app = __webpack_require__(18).remote.app;
-	app.on('before-quit', e => {
-		console.log('ready to quit');
-		e.preventDefault();
+	// let app = require('electron').remote.app;
+	window.addEventListener('beforeunload', e => {
+		// console.log('ready to quit');
+		// e.preventDefault();
 		git.commit(commitTitles.join(' '));
-		app.exit();
+		// app.exit();
 	});
 	
 	note.getTitleFromContent = function (content) {
