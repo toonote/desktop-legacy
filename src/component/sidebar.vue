@@ -176,6 +176,11 @@ export default {
 				},{
 					title:'删除',
 					event:'noteDelete'
+				},{
+					type:'separator'
+				},{
+					title:'历史版本',
+					event:'noteHistory'
 				}]);
 				setTimeout(()=>{
 					this.$store.commit('switchContextMenuNote', 0);

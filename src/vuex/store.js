@@ -6,7 +6,13 @@ import note from '../modules/note';
 import io from '../modules/io';
 import scroll from '../modules/scroll';
 import renderer from '../modules/renderer';
+import Git from '../modules/git';
+import path from 'path';
 
+let gitPath = path.join(require('electron').remote.app.getPath('userData'), 'git');
+let git = new Git({
+	path: gitPath
+});
 // Vue.use(Vuex);
 
 const store = new Vuex.Store({
@@ -27,7 +33,13 @@ const store = new Vuex.Store({
 		searchResults:[
 			// {id:'1407215592432',title:'富途\\服务器相关'},
 			// {id:'1471501307415',title:'富途\\前端近期'},
-		]
+		],
+		versions:{
+			currentNote:null,
+			activeVersionId:'',
+			activeVersionContent:'',
+			list:[]
+		}
 	},
 	mutations: {
 		newNote(state, note) {
@@ -63,6 +75,21 @@ const store = new Vuex.Store({
 		updateSearchResults (state, results) {
 			state.isSearching = true;
 			state.searchResults = results;
+		},
+		showHistory (state, data) {
+			console.log(data);
+			state.versions.currentNote = data.note;
+			state.versions.list = data.versions;
+		},
+		switchCurrentVersion(state, data) {
+			state.versions.activeVersionId = data.versionId;
+			state.versions.activeVersionContent = data.content;
+		},
+		hideVersions(state){
+			state.versions.activeVersionId = '';
+			state.versions.activeVersionContent = '';
+			state.versions.list = [];
+			state.versions.currentNote = null;
 		}
 	},
 	getters: {
@@ -123,6 +150,9 @@ const store = new Vuex.Store({
 		},
 		searchResults(state){
 			return state.searchResults
+		},
+		versions(state){
+			return state.versions
 		}
 		/*currentNoteContent(state, getters){
 			return getters.content;
@@ -202,7 +232,33 @@ const store = new Vuex.Store({
 			await meta.deleteNote(targetId);
 			await note.deleteNote(targetId);
 
-			context.dispatch('switchCurrentNoteById', );
+			context.dispatch('switchCurrentNoteById');
+		},
+		async historyContextMenuNote(context) {
+
+			let targetNote = context.getters.allNotes.filter((note)=>note.id === context.state.contextMenuNoteId)[0];
+			let fileName = `note-${context.state.contextMenuNoteId}.md`;
+			let logArr = git.log(fileName);
+
+			context.commit('showHistory', {
+				note:targetNote,
+				versions:logArr
+			});
+			await context.dispatch('switchActiveVersion');
+			/*logArr.forEach((log) => {
+				let content = git.show(log.id, fileName);
+				console.log(`${log.date}\n\n${content}`);
+			});*/
+		},
+		async switchActiveVersion(context, versionId) {
+			if(!versionId) {
+				let activeVersion = context.state.versions.list[0];
+				if(!activeVersion) return;
+				versionId = activeVersion.id;
+			}
+			let fileName = `note-${context.state.versions.currentNote.id}.md`;
+			let content = git.show(versionId, fileName);
+			context.commit('switchCurrentVersion', {versionId, content});
 		},
 		async importBackup(context) {
 			let newNotes = await io.getNotesFromBackUp();

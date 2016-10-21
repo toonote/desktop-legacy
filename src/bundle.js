@@ -67,7 +67,7 @@
 	
 	var _sidebar2 = _interopRequireDefault(_sidebar);
 	
-	var _editor = __webpack_require__(20);
+	var _editor = __webpack_require__(21);
 	
 	var _editor2 = _interopRequireDefault(_editor);
 	
@@ -78,6 +78,10 @@
 	var _menubar = __webpack_require__(49);
 	
 	var _menubar2 = _interopRequireDefault(_menubar);
+	
+	var _versions = __webpack_require__(65);
+	
+	var _versions2 = _interopRequireDefault(_versions);
 	
 	var _menu = __webpack_require__(54);
 	
@@ -96,7 +100,7 @@
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	_vue2.default.use(_vuex2.default);
-	let store = __webpack_require__(60);
+	let store = __webpack_require__(62);
 	
 	// Vue.config.debug = true;
 	
@@ -131,6 +135,9 @@
 			deleteContextMenuNote() {
 				store.dispatch('deleteContextMenuNote');
 			},
+			historyContextMenuNote() {
+				store.dispatch('historyContextMenuNote');
+			},
 			switchCurrentNotebook(notebook) {
 				store.commit('switchCurrentNotebook', notebook);
 			},
@@ -154,7 +161,8 @@
 			menubar: _menubar2.default,
 			sidebar: _sidebar2.default,
 			editor: _editor2.default,
-			preview: _preview2.default
+			preview: _preview2.default,
+			versions: _versions2.default
 		}
 	});
 	
@@ -202,6 +210,9 @@
 					if (confirm('确定要删除该笔记吗？删除后将无法找回该笔记内容')) {
 						app.deleteContextMenuNote();
 					}
+					break;
+				case 'noteHistory':
+					app.historyContextMenuNote();
 					break;
 				case 'importBackup':
 					app.importBackup();
@@ -256,7 +267,7 @@
 	__vue_exports__ = __webpack_require__(11)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(19)
+	var __vue_template__ = __webpack_require__(20)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -326,7 +337,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1],\n.wrapper .notFound[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li[data-v-114b24d1]{\n\ttext-indent: 44px;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-114b24d1] {\n\ttransition: transform .4s;\n}\n.searchWrapper input[data-v-114b24d1]{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input[data-v-114b24d1]:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?d4d0d122"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;;CAEA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AAEA;CACA,eAAA;IACA,eAAA;IACA,YAAA;IACA,aAAA;IACA,iCAAA;IACA,wBAAA;IACA,gBAAA;CACA;AACA;CACA,kBAAA;CACA,gBAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2,\n.wrapper .notFound{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li{\n\ttext-indent: 44px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n\n.searchWrapper input{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"searchWrapper\">\n\t\t<input type=\"search\" v-model.trim=\"keyword\" placeholder=\"搜索...\" />\n\t</section>\n\t<section class=\"wrapper\" v-show=\"!isSearching\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<transition-group\n\t\t\t\t\tname=\"note-list\"\n\t\t\t\t\ttag=\"ul\"\n\t\t\t\t\tdroppable=\"true\"\n\t\t\t\t\tv-on:drop=\"drop\"\n\t\t\t\t\t>\n\t\t\t\t\t<li\n\t\t\t\t\t\tdraggable=\"true\"\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:key=\"note.id\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t\tv-on:dragstart=\"dragStart($event, note.id)\"\n\t\t\t\t\t\tv-on:dragover.prevent=\"dragOver($event, note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"wrapper\" v-show=\"isSearching\">\n\t\t<div class=\"notFound\" v-show=\"!searchResults.length\">搜的什么鬼 一篇都没有</div>\n\t\t<ul v-show=\"searchResults.length\">\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in searchResultsWithCategories\"\n\t\t\t>{{category}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'notebooks',\n\t\t\t'currentNote',\n\t\t\t'contextMenuNoteId',\n\t\t\t'notebooksWithCategories',\n\t\t\t'isSearching',\n\t\t\t'searchResults',\n\t\t\t'searchResultsWithCategories'\n\t\t])\n\t},\n\twatch: {\n\t\tkeyword(){\n\t\t\tif(this.keyword){\n\t\t\t\tthis.$store.dispatch('search', this.keyword);\n\t\t\t}else{\n\t\t\t\tthis.$store.commit('switchSearching', false);\n\t\t\t}\n\t\t}\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\tdragStart(e, noteId){\n\t\t\tthis.currentMovingNoteId = noteId;\n\t\t\t// e.dataTransfer.dropEffect = 'move';\n\t\t\t// e.dataTransfer.effectAllowed = 'move';\n\t\t\t// console.log('start', noteId);\n\t\t},\n\t\tdragOver(e, noteId){\n\t\t\tif(this.isAnimating) return;\n\t\t\tif(this.currentMovingNoteId === noteId) return;\n\n\t\t\t// console.log('over', noteId);\n\n\t\t\tthis.currentTargetingNoteId = noteId;\n\n\t\t\tif(!_doExchange){\n\t\t\t\t_doExchange = throttle(() => {\n\t\t\t\t\tthis.isAnimating = true;\n\t\t\t\t\tthis.$store.dispatch('exchangeNote', {\n\t\t\t\t\t\tid1:this.currentMovingNoteId,\n\t\t\t\t\t\tid2:this.currentTargetingNoteId\n\t\t\t\t\t});\n\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\tthis.isAnimating = false;\n\t\t\t\t\t}, 500);\n\t\t\t\t}, 500);\n\t\t\t}\n\t\t\t_doExchange();\n\t\t},\n\t\tdrop(e){\n\t\t\tthis.currentMovingNoteId = 0;\n\t\t\t// console.log('drop', e);\n\t\t}\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\tcurrentMovingNoteId:0,\n\t\t\tcurrentTargetingNoteId:0,\n\t\t\tisAnimating:false,\n\t\t\tkeyword:''\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1],\n.wrapper .notFound[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li[data-v-114b24d1]{\n\ttext-indent: 44px;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-114b24d1] {\n\ttransition: transform .4s;\n}\n.searchWrapper input[data-v-114b24d1]{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input[data-v-114b24d1]:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?602c33de"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;;CAEA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AAEA;CACA,eAAA;IACA,eAAA;IACA,YAAA;IACA,aAAA;IACA,iCAAA;IACA,wBAAA;IACA,gBAAA;CACA;AACA;CACA,kBAAA;CACA,gBAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2,\n.wrapper .notFound{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li{\n\ttext-indent: 44px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n\n.searchWrapper input{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"searchWrapper\">\n\t\t<input type=\"search\" v-model.trim=\"keyword\" placeholder=\"搜索...\" />\n\t</section>\n\t<section class=\"wrapper\" v-show=\"!isSearching\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<transition-group\n\t\t\t\t\tname=\"note-list\"\n\t\t\t\t\ttag=\"ul\"\n\t\t\t\t\tdroppable=\"true\"\n\t\t\t\t\tv-on:drop=\"drop\"\n\t\t\t\t\t>\n\t\t\t\t\t<li\n\t\t\t\t\t\tdraggable=\"true\"\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:key=\"note.id\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t\tv-on:dragstart=\"dragStart($event, note.id)\"\n\t\t\t\t\t\tv-on:dragover.prevent=\"dragOver($event, note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"wrapper\" v-show=\"isSearching\">\n\t\t<div class=\"notFound\" v-show=\"!searchResults.length\">搜的什么鬼 一篇都没有</div>\n\t\t<ul v-show=\"searchResults.length\">\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in searchResultsWithCategories\"\n\t\t\t>{{category}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'notebooks',\n\t\t\t'currentNote',\n\t\t\t'contextMenuNoteId',\n\t\t\t'notebooksWithCategories',\n\t\t\t'isSearching',\n\t\t\t'searchResults',\n\t\t\t'searchResultsWithCategories'\n\t\t])\n\t},\n\twatch: {\n\t\tkeyword(){\n\t\t\tif(this.keyword){\n\t\t\t\tthis.$store.dispatch('search', this.keyword);\n\t\t\t}else{\n\t\t\t\tthis.$store.commit('switchSearching', false);\n\t\t\t}\n\t\t}\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t},{\n\t\t\t\t\ttype:'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'历史版本',\n\t\t\t\t\tevent:'noteHistory'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\tdragStart(e, noteId){\n\t\t\tthis.currentMovingNoteId = noteId;\n\t\t\t// e.dataTransfer.dropEffect = 'move';\n\t\t\t// e.dataTransfer.effectAllowed = 'move';\n\t\t\t// console.log('start', noteId);\n\t\t},\n\t\tdragOver(e, noteId){\n\t\t\tif(this.isAnimating) return;\n\t\t\tif(this.currentMovingNoteId === noteId) return;\n\n\t\t\t// console.log('over', noteId);\n\n\t\t\tthis.currentTargetingNoteId = noteId;\n\n\t\t\tif(!_doExchange){\n\t\t\t\t_doExchange = throttle(() => {\n\t\t\t\t\tthis.isAnimating = true;\n\t\t\t\t\tthis.$store.dispatch('exchangeNote', {\n\t\t\t\t\t\tid1:this.currentMovingNoteId,\n\t\t\t\t\t\tid2:this.currentTargetingNoteId\n\t\t\t\t\t});\n\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\tthis.isAnimating = false;\n\t\t\t\t\t}, 500);\n\t\t\t\t}, 500);\n\t\t\t}\n\t\t\t_doExchange();\n\t\t},\n\t\tdrop(e){\n\t\t\tthis.currentMovingNoteId = 0;\n\t\t\t// console.log('drop', e);\n\t\t}\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\tcurrentMovingNoteId:0,\n\t\t\tcurrentTargetingNoteId:0,\n\t\t\tisAnimating:false,\n\t\t\tkeyword:''\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -751,17 +762,17 @@
 	//
 	//
 	
-	var _lodash = __webpack_require__(24);
+	var _lodash = __webpack_require__(12);
 	
 	var _lodash2 = _interopRequireDefault(_lodash);
 	
 	var _vuex = __webpack_require__(3);
 	
-	var _index = __webpack_require__(12);
+	var _index = __webpack_require__(13);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
-	var _util = __webpack_require__(18);
+	var _util = __webpack_require__(19);
 	
 	var _util2 = _interopRequireDefault(_util);
 	
@@ -810,6 +821,11 @@
 					}, {
 						title: '删除',
 						event: 'noteDelete'
+					}, {
+						type: 'separator'
+					}, {
+						title: '历史版本',
+						event: 'noteHistory'
 					}]);
 					setTimeout(() => {
 						this.$store.commit('switchContextMenuNote', 0);
@@ -867,6 +883,12 @@
 
 /***/ },
 /* 12 */
+/***/ function(module, exports) {
+
+	module.exports = require("lodash.throttle");
+
+/***/ },
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -875,15 +897,15 @@
 		value: true
 	});
 	
-	var _web = __webpack_require__(13);
+	var _web = __webpack_require__(14);
 	
 	var _web2 = _interopRequireDefault(_web);
 	
-	var _macgap = __webpack_require__(15);
+	var _macgap = __webpack_require__(16);
 	
 	var _macgap2 = _interopRequireDefault(_macgap);
 	
-	var _electron = __webpack_require__(16);
+	var _electron = __webpack_require__(17);
 	
 	var _electron2 = _interopRequireDefault(_electron);
 	
@@ -906,7 +928,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -915,7 +937,7 @@
 		value: true
 	});
 	
-	var _base = __webpack_require__(14);
+	var _base = __webpack_require__(15);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
@@ -942,7 +964,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -991,7 +1013,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1000,7 +1022,7 @@
 		value: true
 	});
 	
-	var _base = __webpack_require__(14);
+	var _base = __webpack_require__(15);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
@@ -1057,7 +1079,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1066,11 +1088,11 @@
 		value: true
 	});
 	
-	var _base = __webpack_require__(14);
+	var _base = __webpack_require__(15);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	var _electron = __webpack_require__(17);
+	var _electron = __webpack_require__(18);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -1174,13 +1196,13 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = require("electron");
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1206,7 +1228,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -1338,16 +1360,16 @@
 	}
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	
 	/* styles */
-	__webpack_require__(21)
+	__webpack_require__(22)
 	
 	/* script */
-	__vue_exports__ = __webpack_require__(23)
+	__vue_exports__ = __webpack_require__(24)
 	
 	/* template */
 	var __vue_template__ = __webpack_require__(36)
@@ -1386,13 +1408,13 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(22);
+	var content = __webpack_require__(23);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -1412,7 +1434,7 @@
 	}
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
@@ -1426,7 +1448,7 @@
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1462,7 +1484,7 @@
 	//
 	//
 	
-	var _lodash = __webpack_require__(24);
+	var _lodash = __webpack_require__(12);
 	
 	var _lodash2 = _interopRequireDefault(_lodash);
 	
@@ -1581,12 +1603,6 @@
 		}
 	};
 	module.exports = exports['default'];
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	module.exports = require("lodash.throttle");
 
 /***/ },
 /* 25 */
@@ -4948,13 +4964,13 @@
 	};
 	
 	io.getFileText = filePath => {
-		filePath = path.join(__webpack_require__(17).remote.app.getAppPath(), filePath);
+		filePath = path.join(__webpack_require__(18).remote.app.getAppPath(), filePath);
 		console.log(filePath);
 		return fs.readFileSync(filePath, 'utf8');
 	};
 	
 	io.saveFile = (data, ext) => {
-		let userDataPath = __webpack_require__(17).remote.app.getPath('userData');
+		let userDataPath = __webpack_require__(18).remote.app.getPath('userData');
 		let savePath = path.join(userDataPath, 'images');
 		let saveFilePath = path.join(savePath, (Date.now() + '' + Math.random()).replace('.', ''));
 		if (ext) {
@@ -4975,7 +4991,7 @@
 	};
 	
 	io.saveImageFromClipboard = () => {
-		let img = __webpack_require__(17).clipboard.readImage();
+		let img = __webpack_require__(18).clipboard.readImage();
 		let imgData = img.toPng();
 	
 		return io.saveFile(imgData, '.png');
@@ -4989,7 +5005,7 @@
 	
 	// 选择文件
 	io.selectFileContent = filters => {
-		var remote = __webpack_require__(17).remote;
+		var remote = __webpack_require__(18).remote;
 		var dialog = remote.dialog;
 		var filePath = dialog.showOpenDialog({
 			filters,
@@ -5005,7 +5021,7 @@
 	
 	// 选择写入路径
 	io.selectPathForWrite = filters => {
-		var remote = __webpack_require__(17).remote;
+		var remote = __webpack_require__(18).remote;
 		var dialog = remote.dialog;
 		var filePath = dialog.showSaveDialog({
 			filters: filters,
@@ -5343,7 +5359,7 @@
 	// import 'highlight.js/styles/github-gist.css';
 	
 	
-	__webpack_require__(63);
+	__webpack_require__(42);
 	
 	var _vuex = __webpack_require__(3);
 	
@@ -5367,7 +5383,7 @@
 				let $target = e.target;
 				// 链接
 				if ($target.tagName === 'A' && /^https?:\/\//.test($target.href)) {
-					let shell = __webpack_require__(17).shell;
+					let shell = __webpack_require__(18).shell;
 					shell.openExternal($target.href);
 					e.preventDefault();
 				}
@@ -5427,7 +5443,12 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 42 */,
+/* 42 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
 /* 43 */,
 /* 44 */,
 /* 45 */
@@ -5638,11 +5659,11 @@
 		value: true
 	});
 	
-	var _index = __webpack_require__(12);
+	var _index = __webpack_require__(13);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
-	var _util = __webpack_require__(18);
+	var _util = __webpack_require__(19);
 	
 	var _util2 = _interopRequireDefault(_util);
 	
@@ -5849,7 +5870,7 @@
 	  value: true
 	});
 	
-	var _util = __webpack_require__(18);
+	var _util = __webpack_require__(19);
 	
 	var _util2 = _interopRequireDefault(_util);
 	
@@ -5861,7 +5882,7 @@
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
-	var _index = __webpack_require__(12);
+	var _index = __webpack_require__(13);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
@@ -5889,7 +5910,7 @@
 		value: true
 	});
 	
-	var _util = __webpack_require__(18);
+	var _util = __webpack_require__(19);
 	
 	var _util2 = _interopRequireDefault(_util);
 	
@@ -5897,12 +5918,57 @@
 	
 	var _index2 = _interopRequireDefault(_index);
 	
+	var _git = __webpack_require__(60);
+	
+	var _git2 = _interopRequireDefault(_git);
+	
+	var _path = __webpack_require__(35);
+	
+	var _path2 = _interopRequireDefault(_path);
+	
+	var _fs = __webpack_require__(34);
+	
+	var _fs2 = _interopRequireDefault(_fs);
+	
+	var _lodash = __webpack_require__(12);
+	
+	var _lodash2 = _interopRequireDefault(_lodash);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	let note = {};
 	let store = new _index2.default(_util2.default.platform);
+	
+	let gitPath = _path2.default.join(__webpack_require__(18).remote.app.getPath('userData'), 'git');
+	let git = new _git2.default({
+		path: gitPath
+	});
+	
+	if (!git.hasInited()) git.init();
+	
+	let commitTitles = [];
+	let doGitCommit = (0, _lodash2.default)(() => {
+		git.commit(commitTitles.join(' '));
+		commitTitles = [];
+	}, 5 * 60 * 1000);
+	let gitCommit = msg => {
+		if (commitTitles.indexOf(msg) === -1) {
+			commitTitles.push(msg);
+		}
+		doGitCommit();
+	};
+	
+	// app退出前提交git
+	// 无效，待查
+	let app = __webpack_require__(18).remote.app;
+	app.on('before-quit', e => {
+		console.log('ready to quit');
+		e.preventDefault();
+		git.commit(commitTitles.join(' '));
+		app.exit();
+	});
 	
 	note.getTitleFromContent = function (content) {
 		let firstLine = content.split('\n', 2)[0];
@@ -5953,6 +6019,8 @@
 	
 	note.deleteNote = (() => {
 		var _ref3 = _asyncToGenerator(function* (id) {
+			_fs2.default.unlinkSync(_path2.default.join(gitPath, `note-${ id }.md`));
+			gitCommit(`删除${ id }`);
 			return yield store.deleteFile(`./note-${ id }.md`);
 		});
 	
@@ -5963,6 +6031,8 @@
 	
 	note.saveNoteContent = (() => {
 		var _ref4 = _asyncToGenerator(function* (note, shouldThrottle) {
+			_fs2.default.writeFileSync(_path2.default.join(gitPath, `note-${ note.id }.md`), note.content, 'utf8');
+			gitCommit(note.title);
 			return yield store.writeFile(`/note-${ note.id }.md`, note.content);
 		});
 	
@@ -5974,6 +6044,8 @@
 	note.init = (() => {
 		var _ref5 = _asyncToGenerator(function* (id) {
 			var content = `# 欢迎使用TooNote\n\nTooNote是一款基于Markdown的笔记软件。`;
+			_fs2.default.writeFileSync(_path2.default.join(gitPath, `note-${ id }.md`), content, 'utf8');
+			gitCommit('INIT');
 			return yield store.writeFile(`./note-${ id }.md`, content);
 		});
 	
@@ -6123,7 +6195,7 @@
 		value: true
 	});
 	
-	var _util = __webpack_require__(18);
+	var _util = __webpack_require__(19);
 	
 	var _util2 = _interopRequireDefault(_util);
 	
@@ -6326,6 +6398,90 @@
 		value: true
 	});
 	
+	var _path = __webpack_require__(35);
+	
+	var _path2 = _interopRequireDefault(_path);
+	
+	var _fs = __webpack_require__(34);
+	
+	var _fs2 = _interopRequireDefault(_fs);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	class Git {
+	
+		constructor(options) {
+			this._git = _path2.default.join(__webpack_require__(18).remote.app.getAppPath(), 'lib/git');
+			this._root = options.path;
+			if (!_fs2.default.existsSync(this._root)) {
+				_fs2.default.mkdirSync(this._root);
+			}
+		}
+		runCommand(command) {
+			let execSync = __webpack_require__(61).execSync;
+			try {
+				console.log('[Git runCommand] ' + command);
+				return execSync(`${ this._git } ${ command }`, {
+					cwd: this._root
+				}).toString();
+			} catch (e) {
+				console.log('[Git runCommand Error]', e);
+				return false;
+			}
+		}
+		hasInited() {
+			return _fs2.default.existsSync(_path2.default.join(this._root, '.git'));
+		}
+		init() {
+			return this.runCommand('init');
+		}
+		status() {
+			return this.runCommand('status');
+		}
+		checkout(commitOrPath) {
+			return this.runCommand(`checkout ${ commitOrPath }`);
+		}
+		log(path) {
+			let log = this.runCommand(`log --pretty=format:"%H %ct" ${ path }`);
+			if (!log) {
+				return [];
+			}
+			let logArray = log.trim().split('\n').map(line => {
+				let linePart = line.split(' ');
+				return {
+					id: linePart[0],
+					date: new Date(linePart[1] * 1000)
+				};
+			});
+			return logArray;
+		}
+		commit(msg) {
+			this.runCommand('add .');
+			return this.runCommand(`commit -am "${ msg }"`);
+		}
+		show(version, path) {
+			return this.runCommand(`show ${ version }:${ path }`);
+		}
+	}
+	exports.default = Git;
+	module.exports = exports['default'];
+
+/***/ },
+/* 61 */
+/***/ function(module, exports) {
+
+	module.exports = require("child_process");
+
+/***/ },
+/* 62 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
 	var _vue = __webpack_require__(2);
 	
 	var _vue2 = _interopRequireDefault(_vue);
@@ -6346,7 +6502,7 @@
 	
 	var _io2 = _interopRequireDefault(_io);
 	
-	var _scroll = __webpack_require__(61);
+	var _scroll = __webpack_require__(63);
 	
 	var _scroll2 = _interopRequireDefault(_scroll);
 	
@@ -6354,10 +6510,22 @@
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
+	var _git = __webpack_require__(60);
+	
+	var _git2 = _interopRequireDefault(_git);
+	
+	var _path = __webpack_require__(35);
+	
+	var _path2 = _interopRequireDefault(_path);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
+	let gitPath = _path2.default.join(__webpack_require__(18).remote.app.getPath('userData'), 'git');
+	let git = new _git2.default({
+		path: gitPath
+	});
 	// Vue.use(Vuex);
 	
 	const store = new _vuex2.default.Store({
@@ -6378,7 +6546,13 @@
 			searchResults: [
 				// {id:'1407215592432',title:'富途\\服务器相关'},
 				// {id:'1471501307415',title:'富途\\前端近期'},
-			]
+			],
+			versions: {
+				currentNote: null,
+				activeVersionId: '',
+				activeVersionContent: '',
+				list: []
+			}
 		},
 		mutations: {
 			newNote(state, note) {
@@ -6414,6 +6588,21 @@
 			updateSearchResults(state, results) {
 				state.isSearching = true;
 				state.searchResults = results;
+			},
+			showHistory(state, data) {
+				console.log(data);
+				state.versions.currentNote = data.note;
+				state.versions.list = data.versions;
+			},
+			switchCurrentVersion(state, data) {
+				state.versions.activeVersionId = data.versionId;
+				state.versions.activeVersionContent = data.content;
+			},
+			hideVersions(state) {
+				state.versions.activeVersionId = '';
+				state.versions.activeVersionContent = '';
+				state.versions.list = [];
+				state.versions.currentNote = null;
 			}
 		},
 		getters: {
@@ -6474,6 +6663,9 @@
 			},
 			searchResults(state) {
 				return state.searchResults;
+			},
+			versions(state) {
+				return state.versions;
 			}
 			/*currentNoteContent(state, getters){
 	  	return getters.content;
@@ -6569,6 +6761,38 @@
 					context.dispatch('switchCurrentNoteById');
 				})();
 			},
+			historyContextMenuNote(context) {
+				return _asyncToGenerator(function* () {
+	
+					let targetNote = context.getters.allNotes.filter(function (note) {
+						return note.id === context.state.contextMenuNoteId;
+					})[0];
+					let fileName = `note-${ context.state.contextMenuNoteId }.md`;
+					let logArr = git.log(fileName);
+	
+					context.commit('showHistory', {
+						note: targetNote,
+						versions: logArr
+					});
+					yield context.dispatch('switchActiveVersion');
+					/*logArr.forEach((log) => {
+	    	let content = git.show(log.id, fileName);
+	    	console.log(`${log.date}\n\n${content}`);
+	    });*/
+				})();
+			},
+			switchActiveVersion(context, versionId) {
+				return _asyncToGenerator(function* () {
+					if (!versionId) {
+						let activeVersion = context.state.versions.list[0];
+						if (!activeVersion) return;
+						versionId = activeVersion.id;
+					}
+					let fileName = `note-${ context.state.versions.currentNote.id }.md`;
+					let content = git.show(versionId, fileName);
+					context.commit('switchCurrentVersion', { versionId, content });
+				})();
+			},
 			importBackup(context) {
 				return _asyncToGenerator(function* () {
 					let newNotes = yield _io2.default.getNotesFromBackUp();
@@ -6640,7 +6864,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 61 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6649,7 +6873,7 @@
 		value: true
 	});
 	
-	var _cubicInOut = __webpack_require__(62);
+	var _cubicInOut = __webpack_require__(64);
 	
 	var _cubicInOut2 = _interopRequireDefault(_cubicInOut);
 	
@@ -6698,7 +6922,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 62 */
+/* 64 */
 /***/ function(module, exports) {
 
 	function cubicInOut(t) {
@@ -6710,10 +6934,303 @@
 	module.exports = cubicInOut
 
 /***/ },
-/* 63 */
-/***/ function(module, exports) {
+/* 65 */
+/***/ function(module, exports, __webpack_require__) {
 
-	// removed by extract-text-webpack-plugin
+	var __vue_exports__, __vue_options__
+	
+	/* styles */
+	__webpack_require__(66)
+	
+	/* script */
+	__vue_exports__ = __webpack_require__(68)
+	
+	/* template */
+	var __vue_template__ = __webpack_require__(69)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.name = __vue_options__.name || "versions"
+	__vue_options__.__file = "/Users/TooBug/work/github/TooNote/src/component/versions.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-0bf59276"
+	
+	/* hot reload */
+	if (false) {(function () {
+	  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  module.hot.accept()
+	  if (!module.hot.data) {
+	    hotAPI.createRecord("data-v-0bf59276", __vue_options__)
+	  } else {
+	    hotAPI.reload("data-v-0bf59276", __vue_options__)
+	  }
+	})()}
+	if (__vue_options__.functional) {console.error("[vue-loader] versions.vue: functional components are not supported and should be defined in plain js files using render functions.")}
+	
+	module.exports = __vue_exports__
+
+
+/***/ },
+/* 66 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(67);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./versions.vue", function() {
+				var newContent = require("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./versions.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 67 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(7)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, "\n.mask[data-v-0bf59276]{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions[data-v-0bf59276]{\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper[data-v-0bf59276]{\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul[data-v-0bf59276]{\n\tlist-style: none;\n}\n.wrapper li[data-v-0bf59276]{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li[data-v-0bf59276]{\n\ttext-indent: 34px;\n}\n.wrapper li.active[data-v-0bf59276]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-0bf59276] {\n\ttransition: transform .4s;\n}\n.content[data-v-0bf59276]{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n", "", {"version":3,"sources":["/./component/versions.vue?50be2ed3"],"names":[],"mappings":";AACA;CACA,mBAAA;CACA,OAAA;CACA,MAAA;CACA,WAAA;CACA,WAAA;CACA,YAAA;CACA,gCAAA;CACA;AACA;CACA,mBAAA;CACA,WAAA;CACA,aAAA;CACA,cAAA;CACA,UAAA;CACA,SAAA;CACA,iCAAA;CACA,iBAAA;CACA,sBAAA;CACA,cAAA;CACA,2BAAA;CACA,cAAA;CACA;AACA;CACA,aAAA;CACA,mBAAA;CACA,+BAAA;CACA,kBAAA;CACA,gBAAA;CACA,eAAA;CACA,0BAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA,iBAAA;IACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AACA;CACA,cAAA;CACA,OAAA;CACA,aAAA;CACA,eAAA;CACA","file":"versions.vue","sourcesContent":["<style scoped>\n.mask{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions{\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper{\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li{\n\ttext-indent: 34px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n.content{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n</style>\n\n<template>\n<section class=\"mask\" v-on:click=\"hideVersions\" v-show=\"versions.currentNote\">\n<section class=\"versions\" v-on:click.stop=\"()=>{}\">\n\t<section class=\"wrapper\">\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t>{{versions.currentNote && versions.currentNote.title}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(versions.activeVersionId && versions.activeVersionId === version.id)}\"\n\t\t\t\t\t\tv-for=\"version in versions.list\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentVersion(version.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(version.id)\"\n\t\t\t\t\t>{{formatDate(version.date)}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"content\"><pre>{{versions.activeVersionContent}}</pre></section>\n</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'versions'\n\t\t])\n\t},\n\twatch: {\n\t},\n\tmethods: {\n\t\tformatDate(date){\n\t\t\tlet ts = date.getTime() - date.getTimezoneOffset()*60*1000;\n\t\t\tlet s = new Date(ts).toISOString();\n\n\t\t\t// s.replace(/T.+$/,'');\t// 2015-11-24\n\t\t\t// s.replace(/\\-\\d+T.+$/,''); // 2015-11\n\t\t\t// s.replace(/(^\\d+\\-|T.+$)/g,''); // 11-24\n\t\t\t// s.replace(/(^[0-9\\-]+T|\\.\\d+Z$)/g,''); // 14:16:18\n\t\t\t// s.replace(/(^[0-9\\-]+T|:\\d+\\.\\d+Z$)/g,''); // 14:16\n\t\t\t// s.replace(/T/g,' ').replace(/\\.\\d+Z$/,''); // 2015-11-24 14:16:18\n\t\t\t// s.replace(/T/g,' ').replace(/:\\d+\\.\\d+Z$/,''); // 2015-11-24 14:16\n\t\t\treturn s.replace(/T/g,' ').replace(/^\\d+\\-/, '').replace(/:\\d+\\.\\d+Z$/,''); // 11-24 14:16\n\n\t\t},\n\t\tswitchCurrentVersion(versionId){\n\t\t\tthis.$store.dispatch('switchActiveVersion', versionId);\n\t\t},\n\t\thideVersions(){\n\t\t\tthis.$store.commit('hideVersions');\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	
+	// exports
+
+
+/***/ },
+/* 68 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	
+	var _lodash = __webpack_require__(12);
+	
+	var _lodash2 = _interopRequireDefault(_lodash);
+	
+	var _vuex = __webpack_require__(3);
+	
+	var _index = __webpack_require__(13);
+	
+	var _index2 = _interopRequireDefault(_index);
+	
+	var _util = __webpack_require__(19);
+	
+	var _util2 = _interopRequireDefault(_util);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	let menu = new _index2.default(_util2.default.platform);
+	
+	let _doExchange;
+	
+	exports.default = {
+		computed: _extends({}, (0, _vuex.mapGetters)(['versions'])),
+		watch: {},
+		methods: {
+			formatDate(date) {
+				let ts = date.getTime() - date.getTimezoneOffset() * 60 * 1000;
+				let s = new Date(ts).toISOString();
+	
+				// s.replace(/T.+$/,'');	// 2015-11-24
+				// s.replace(/\-\d+T.+$/,''); // 2015-11
+				// s.replace(/(^\d+\-|T.+$)/g,''); // 11-24
+				// s.replace(/(^[0-9\-]+T|\.\d+Z$)/g,''); // 14:16:18
+				// s.replace(/(^[0-9\-]+T|:\d+\.\d+Z$)/g,''); // 14:16
+				// s.replace(/T/g,' ').replace(/\.\d+Z$/,''); // 2015-11-24 14:16:18
+				// s.replace(/T/g,' ').replace(/:\d+\.\d+Z$/,''); // 2015-11-24 14:16
+				return s.replace(/T/g, ' ').replace(/^\d+\-/, '').replace(/:\d+\.\d+Z$/, ''); // 11-24 14:16
+			},
+			switchCurrentVersion(versionId) {
+				this.$store.dispatch('switchActiveVersion', versionId);
+			},
+			hideVersions() {
+				this.$store.commit('hideVersions');
+			}
+		},
+		data() {
+			var data = {};
+			return data;
+		}
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 69 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports={render:function (){with(this) {
+	  return _h('section', {
+	    directives: [{
+	      name: "show",
+	      rawName: "v-show",
+	      value: (versions.currentNote),
+	      expression: "versions.currentNote"
+	    }],
+	    staticClass: "mask",
+	    on: {
+	      "click": hideVersions
+	    }
+	  }, [_h('section', {
+	    staticClass: "versions",
+	    on: {
+	      "click": function($event) {
+	        $event.stopPropagation();
+	        () => {}
+	      }
+	    }
+	  }, [_h('section', {
+	    staticClass: "wrapper"
+	  }, [_h('ul', [_h('li', {
+	    staticClass: "icon folder"
+	  }, [_s(versions.currentNote && versions.currentNote.title) + "\n\t\t\t\t", _h('ul', [_l((versions.list), function(version) {
+	    return _h('li', {
+	      staticClass: "icon note",
+	      class: {
+	        active: (versions.activeVersionId && versions.activeVersionId === version.id)
+	      },
+	      on: {
+	        "click": function($event) {
+	          switchCurrentVersion(version.id)
+	        },
+	        "contextmenu": function($event) {
+	          showContextMenu(version.id)
+	        }
+	      }
+	    }, [_s(formatDate(version.date))])
+	  }), " "])])])]), " ", _h('section', {
+	    staticClass: "content"
+	  }, [_h('pre', [_s(versions.activeVersionContent)])])])])
+	}},staticRenderFns: []}
+	if (false) {
+	  module.hot.accept()
+	  if (module.hot.data) {
+	     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-0bf59276", module.exports)
+	  }
+	}
 
 /***/ }
 /******/ ]);

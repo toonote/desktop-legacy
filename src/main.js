@@ -9,6 +9,7 @@ import Sidebar from './component/sidebar.vue';
 import Editor from './component/editor.vue';
 import Preview from './component/preview.vue';
 import Menubar from './component/menubar.vue';
+import Versions from './component/versions.vue';
 
 // import config from './modules/config';
 import menu from './modules/menu';
@@ -44,6 +45,9 @@ let app = new Vue({
 		deleteContextMenuNote(){
 			store.dispatch('deleteContextMenuNote');
 		},
+		historyContextMenuNote(){
+			store.dispatch('historyContextMenuNote');
+		},
 		switchCurrentNotebook(notebook){
 			store.commit('switchCurrentNotebook', notebook);
 		},
@@ -67,7 +71,8 @@ let app = new Vue({
 		menubar: Menubar,
 		sidebar: Sidebar,
 		editor: Editor,
-		preview: Preview
+		preview: Preview,
+		versions: Versions
 	}
 });
 
@@ -118,6 +123,9 @@ let app = new Vue({
 					app.deleteContextMenuNote();
 				}
 				break;
+			case 'noteHistory':
+				app.historyContextMenuNote();
+				break;
 			case 'importBackup':
 				app.importBackup();
 				break;
@@ -145,5 +153,6 @@ let app = new Vue({
 		}
 
 	});
+
 })();
 
