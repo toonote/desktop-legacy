@@ -29,7 +29,7 @@ renderer.use(function(md) {
 			var token = tokens[i];
 			if (token.type === 'inline' && token.content) {
 				token.content = token.content.replace(todoRegExp, (str, char, text) => {
-					console.log(str, char, text);
+					// console.log(str, char, text);
 					let isDone = char.toLowerCase() === 'x';
 					// return `<input type="checkbox" ${isDone?"checked":""} />` + text;
 					return `${isDone?'✔':'☐'} ` + text;

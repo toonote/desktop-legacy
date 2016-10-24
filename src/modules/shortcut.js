@@ -53,9 +53,31 @@
 let shortcut = function(aceEditor){
 	let editor = aceEditor;
 	let selection = editor.getSelection();
+	let session = editor.getSession();
 
 	editor.commands.bindKey('Cmd-D', null);
 	editor.commands.bindKey('Ctrl-D', null);
+
+
+	let getCurrentLineText = () => {
+		let row = editor.getSelection().getCursor().row;
+		return session.getLine(row);
+	};
+
+	let replaceCurrentLineText = (newText) => {
+		let range = editor.getSelectionRange();
+		let position = aceEditor.getSelection().getCursor();
+		let oldColumn = range.start.column;
+		range.setStart({
+			row:position.row,
+			column:0
+		});
+		range.setEnd({
+			row:position.row,
+			column:999999999
+		});
+		session.replace(range, newText);
+	};
 
 	// 选中整行
 	editor.commands.addCommand({
@@ -65,7 +87,6 @@ let shortcut = function(aceEditor){
 			mac: 'Command-l'
 		},
 		exec: function(editor) {
-			console.log('cmd + l', );
 			if(selection.isMultiLine()){
 				// 如果已经选中一行了，则选下一行
 				selection.selectDown();
@@ -84,7 +105,6 @@ let shortcut = function(aceEditor){
 			mac: 'Command-Shift-l'
 		},
 		exec: function(editor) {
-			console.log('cmd + shift + l', );
 			selection.splitIntoLines();
 		}
 	});
@@ -156,6 +176,57 @@ let shortcut = function(aceEditor){
 		},
 		exec: function(editor) {
 			editor.removeToLineStart();
+		}
+	});
+
+	// TODO完成切换
+	editor.commands.addCommand({
+		name: 'toggleTodoState',
+		bindKey: {
+			win: 'Ctrl-d',
+			mac: 'Cmd-d'
+		},
+		exec: function(editor) {
+			let currText = getCurrentLineText();
+
+			let todoItemRegExp = /\- \[([x ])\] ?/;
+			let todoItemMatch = currText.match(todoItemRegExp);
+			if(!todoItemMatch || todoItemMatch.length < 2) return;
+
+			let newText;
+			let isDone = todoItemMatch[1] === 'x';
+			if(isDone){
+				newText = currText.replace('[x]','[ ]');
+			}else{
+				newText = currText.replace('[ ]','[x]');
+			}
+
+			replaceCurrentLineText(newText);
+
+		}
+	});
+
+	// TODO任务切换
+	editor.commands.addCommand({
+		name: 'toggleIsTodo',
+		bindKey: {
+			win: 'Ctrl-i',
+			mac: 'Cmd-i'
+		},
+		exec: function(editor) {
+			let currText = getCurrentLineText();
+			let newText;
+
+			let todoItemRegExp = /\- \[([x ])\] ?/;
+			let todoItemMatch = currText.match(todoItemRegExp);
+			if(!todoItemMatch || todoItemMatch.length < 2){
+				newText = '- [ ] ' + currText.replace(/^\- /,'');
+			}else{
+				newText = currText.replace(/^\- \[[x ]\] /,'- ');
+			}
+
+			replaceCurrentLineText(newText);
+
 		}
 	});
 

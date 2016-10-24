@@ -71,19 +71,19 @@
 	
 	var _editor2 = _interopRequireDefault(_editor);
 	
-	var _preview = __webpack_require__(37);
+	var _preview = __webpack_require__(38);
 	
 	var _preview2 = _interopRequireDefault(_preview);
 	
-	var _menubar = __webpack_require__(49);
+	var _menubar = __webpack_require__(50);
 	
 	var _menubar2 = _interopRequireDefault(_menubar);
 	
-	var _versions = __webpack_require__(54);
+	var _versions = __webpack_require__(55);
 	
 	var _versions2 = _interopRequireDefault(_versions);
 	
-	var _menu = __webpack_require__(59);
+	var _menu = __webpack_require__(60);
 	
 	var _menu2 = _interopRequireDefault(_menu);
 	
@@ -91,7 +91,7 @@
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
-	var _note = __webpack_require__(60);
+	var _note = __webpack_require__(61);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
@@ -349,7 +349,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1],\n.wrapper .notFound[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li[data-v-114b24d1]{\n\ttext-indent: 44px;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-114b24d1] {\n\ttransition: transform .4s;\n}\n.searchWrapper input[data-v-114b24d1]{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input[data-v-114b24d1]:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?602c33de"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;;CAEA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AAEA;CACA,eAAA;IACA,eAAA;IACA,YAAA;IACA,aAAA;IACA,iCAAA;IACA,wBAAA;IACA,gBAAA;CACA;AACA;CACA,kBAAA;CACA,gBAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2,\n.wrapper .notFound{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li{\n\ttext-indent: 44px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n\n.searchWrapper input{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"searchWrapper\">\n\t\t<input type=\"search\" v-model.trim=\"keyword\" placeholder=\"搜索...\" />\n\t</section>\n\t<section class=\"wrapper\" v-show=\"!isSearching\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<transition-group\n\t\t\t\t\tname=\"note-list\"\n\t\t\t\t\ttag=\"ul\"\n\t\t\t\t\tdroppable=\"true\"\n\t\t\t\t\tv-on:drop=\"drop\"\n\t\t\t\t\t>\n\t\t\t\t\t<li\n\t\t\t\t\t\tdraggable=\"true\"\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:key=\"note.id\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t\tv-on:dragstart=\"dragStart($event, note.id)\"\n\t\t\t\t\t\tv-on:dragover.prevent=\"dragOver($event, note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"wrapper\" v-show=\"isSearching\">\n\t\t<div class=\"notFound\" v-show=\"!searchResults.length\">搜的什么鬼 一篇都没有</div>\n\t\t<ul v-show=\"searchResults.length\">\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in searchResultsWithCategories\"\n\t\t\t>{{category}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'notebooks',\n\t\t\t'currentNote',\n\t\t\t'contextMenuNoteId',\n\t\t\t'notebooksWithCategories',\n\t\t\t'isSearching',\n\t\t\t'searchResults',\n\t\t\t'searchResultsWithCategories'\n\t\t])\n\t},\n\twatch: {\n\t\tkeyword(){\n\t\t\tif(this.keyword){\n\t\t\t\tthis.$store.dispatch('search', this.keyword);\n\t\t\t}else{\n\t\t\t\tthis.$store.commit('switchSearching', false);\n\t\t\t}\n\t\t}\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t},{\n\t\t\t\t\ttype:'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'历史版本',\n\t\t\t\t\tevent:'noteHistory'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\tdragStart(e, noteId){\n\t\t\tthis.currentMovingNoteId = noteId;\n\t\t\t// e.dataTransfer.dropEffect = 'move';\n\t\t\t// e.dataTransfer.effectAllowed = 'move';\n\t\t\t// console.log('start', noteId);\n\t\t},\n\t\tdragOver(e, noteId){\n\t\t\tif(this.isAnimating) return;\n\t\t\tif(this.currentMovingNoteId === noteId) return;\n\n\t\t\t// console.log('over', noteId);\n\n\t\t\tthis.currentTargetingNoteId = noteId;\n\n\t\t\tif(!_doExchange){\n\t\t\t\t_doExchange = throttle(() => {\n\t\t\t\t\tthis.isAnimating = true;\n\t\t\t\t\tthis.$store.dispatch('exchangeNote', {\n\t\t\t\t\t\tid1:this.currentMovingNoteId,\n\t\t\t\t\t\tid2:this.currentTargetingNoteId\n\t\t\t\t\t});\n\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\tthis.isAnimating = false;\n\t\t\t\t\t}, 500);\n\t\t\t\t}, 500);\n\t\t\t}\n\t\t\t_doExchange();\n\t\t},\n\t\tdrop(e){\n\t\t\tthis.currentMovingNoteId = 0;\n\t\t\t// console.log('drop', e);\n\t\t}\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\tcurrentMovingNoteId:0,\n\t\t\tcurrentTargetingNoteId:0,\n\t\t\tisAnimating:false,\n\t\t\tkeyword:''\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1],\n.wrapper .notFound[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li[data-v-114b24d1]{\n\ttext-indent: 44px;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-114b24d1] {\n\ttransition: transform .4s;\n}\n.searchWrapper input[data-v-114b24d1]{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input[data-v-114b24d1]:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?ef17a992"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;;CAEA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AAEA;CACA,eAAA;IACA,eAAA;IACA,YAAA;IACA,aAAA;IACA,iCAAA;IACA,wBAAA;IACA,gBAAA;CACA;AACA;CACA,kBAAA;CACA,gBAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2,\n.wrapper .notFound{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li{\n\ttext-indent: 44px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n\n.searchWrapper input{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"searchWrapper\">\n\t\t<input type=\"search\" v-model.trim=\"keyword\" placeholder=\"搜索...\" />\n\t</section>\n\t<section class=\"wrapper\" v-show=\"!isSearching\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<transition-group\n\t\t\t\t\tname=\"note-list\"\n\t\t\t\t\ttag=\"ul\"\n\t\t\t\t\tdroppable=\"true\"\n\t\t\t\t\tv-on:drop=\"drop\"\n\t\t\t\t\t>\n\t\t\t\t\t<li\n\t\t\t\t\t\tdraggable=\"true\"\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:key=\"note.id\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu.stop=\"showContextMenu(note.id)\"\n\t\t\t\t\t\tv-on:dragstart=\"dragStart($event, note.id)\"\n\t\t\t\t\t\tv-on:dragover.prevent=\"dragOver($event, note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"wrapper\" v-show=\"isSearching\">\n\t\t<div class=\"notFound\" v-show=\"!searchResults.length\">搜的什么鬼 一篇都没有</div>\n\t\t<ul v-show=\"searchResults.length\">\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in searchResultsWithCategories\"\n\t\t\t>{{category}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'notebooks',\n\t\t\t'currentNote',\n\t\t\t'contextMenuNoteId',\n\t\t\t'notebooksWithCategories',\n\t\t\t'isSearching',\n\t\t\t'searchResults',\n\t\t\t'searchResultsWithCategories'\n\t\t])\n\t},\n\twatch: {\n\t\tkeyword(){\n\t\t\tif(this.keyword){\n\t\t\t\tthis.$store.dispatch('search', this.keyword);\n\t\t\t}else{\n\t\t\t\tthis.$store.commit('switchSearching', false);\n\t\t\t}\n\t\t}\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'新建',\n\t\t\t\t\tevent:'newNote'\n\t\t\t\t},{\n\t\t\t\t\ttype:'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'历史版本',\n\t\t\t\t\tevent:'noteHistory'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\tdragStart(e, noteId){\n\t\t\tthis.currentMovingNoteId = noteId;\n\t\t\t// e.dataTransfer.dropEffect = 'move';\n\t\t\t// e.dataTransfer.effectAllowed = 'move';\n\t\t\t// console.log('start', noteId);\n\t\t},\n\t\tdragOver(e, noteId){\n\t\t\tif(this.isAnimating) return;\n\t\t\tif(this.currentMovingNoteId === noteId) return;\n\n\t\t\t// console.log('over', noteId);\n\n\t\t\tthis.currentTargetingNoteId = noteId;\n\n\t\t\tif(!_doExchange){\n\t\t\t\t_doExchange = throttle(() => {\n\t\t\t\t\tthis.isAnimating = true;\n\t\t\t\t\tthis.$store.dispatch('exchangeNote', {\n\t\t\t\t\t\tid1:this.currentMovingNoteId,\n\t\t\t\t\t\tid2:this.currentTargetingNoteId\n\t\t\t\t\t});\n\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\tthis.isAnimating = false;\n\t\t\t\t\t}, 500);\n\t\t\t\t}, 500);\n\t\t\t}\n\t\t\t_doExchange();\n\t\t},\n\t\tdrop(e){\n\t\t\tthis.currentMovingNoteId = 0;\n\t\t\t// console.log('drop', e);\n\t\t}\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\tcurrentMovingNoteId:0,\n\t\t\tcurrentTargetingNoteId:0,\n\t\t\tisAnimating:false,\n\t\t\tkeyword:''\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -834,6 +834,9 @@
 						title: '删除',
 						event: 'noteDelete'
 					}, {
+						title: '新建',
+						event: 'newNote'
+					}, {
 						type: 'separator'
 					}, {
 						title: '历史版本',
@@ -1307,6 +1310,7 @@
 	              switchCurrentNote(note.id)
 	            },
 	            "contextmenu": function($event) {
+	              $event.stopPropagation();
 	              showContextMenu(note.id)
 	            },
 	            "dragstart": function($event) {
@@ -1384,7 +1388,7 @@
 	__vue_exports__ = __webpack_require__(24)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(36)
+	var __vue_template__ = __webpack_require__(37)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -1454,7 +1458,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?44473011"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div\n\t\tid=\"ace_container\"\n\t\tv-on:dragover.prevent=\"onDragOver\"\n\t\tv-on:drop.prevent.stop=\"onDrop\"\n\t\tv-on:paste=\"onPaste\"\n\t></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex';\nimport io from '../modules/io';\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\tmethods:{\n\t\tonDragOver(){\n\t\t\t// console.log('dragover');\n\t\t},\n\t\tonDrop(e){\n\t\t\tlet img = e.dataTransfer.files[0];\n\t\t\tif(!img || !/^image/.test(img.type)) return;\n\t\t\tlet ext = io.getExt(img.name);\n\t\t\tlet imagePath = io.saveImage(img.path, ext);\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tonPaste(e){\n\t\t\tif(!e.clipboardData.items || !e.clipboardData.items.length) return;\n\t\t\tlet hasImage = false;\n\t\t\tfor(let i = e.clipboardData.items.length;i--;){\n\t\t\t\tlet item = e.clipboardData.items[i];\n\t\t\t\tif(/^image/.test(item.type)){\n\t\t\t\t\thasImage = true;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(!hasImage) return;\n\n\t\t\tlet imagePath = io.saveImageFromClipboard();\n\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tinsertImg(imagePath){\n\n\t\t\tif(imagePath){\n\t\t\t\timagePath = encodeURI(imagePath);\n\t\t\t\t_aceEditor.insert(`\\n\\n![${name}](${imagePath})\\n\\n`);\n\t\t\t}else{\n\t\t\t\t_aceEditor.insert(`拖拽插入图片出错！`);\n\t\t\t}\n\t\t\tthis.onEditorInput();\n\t\t},\n\t\tonEditorInput(){\n\t\t\t_content = _aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t}\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note.id) return;\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t},\n\t\t'currentNote.content': function(content){\n\t\t\t// console.log('watch currentNote.content change');\n\t\t\tif(!content && content !== '') return\n\t\t\tif(_content !== content){\n\t\t\t\t_aceEditor.setValue(content, -1);\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', this.onEditorInput);\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?3a0cf565"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div\n\t\tid=\"ace_container\"\n\t\tv-on:dragover.prevent=\"onDragOver\"\n\t\tv-on:drop.prevent.stop=\"onDrop\"\n\t\tv-on:paste=\"onPaste\"\n\t></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex';\nimport shortcut from '../modules/shortcut';\nimport io from '../modules/io';\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\tmethods:{\n\t\tonDragOver(){\n\t\t\t// console.log('dragover');\n\t\t},\n\t\tonDrop(e){\n\t\t\tlet img = e.dataTransfer.files[0];\n\t\t\tif(!img || !/^image/.test(img.type)) return;\n\t\t\tlet ext = io.getExt(img.name);\n\t\t\tlet imagePath = io.saveImage(img.path, ext);\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tonPaste(e){\n\t\t\tif(!e.clipboardData.items || !e.clipboardData.items.length) return;\n\t\t\tlet hasImage = false;\n\t\t\tfor(let i = e.clipboardData.items.length;i--;){\n\t\t\t\tlet item = e.clipboardData.items[i];\n\t\t\t\tif(/^image/.test(item.type)){\n\t\t\t\t\thasImage = true;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(!hasImage) return;\n\n\t\t\tlet imagePath = io.saveImageFromClipboard();\n\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tinsertImg(imagePath){\n\n\t\t\tif(imagePath){\n\t\t\t\timagePath = encodeURI(imagePath);\n\t\t\t\t_aceEditor.insert(`\\n\\n![${name}](${imagePath})\\n\\n`);\n\t\t\t}else{\n\t\t\t\t_aceEditor.insert(`拖拽插入图片出错！`);\n\t\t\t}\n\t\t\tthis.onEditorInput();\n\t\t},\n\t\tonEditorInput(){\n\t\t\t_content = _aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t}\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note.id) return;\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t},\n\t\t'currentNote.content': function(content){\n\t\t\t// console.log('watch currentNote.content change');\n\t\t\tif(!content && content !== '') return\n\t\t\tif(_content !== content){\n\t\t\t\t_aceEditor.setValue(content, -1);\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', this.onEditorInput);\n\n\t\tshortcut(aceEditor);\n\t\t/*for(let cmd in shortcut){\n\t\t\taceEditor.commands.bindKey(cmd, shortcut[cmd]);\n\t\t}*/\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -1509,6 +1513,10 @@
 	__webpack_require__(27);
 	
 	var _vuex = __webpack_require__(3);
+	
+	var _shortcut = __webpack_require__(70);
+	
+	var _shortcut2 = _interopRequireDefault(_shortcut);
 	
 	var _io = __webpack_require__(32);
 	
@@ -1597,6 +1605,11 @@
 			aceEditor.setShowPrintMargin(false);
 			aceEditor.$blockScrolling = Infinity;
 			aceEditor.on('input', this.onEditorInput);
+	
+			(0, _shortcut2.default)(aceEditor);
+			/*for(let cmd in shortcut){
+	  	aceEditor.commands.bindKey(cmd, shortcut[cmd]);
+	  }*/
 	
 			// 同步滚动
 			session.on('changeScrollTop', (0, _lodash2.default)(scroll => {
@@ -5098,7 +5111,7 @@
 			htmlTmpPath = path.join(cwd, 'ToonotePdfTmp.html');
 			fs.writeFileSync(htmlTmpPath, content, 'utf8');
 			// 生成pdf
-			let spawn = __webpack_require__(65).spawn;
+			let spawn = __webpack_require__(36).spawn;
 			let pdfprocess = spawn(path.join(__webpack_require__(18).remote.app.getAppPath(), 'lib/phantomjs'), [path.join(__webpack_require__(18).remote.app.getAppPath(), 'lib/html2pdf.js'), encodeURI(htmlTmpPath), filePath], {
 				cwd: cwd
 			});
@@ -5172,6 +5185,12 @@
 
 /***/ },
 /* 36 */
+/***/ function(module, exports) {
+
+	module.exports = require("child_process");
+
+/***/ },
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -5203,19 +5222,19 @@
 	}
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	
 	/* styles */
-	__webpack_require__(38)
+	__webpack_require__(39)
 	
 	/* script */
-	__vue_exports__ = __webpack_require__(41)
+	__vue_exports__ = __webpack_require__(42)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(48)
+	var __vue_template__ = __webpack_require__(49)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -5251,13 +5270,13 @@
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(39);
+	var content = __webpack_require__(40);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -5277,12 +5296,12 @@
 	}
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
 	// imports
-	exports.i(__webpack_require__(40), "");
+	exports.i(__webpack_require__(41), "");
 	
 	// module
 	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?c50deb1a"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\" v-on:click=\"handleContent\"></div>\n</section>\n</template>\n\n\n<script>\n// import 'highlight.js/styles/github-gist.css';\nimport 'highlight.js/styles/tomorrow.css';\nimport {mapGetters} from 'vuex';\nimport renderer from '../modules/renderer';\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn renderer.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\tmethods: {\n\t\thandleContent(e) {\n\t\t\tlet $target = e.target;\n\t\t\t// 链接\n\t\t\tif($target.tagName === 'A' && /^https?:\\/\\//.test($target.href)){\n\t\t\t\tlet shell = require('electron').shell;\n\t\t\t\tshell.openExternal($target.href);\n\t\t\t\te.preventDefault();\n\t\t\t}\n\t\t}\n\t},\n\twatch:{\n\t\thtml(){\n\t\t\tthis.$nextTick(() => {\n\t\t\t\tlet scrollMap = [];\n\n\t\t\t\tlet $preview = this.$el;\n\t\t\t\tlet $previewAnchors = $preview.querySelectorAll('.line');\n\t\t\t\tArray.prototype.forEach.call($previewAnchors, function($previewAnchor){\n\t\t\t\t\tlet line = $previewAnchor.dataset.line;\n\t\t\t\t\tlet top = $previewAnchor.offsetTop;\n\t\t\t\t\t/*if(line == 8){\n\t\t\t\t\t\tconsole.log(line, top, $previewAnchor);\n\t\t\t\t\t}*/\n\t\t\t\t\tif(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){\n\t\t\t\t\t\tscrollMap[line] = top;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\tscrollMap[0] = 0;\n\n\t\t\t\tlet contentLines = this.currentNote.content.split('\\n').length;\n\t\t\t\tif(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;\n\n\t\t\t\tfor(var i = 1; i<contentLines -1; i++){\n\t\t\t\t\tif(!scrollMap[i]){\n\t\t\t\t\t\tvar j = i+1;\n\t\t\t\t\t\twhile(!scrollMap[j] && j < contentLines - 1){\n\t\t\t\t\t\t\tj++;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t// console.log(scrollMap[8]);\n\n\t\t\t\tthis.$store.commit('changeScrollMap', scrollMap);\n\t\t\t\t// console.log(scrollMap);\n\t\t\t\t// console.log('html changed');\n\t\t\t});\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\t// console.log('[preview] mounted', this, this.$store);\n\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
@@ -5291,7 +5310,7 @@
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
@@ -5299,13 +5318,13 @@
 	
 	
 	// module
-	exports.push([module.id, ".htmlBody{\n\tfont-family: \"PingFang SC\";\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,2BAA2B;CAC3B,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;;AAED,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB,gBAAgB;CAChB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tfont-family: \"PingFang SC\";\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, ".htmlBody{\n\tfont-family: \"PingFang SC\", sans-serif;\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n/*todo*/\n.htmlBody li.todo{\n\tlist-style: none;\n}\n/*.htmlBody li.todo.doing::before{\n\tcontent:'☐';\n}\n.htmlBody li.todo.done::before{\n\tcontent:'✔';\n}\n.htmlBody li.todo p{\n\ttext-indent:-1.5em;\n}*/\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,uCAAuC;CACvC,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;AACD,QAAQ;AACR;CACC,iBAAiB;CACjB;AACD;;;;;;;;GAQG;;AAEH,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB,gBAAgB;CAChB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tfont-family: \"PingFang SC\", sans-serif;\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n/*todo*/\n.htmlBody li.todo{\n\tlist-style: none;\n}\n/*.htmlBody li.todo.doing::before{\n\tcontent:'☐';\n}\n.htmlBody li.todo.done::before{\n\tcontent:'✔';\n}\n.htmlBody li.todo p{\n\ttext-indent:-1.5em;\n}*/\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5338,11 +5357,11 @@
 	// import 'highlight.js/styles/github-gist.css';
 	
 	
-	__webpack_require__(42);
+	__webpack_require__(43);
 	
 	var _vuex = __webpack_require__(3);
 	
-	var _renderer = __webpack_require__(45);
+	var _renderer = __webpack_require__(46);
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
@@ -5422,15 +5441,15 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 43 */,
 /* 44 */,
-/* 45 */
+/* 45 */,
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5439,11 +5458,11 @@
 		value: true
 	});
 	
-	var _remarkable = __webpack_require__(46);
+	var _remarkable = __webpack_require__(47);
 	
 	var _remarkable2 = _interopRequireDefault(_remarkable);
 	
-	var _highlight = __webpack_require__(47);
+	var _highlight = __webpack_require__(48);
 	
 	var _highlight2 = _interopRequireDefault(_highlight);
 	
@@ -5465,6 +5484,28 @@
 		}
 	});
 	
+	// 解析todo
+	let todoRegExp = /^\[([ x])\] ([\s\S]+)/mi;
+	
+	renderer.use(function (md) {
+		md.core.ruler.after('block', 'todo', function (state) {
+			var tokens = state.tokens;
+			var len = tokens.length,
+			    i = -1;
+			while (++i < len) {
+				var token = tokens[i];
+				if (token.type === 'inline' && token.content) {
+					token.content = token.content.replace(todoRegExp, (str, char, text) => {
+						// console.log(str, char, text);
+						let isDone = char.toLowerCase() === 'x';
+						// return `<input type="checkbox" ${isDone?"checked":""} />` + text;
+						return `${ isDone ? '✔' : '☐' } ` + text;
+					});
+				}
+			}
+		}, { alt: [] });
+	});
+	
 	let index = 0;
 	
 	let customerRulesMap = {
@@ -5478,7 +5519,7 @@
 		renderer.renderer.rules[`${ token }_open`] = function (tokens, idx) {
 			var line;
 			if (tag === 'tr') {
-				console.log(tokens[idx]);
+				// console.log(tokens[idx]);
 			}
 			if (tokens[idx].lines /* && tokens[idx].level === 0*/) {
 					line = tokens[idx].lines[0];
@@ -5487,6 +5528,15 @@
 			return `<${ tag }>`;
 		};
 	}
+	
+	renderer.renderer.rules.list_item_open = function (tokens, idx) {
+		for (let i = idx + 1; i < idx + 3; i++) {
+			if (/[✔☐]/.test(tokens[i].content)) {
+				return `<li class="todo${ /^✔/i.test(tokens[i].content) ? ' done' : ' doing' }">`;
+			}
+		}
+		return '<li>';
+	};
 	
 	renderer.renderer.rules.heading_open = function (tokens, idx) {
 		var line;
@@ -5505,19 +5555,19 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports) {
 
 	module.exports = require("remarkable");
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports) {
 
 	module.exports = require("highlight.js");
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -5541,19 +5591,19 @@
 	}
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	
 	/* styles */
-	__webpack_require__(50)
+	__webpack_require__(51)
 	
 	/* script */
-	__vue_exports__ = __webpack_require__(52)
+	__vue_exports__ = __webpack_require__(53)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(53)
+	var __vue_template__ = __webpack_require__(54)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -5589,13 +5639,13 @@
 
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(51);
+	var content = __webpack_require__(52);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -5615,7 +5665,7 @@
 	}
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
@@ -5629,7 +5679,7 @@
 
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5805,7 +5855,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -5840,19 +5890,19 @@
 	}
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	
 	/* styles */
-	__webpack_require__(55)
+	__webpack_require__(56)
 	
 	/* script */
-	__vue_exports__ = __webpack_require__(57)
+	__vue_exports__ = __webpack_require__(58)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(58)
+	var __vue_template__ = __webpack_require__(59)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -5888,13 +5938,13 @@
 
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(56);
+	var content = __webpack_require__(57);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -5914,7 +5964,7 @@
 	}
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
@@ -5928,7 +5978,7 @@
 
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6104,7 +6154,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -6158,7 +6208,7 @@
 	}
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6171,7 +6221,7 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _note = __webpack_require__(60);
+	var _note = __webpack_require__(61);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
@@ -6198,7 +6248,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6211,11 +6261,11 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _index = __webpack_require__(61);
+	var _index = __webpack_require__(62);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
-	var _git = __webpack_require__(64);
+	var _git = __webpack_require__(65);
 	
 	var _git2 = _interopRequireDefault(_git);
 	
@@ -6270,7 +6320,7 @@
 	note.getTitleFromContent = function (content) {
 		let firstLine = content.split('\n', 2)[0];
 		if (!firstLine) return '';
-		return firstLine.replace(/[#\s]/g, '');
+		return firstLine.replace(/#/g, '').trim();
 	};
 	
 	note.getTitleWithoutCategory = function (title) {
@@ -6355,7 +6405,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6364,7 +6414,7 @@
 		value: true
 	});
 	
-	var _web = __webpack_require__(62);
+	var _web = __webpack_require__(63);
 	
 	var _web2 = _interopRequireDefault(_web);
 	
@@ -6380,7 +6430,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6389,7 +6439,7 @@
 		value: true
 	});
 	
-	var _base = __webpack_require__(63);
+	var _base = __webpack_require__(64);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
@@ -6455,7 +6505,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6483,7 +6533,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6512,7 +6562,7 @@
 			}
 		}
 		runCommand(command) {
-			let execSync = __webpack_require__(65).execSync;
+			let execSync = __webpack_require__(36).execSync;
 			try {
 				console.log('[Git runCommand] ' + command);
 				return execSync(`${ this._git } ${ command }`, {
@@ -6561,12 +6611,6 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 65 */
-/***/ function(module, exports) {
-
-	module.exports = require("child_process");
-
-/***/ },
 /* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -6580,7 +6624,7 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _index = __webpack_require__(61);
+	var _index = __webpack_require__(62);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
@@ -6791,7 +6835,7 @@
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
-	var _note = __webpack_require__(60);
+	var _note = __webpack_require__(61);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
@@ -6803,11 +6847,11 @@
 	
 	var _scroll2 = _interopRequireDefault(_scroll);
 	
-	var _renderer = __webpack_require__(45);
+	var _renderer = __webpack_require__(46);
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
-	var _git = __webpack_require__(64);
+	var _git = __webpack_require__(65);
 	
 	var _git2 = _interopRequireDefault(_git);
 	
@@ -7255,6 +7299,248 @@
 	}
 	
 	module.exports = cubicInOut
+
+/***/ },
+/* 70 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	// https://github.com/ajaxorg/ace/issues/1287
+	/*{
+		// "Alt-Left": "goSubwordLeft",
+		// "Alt-Right": "goSubwordRight",
+		// "Ctrl-Up": "scrollLineUp",
+		// "Ctrl-Down": "scrollLineDown",
+		"Shift-Ctrl-L": "splitSelectionByLine",
+		"Shift-Tab": "indentLess",
+		"Esc": "singleSelectionTop",
+		"Cmd-L": "expandtoline",
+		"Shift-Ctrl-K": "deleteLine",
+		"Cmd-Enter": "insertLineAfter",
+		"Shift-Cmd-Enter": "insertLineBefore",
+		"Cmd-D": "selectNextOccurrence",
+		// "Shift-Ctrl-Space": "selectScope",
+		"Shift-Ctrl-M": "selectBetweenBrackets",
+		"Ctrl-M": "goToBracket",
+		"Cmd-Ctrl-Up": "swapLineUp",
+		"Cmd-Ctrl-Down": "swapLineDown",
+		"Ctrl-/": "toggleComment",
+		"Ctrl-J": "joinLines",
+		"Shift-Cmd-D": "duplicateLine",
+		"Ctrl-T": "transposeChars",
+		// "F9": "sortLines",
+		// "Ctrl-F9": "sortLinesInsensitive",
+		"F2": "nextBookmark",
+		"Shift-F2": "prevBookmark",
+		"Cmd-F2": "toggleBookmark",
+		"Shift-Cmd-F2": "clearBookmarks",
+		// "Alt-F2": "selectBookmarks",
+		// "Alt-Q": "wrapLines",
+		"Cmd-K Cmd-Backspace": "delLineLeft",
+		"Cmd-K Cmd-K": "delLineRight",
+		"Cmd-K Cmd-U": "upcaseAtCursor",
+		"Cmd-K Cmd-L": "downcaseAtCursor",
+		// "Cmd-K Cmd-Space": "setSublimeMark",
+		// "Cmd-K Cmd-A": "selectToSublimeMark",
+		// "Cmd-K Cmd-W": "deleteToSublimeMark",
+		// "Cmd-K Cmd-X": "swapWithSublimeMark",
+		// "Cmd-K Cmd-Y": "sublimeYank",
+		// "Cmd-K Cmd-G": "clearBookmarks",
+		// "Cmd-K Cmd-C": "showInCenter",
+		"Shift-Alt-Up": "selectLinesUpward",
+		"Shift-Alt-Down": "selectLinesDownward",
+		// "Ctrl-F3": "findUnder",
+		// "Shift-Ctrl-F3": "findUnderPrevious",
+		// "Shift-Ctrl-[": "fold",
+		// "Shift-Ctrl-]": "unfold",
+		"Ctrl-K Ctrl-j": "unfoldAll",
+		"Ctrl-K Ctrl-0": "unfoldAll",
+		// "Ctrl-H": "replace",
+	}*/
+	let shortcut = function (aceEditor) {
+		let editor = aceEditor;
+		let selection = editor.getSelection();
+		let session = editor.getSession();
+	
+		editor.commands.bindKey('Cmd-D', null);
+		editor.commands.bindKey('Ctrl-D', null);
+	
+		let getCurrentLineText = () => {
+			let row = editor.getSelection().getCursor().row;
+			return session.getLine(row);
+		};
+	
+		let replaceCurrentLineText = newText => {
+			let range = editor.getSelectionRange();
+			let position = aceEditor.getSelection().getCursor();
+			let oldColumn = range.start.column;
+			range.setStart({
+				row: position.row,
+				column: 0
+			});
+			range.setEnd({
+				row: position.row,
+				column: 999999999
+			});
+			session.replace(range, newText);
+		};
+	
+		// 选中整行
+		editor.commands.addCommand({
+			name: 'selectLine',
+			bindKey: {
+				win: 'Ctrl-l',
+				mac: 'Command-l'
+			},
+			exec: function (editor) {
+				if (selection.isMultiLine()) {
+					// 如果已经选中一行了，则选下一行
+					selection.selectDown();
+				} else {
+					// 否则，选中当前行
+					selection.selectLine();
+				}
+			}
+		});
+	
+		// 选中整行
+		editor.commands.addCommand({
+			name: 'splitInfoLines',
+			bindKey: {
+				win: 'Ctrl-Shift-l',
+				mac: 'Command-Shift-l'
+			},
+			exec: function (editor) {
+				selection.splitIntoLines();
+			}
+		});
+	
+		// 向下移动
+		editor.commands.addCommand({
+			name: 'moveDown',
+			bindKey: {
+				win: 'Ctrl-Shift-Down',
+				mac: 'Command-Ctrl-Down'
+			},
+			exec: function (editor) {
+				if (selection.isEmpty()) {
+					selection.selectLine();
+				}
+				editor.moveLinesDown();
+				selection.clearSelection();
+				selection.moveCursorUp();
+			}
+		});
+	
+		// 向上移动
+		editor.commands.addCommand({
+			name: 'moveUp',
+			bindKey: {
+				win: 'Ctrl-Shift-Up',
+				mac: 'Command-Ctrl-Up'
+			},
+			exec: function (editor) {
+				if (selection.isEmpty()) {
+					selection.selectLine();
+				}
+				editor.moveLinesUp();
+				selection.clearSelection();
+				selection.moveCursorUp();
+			}
+		});
+	
+		// 删除行
+		editor.commands.addCommand({
+			name: 'deleteLines',
+			bindKey: {
+				win: 'Ctrl-Shift-k',
+				mac: 'Ctrl-Shift-k'
+			},
+			exec: function (editor) {
+				editor.removeLines();
+			}
+		});
+	
+		// 删除到行尾
+		editor.commands.addCommand({
+			name: 'deleteToEnd',
+			bindKey: {
+				win: 'Ctrl-k Ctrl-k',
+				mac: 'Cmd-k Cmd-k'
+			},
+			exec: function (editor) {
+				editor.removeToLineEnd();
+			}
+		});
+	
+		// 删除到行首
+		editor.commands.addCommand({
+			name: 'deleteToStart',
+			bindKey: {
+				win: 'Ctrl-k Ctrl-backspace',
+				mac: 'Cmd-k Cmd-backspace'
+			},
+			exec: function (editor) {
+				editor.removeToLineStart();
+			}
+		});
+	
+		// TODO完成切换
+		editor.commands.addCommand({
+			name: 'toggleTodoState',
+			bindKey: {
+				win: 'Ctrl-d',
+				mac: 'Cmd-d'
+			},
+			exec: function (editor) {
+				let currText = getCurrentLineText();
+	
+				let todoItemRegExp = /\- \[([x ])\] ?/;
+				let todoItemMatch = currText.match(todoItemRegExp);
+				if (!todoItemMatch || todoItemMatch.length < 2) return;
+	
+				let newText;
+				let isDone = todoItemMatch[1] === 'x';
+				if (isDone) {
+					newText = currText.replace('[x]', '[ ]');
+				} else {
+					newText = currText.replace('[ ]', '[x]');
+				}
+	
+				replaceCurrentLineText(newText);
+			}
+		});
+	
+		// TODO任务切换
+		editor.commands.addCommand({
+			name: 'toggleIsTodo',
+			bindKey: {
+				win: 'Ctrl-i',
+				mac: 'Cmd-i'
+			},
+			exec: function (editor) {
+				let currText = getCurrentLineText();
+				let newText;
+	
+				let todoItemRegExp = /\- \[([x ])\] ?/;
+				let todoItemMatch = currText.match(todoItemRegExp);
+				if (!todoItemMatch || todoItemMatch.length < 2) {
+					newText = '- [ ] ' + currText.replace(/^\- /, '');
+				} else {
+					newText = currText.replace(/^\- \[[x ]\] /, '- ');
+				}
+	
+				replaceCurrentLineText(newText);
+			}
+		});
+	};
+	
+	exports.default = shortcut;
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);
