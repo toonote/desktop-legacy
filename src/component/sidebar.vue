@@ -86,7 +86,7 @@
 						v-bind:class="{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}"
 						v-for="note in notes"
 						v-on:click="switchCurrentNote(note.id)"
-						v-on:contextmenu="showContextMenu(note.id)"
+						v-on:contextmenu.stop="showContextMenu(note.id)"
 						v-on:dragstart="dragStart($event, note.id)"
 						v-on:dragover.prevent="dragOver($event, note.id)"
 					>{{note.title}}</li>
@@ -171,6 +171,9 @@ export default {
 			// this.$nextTick(() => {
 			setTimeout(() => {
 				menu.showContextMenu([{
+					title:'新建',
+					event:'newNote'
+				},{
 					title:'打开',
 					event:'noteOpen'
 				},{
