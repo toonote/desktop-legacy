@@ -296,13 +296,17 @@ const store = new Vuex.Store({
 					content = renderer.render(context.state.currentNote.content);
 					break;
 				case 'html':
+				case 'pdf':
 					let body = renderer.render(context.state.currentNote.content);
 					// var postcss = require('postcss');
 					// var atImport = require('postcss-import');
 					let css = io.getFileText('/style/htmlbody.css');
+					// 加载PDF样式
+					if(format === 'pdf'){
+						css += io.getFileText('/style/pdf.css');
+					}
 					// css += io.getFileText('/node_modules/highlight.js/styles/github-gist.css');
 					css += io.getFileText('/node_modules/highlight.js/styles/tomorrow.css');
-
 					/*var outputCss = postcss()
 						.use(atImport())
 						.process(css, {

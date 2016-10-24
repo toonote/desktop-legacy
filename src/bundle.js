@@ -5090,71 +5090,34 @@
 			});
 		}
 		let filePath = io.selectPathForWrite(filters);
+		let htmlTmpPath;
 	
-		fs.writeFileSync(filePath, content, 'utf8');
-		// console.log(filePath);
-		/*var content = currentNote.content;
-	 if(format !== 'markdown'){
-	 	isExporting = true;
-	 	view.renderPreview(currentNote);
-	 	content = $preview.innerHTML;
-	 	isExporting = false;
-	 }
-	 if(format === 'htmlfile' || format === 'pdf'){
-	 	var postcss = require('postcss');
-	 	var atImport = require('postcss-import');
-	 		var css = fs.readFileSync(__dirname + '/render.css', 'utf8');
-	 		var outputCss = postcss()
-	 		.use(atImport())
-	 		.process(css, {
-	 			from: __dirname + '/render.css'
-	 		})
-	 		.css;
-	 		// console.log(outputCss);
-	 	content = '<!doctype html><html>\n' +
-	 			'<head>\n' +
-	 			'<meta charset="utf-8">\n' +
-	 			'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
-	 			'<title>' + noteIndex[currentNote.id] + '</title>\n' +
-	 			'<style>\n' + outputCss + '</style>\n' +
-	 			'</head>\n' +
-	 			'<body class="preview">\n' + content + '</body>\n</html>';
-	 }
-	 	if(format === 'pdf'){
-	 	var pdfPath = filePath;
-	 	var path = require('path');
-	 	var cwd = path.dirname(filePath);
-	 	// 如果是pdf，先生成一个临时HTML文件
-	 	filePath = path.join(cwd,'tmp.htm');
-	 }
-	 fs.writeFile(filePath,JSON.parse(JSON.stringify(content)),function(err){
-	 	if(err){
-	 		alert('保存失败：\n' + err.message);
-	 	}else if(format === 'pdf'){
-	 		// 生成pdf
-	 		var spawn = require('child_process').spawn;
-	 		var pdfprocess = spawn(__dirname + '/lib/phantomjs',[
-	 			__dirname + '/html2pdf.js',
-	 			encodeURI(filePath),
-	 			pdfPath
-	 		],{
-	 			cwd:cwd
-	 		});
-	 		pdfprocess.stdout.on('data',function(data){
-	 			console.log('stdout'+data);
-	 		});
-	 		pdfprocess.stderr.on('data',function(data){
-	 			console.log('stderr'+data);
-	 		});
-	 		pdfprocess.on('close',function(){
-	 			console.log('closed');
-	 			// 删除HTML文件
-	 			fs.unlink(filePath,function(){
-	 				console.log('htm deleted');
-	 			});
-	 		});
-	 	}
-	 });*/
+		if (format === 'pdf') {
+			let cwd = path.dirname(filePath);
+			// 如果是pdf，先生成一个临时HTML文件
+			htmlTmpPath = path.join(cwd, 'ToonotePdfTmp.html');
+			fs.writeFileSync(htmlTmpPath, content, 'utf8');
+			// 生成pdf
+			let spawn = __webpack_require__(65).spawn;
+			let pdfprocess = spawn(path.join(__webpack_require__(18).remote.app.getAppPath(), 'lib/phantomjs'), [path.join(__webpack_require__(18).remote.app.getAppPath(), 'lib/html2pdf.js'), encodeURI(htmlTmpPath), filePath], {
+				cwd: cwd
+			});
+			pdfprocess.stdout.on('data', function (data) {
+				console.log('stdout' + data);
+			});
+			pdfprocess.stderr.on('data', function (data) {
+				console.log('stderr' + data);
+			});
+			pdfprocess.on('close', function () {
+				console.log('closed');
+				// 删除HTML文件
+				fs.unlink(htmlTmpPath, function () {
+					console.log('htm deleted');
+				});
+			});
+		} else {
+			fs.writeFileSync(filePath, content, 'utf8');
+		}
 	};
 	
 	/*// 创建备份文件
@@ -5336,7 +5299,7 @@
 	
 	
 	// module
-	exports.push([module.id, ".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;;AAED,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB,gBAAgB;CAChB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, ".htmlBody{\n\tfont-family: \"PingFang SC\";\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,2BAA2B;CAC3B,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;;AAED,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB,gBAAgB;CAChB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tfont-family: \"PingFang SC\";\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -7168,13 +7131,17 @@
 							content = _renderer2.default.render(context.state.currentNote.content);
 							break;
 						case 'html':
+						case 'pdf':
 							let body = _renderer2.default.render(context.state.currentNote.content);
 							// var postcss = require('postcss');
 							// var atImport = require('postcss-import');
 							let css = _io2.default.getFileText('/style/htmlbody.css');
+							// 加载PDF样式
+							if (format === 'pdf') {
+								css += _io2.default.getFileText('/style/pdf.css');
+							}
 							// css += io.getFileText('/node_modules/highlight.js/styles/github-gist.css');
 							css += _io2.default.getFileText('/node_modules/highlight.js/styles/tomorrow.css');
-	
 							/*var outputCss = postcss()
 	      	.use(atImport())
 	      	.process(css, {

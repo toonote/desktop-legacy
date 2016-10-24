@@ -1,0 +1,14 @@
+.htmlBody{
+	font-size: 10px;
+	line-height: 1.5em;
+}
+.htmlBody h1{
+	line-height: 28px;
+	text-align:center;
+}
+.htmlBody p,
+.htmlBody ul,
+.htmlBody ol{
+	margin-top:0;
+	margin-bottom: 14px;
+}

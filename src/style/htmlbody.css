@@ -1,4 +1,5 @@
 .htmlBody{
+	font-family: "PingFang SC";
 	line-height: 28px;
 	font-size: 14px;
 	color:#4D4D4C;
@@ -38,7 +39,7 @@
 }
 
 /*列表*/
-.htmlBody ul,ol{
+.htmlBody ul,.htmlBody ol{
 	margin-bottom: 28px;
 	/*padding-left:34px;*/
 	list-style-position: inside;

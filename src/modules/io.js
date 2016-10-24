@@ -119,75 +119,39 @@ io.export = function(format, content){
 		});
 	}
 	let filePath = io.selectPathForWrite(filters);
+	let htmlTmpPath;
 
-	fs.writeFileSync(filePath, content, 'utf8');
-	// console.log(filePath);
-	/*var content = currentNote.content;
-	if(format !== 'markdown'){
-		isExporting = true;
-		view.renderPreview(currentNote);
-		content = $preview.innerHTML;
-		isExporting = false;
-	}
-	if(format === 'htmlfile' || format === 'pdf'){
-		var postcss = require('postcss');
-		var atImport = require('postcss-import');
-
-		var css = fs.readFileSync(__dirname + '/render.css', 'utf8');
-
-		var outputCss = postcss()
-			.use(atImport())
-			.process(css, {
-				from: __dirname + '/render.css'
-			})
-			.css;
-
-		// console.log(outputCss);
-		content = '<!doctype html><html>\n' +
-				'<head>\n' +
-				'<meta charset="utf-8">\n' +
-				'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
-				'<title>' + noteIndex[currentNote.id] + '</title>\n' +
-				'<style>\n' + outputCss + '</style>\n' +
-				'</head>\n' +
-				'<body class="preview">\n' + content + '</body>\n</html>';
-	}
-
-	if(format === 'pdf'){
-		var pdfPath = filePath;
-		var path = require('path');
-		var cwd = path.dirname(filePath);
+	if(format === 'pdf') {
+		let cwd = path.dirname(filePath);
 		// 如果是pdf，先生成一个临时HTML文件
-		filePath = path.join(cwd,'tmp.htm');
+		htmlTmpPath = path.join(cwd,'ToonotePdfTmp.html');
+		fs.writeFileSync(htmlTmpPath, content, 'utf8');
+		// 生成pdf
+		let spawn = require('child_process').spawn;
+		let pdfprocess = spawn(path.join(require('electron').remote.app.getAppPath(), 'lib/phantomjs'),[
+			path.join(require('electron').remote.app.getAppPath(), 'lib/html2pdf.js'),
+			encodeURI(htmlTmpPath),
+			filePath
+		],{
+			cwd:cwd
+		});
+		pdfprocess.stdout.on('data',function(data){
+			console.log('stdout'+data);
+		});
+		pdfprocess.stderr.on('data',function(data){
+			console.log('stderr'+data);
+		});
+		pdfprocess.on('close',function(){
+			console.log('closed');
+			// 删除HTML文件
+			fs.unlink(htmlTmpPath, function(){
+				console.log('htm deleted');
+			});
+		});
+	}else{
+		fs.writeFileSync(filePath, content, 'utf8');
 	}
-	fs.writeFile(filePath,JSON.parse(JSON.stringify(content)),function(err){
-		if(err){
-			alert('保存失败：\n' + err.message);
-		}else if(format === 'pdf'){
-			// 生成pdf
-			var spawn = require('child_process').spawn;
-			var pdfprocess = spawn(__dirname + '/lib/phantomjs',[
-				__dirname + '/html2pdf.js',
-				encodeURI(filePath),
-				pdfPath
-			],{
-				cwd:cwd
-			});
-			pdfprocess.stdout.on('data',function(data){
-				console.log('stdout'+data);
-			});
-			pdfprocess.stderr.on('data',function(data){
-				console.log('stderr'+data);
-			});
-			pdfprocess.on('close',function(){
-				console.log('closed');
-				// 删除HTML文件
-				fs.unlink(filePath,function(){
-					console.log('htm deleted');
-				});
-			});
-		}
-	});*/
+
 }
 
 /*// 创建备份文件
