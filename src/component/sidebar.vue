@@ -171,14 +171,14 @@ export default {
 			// this.$nextTick(() => {
 			setTimeout(() => {
 				menu.showContextMenu([{
-					title:'新建',
-					event:'newNote'
-				},{
 					title:'打开',
 					event:'noteOpen'
 				},{
 					title:'删除',
 					event:'noteDelete'
+				},{
+					title:'新建',
+					event:'newNote'
 				},{
 					type:'separator'
 				},{
