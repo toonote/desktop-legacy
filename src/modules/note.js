@@ -40,7 +40,7 @@ window.addEventListener('beforeunload', (e) => {
 note.getTitleFromContent = function(content){
 	let firstLine = content.split('\n', 2)[0];
 	if(!firstLine) return '';
-	return firstLine.replace(/[#\s]/g, '');
+	return firstLine.replace(/#/g, '').trim();
 };
 
 note.getTitleWithoutCategory = function(title){
