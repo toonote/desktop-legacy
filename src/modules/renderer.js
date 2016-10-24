@@ -17,6 +17,28 @@ let renderer = new Remarkable({
 	}
 });
 
+
+// 解析todo
+let todoRegExp = /^\[([ x])\] ([\s\S]+)/mi;
+
+renderer.use(function(md) {
+	md.core.ruler.after('block', 'todo', function(state){
+		var tokens = state.tokens;
+		var len = tokens.length, i = -1;
+		while(++i < len) {
+			var token = tokens[i];
+			if (token.type === 'inline' && token.content) {
+				token.content = token.content.replace(todoRegExp, (str, char, text) => {
+					console.log(str, char, text);
+					let isDone = char.toLowerCase() === 'x';
+					// return `<input type="checkbox" ${isDone?"checked":""} />` + text;
+					return `${isDone?'✔':'☐'} ` + text;
+				});
+			}
+		}
+	}, {alt: []})
+});
+
 let index = 0;
 
 let customerRulesMap = {
@@ -32,7 +54,7 @@ for(let token in customerRulesMap){
 	renderer.renderer.rules[`${token}_open`] = function (tokens, idx) {
 		var line;
 		if(tag === 'tr'){
-			console.log(tokens[idx]);
+			// console.log(tokens[idx]);
 		}
 		if (tokens[idx].lines/* && tokens[idx].level === 0*/) {
 			line = tokens[idx].lines[0];
@@ -40,6 +62,15 @@ for(let token in customerRulesMap){
 		}
 		return `<${tag}>`;
 	};
+}
+
+renderer.renderer.rules.list_item_open = function (tokens, idx) {
+	for(let i = idx + 1; i < idx + 3; i++){
+		if(/[✔☐]/.test(tokens[i].content)){
+			return `<li class="todo${/^✔/i.test(tokens[i].content)?' done':' doing'}">`;
+		}
+	}
+	return '<li>';
 }
 
 renderer.renderer.rules.heading_open = function (tokens, idx) {

@@ -55,6 +55,19 @@
 	padding-left: 34px;
 	margin-bottom: 0;
 }
+/*todo*/
+.htmlBody li.todo{
+	list-style: none;
+}
+/*.htmlBody li.todo.doing::before{
+	content:'☐';
+}
+.htmlBody li.todo.done::before{
+	content:'✔';
+}
+.htmlBody li.todo p{
+	text-indent:-1.5em;
+}*/
 
 /*代码*/
 .htmlBody code{

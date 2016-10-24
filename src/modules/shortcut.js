@@ -53,6 +53,10 @@
 let shortcut = function(aceEditor){
 	let editor = aceEditor;
 	let selection = editor.getSelection();
+
+	editor.commands.bindKey('Cmd-D', null);
+	editor.commands.bindKey('Ctrl-D', null);
+
 	// 选中整行
 	editor.commands.addCommand({
 		name: 'selectLine',
