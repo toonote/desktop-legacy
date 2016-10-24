@@ -112,9 +112,10 @@ export default {
 		aceEditor.$blockScrolling = Infinity;
 		aceEditor.on('input', this.onEditorInput);
 
-		for(let cmd in shortcut){
+		shortcut(aceEditor);
+		/*for(let cmd in shortcut){
 			aceEditor.commands.bindKey(cmd, shortcut[cmd]);
-		}
+		}*/
 
 		// 同步滚动
 		session.on('changeScrollTop', throttle((scroll) => {
