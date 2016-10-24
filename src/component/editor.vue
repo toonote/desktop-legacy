@@ -30,6 +30,7 @@ import ace from 'brace';
 import 'brace/theme/tomorrow';
 import 'brace/mode/markdown';
 import {mapGetters} from 'vuex';
+import shortcut from '../modules/shortcut';
 import io from '../modules/io';
 let _aceEditor;
 let _id,_content;
@@ -114,6 +115,11 @@ export default {
 		aceEditor.setShowPrintMargin(false);
 		aceEditor.$blockScrolling = Infinity;
 		aceEditor.on('input', this.onEditorInput);
+
+		shortcut(aceEditor);
+		/*for(let cmd in shortcut){
+			aceEditor.commands.bindKey(cmd, shortcut[cmd]);
+		}*/
 
 		// 同步滚动
 		session.on('changeScrollTop', throttle((scroll) => {
