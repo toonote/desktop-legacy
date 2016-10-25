@@ -1154,7 +1154,7 @@
 					}, {
 						label: '退出',
 						accelerator: 'cmd+q',
-						role: 'close'
+						role: 'quit'
 					}]);
 				} else if (menuItem.title === 'Edit') {
 					subMenu = [{
