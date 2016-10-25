@@ -68,6 +68,9 @@ let app = new Vue({
 		},
 		versionRestore(){
 			store.dispatch('restoreActiveVersion');
+		},
+		doEdit(action){
+			store.commit('editAction', action);
 		}
 	},
 	data:{
@@ -161,6 +164,12 @@ let app = new Vue({
 				break;
 			case 'versionRestore':
 				app.versionRestore();
+				break;
+			case 'undo':
+				app.doEdit('undo');
+				break;
+			case 'redo':
+				app.doEdit('redo');
 				break;
 		}
 

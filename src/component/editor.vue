@@ -36,7 +36,7 @@ let _aceEditor;
 let _id,_content;
 export default {
 	computed:{
-		...mapGetters(['currentNote', 'layout'])
+		...mapGetters(['currentNote', 'layout', 'editAction'])
 	},
 	methods:{
 		onDragOver(){
@@ -96,6 +96,11 @@ export default {
 			if(!content && content !== '') return
 			if(_content !== content){
 				_aceEditor.setValue(content, -1);
+				// 清除undo列表
+				setTimeout(() => {
+					_aceEditor.getSession().getUndoManager().reset();
+					console.log(_aceEditor.getSession().getUndoManager().hasUndo());
+				},0);
 			}
 		},
 		'layout.preview': function(){
@@ -106,6 +111,19 @@ export default {
 		},
 		'layout.editor': function(){
 			this.resize();
+		},
+		'editAction': function(){
+			if(!this.editAction) return;
+			let undo = _aceEditor.getSession().getUndoManager();
+			if(this.editAction === 'undo') {
+				if(undo.hasUndo()){
+					undo.undo(true);
+				}
+			}else if(this.editAction === 'redo') {
+				if(undo.hasRedo()){
+					undo.redo(true);
+				}
+			}
 		}
 	},
 	data(){
@@ -153,6 +171,7 @@ export default {
 		},0);
 
 		window.addEventListener('resize', throttle(this.resize, 50));
+
 
 	}
 };

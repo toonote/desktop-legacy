@@ -158,6 +158,9 @@
 			},
 			versionRestore() {
 				store.dispatch('restoreActiveVersion');
+			},
+			doEdit(action) {
+				store.commit('editAction', action);
 			}
 		},
 		data: {
@@ -249,6 +252,12 @@
 					break;
 				case 'versionRestore':
 					app.versionRestore();
+					break;
+				case 'undo':
+					app.doEdit('undo');
+					break;
+				case 'redo':
+					app.doEdit('redo');
 					break;
 			}
 		});
@@ -1148,15 +1157,21 @@
 						role: 'close'
 					}]);
 				} else if (menuItem.title === 'Edit') {
-					subMenu = [/*{
-	               label: '撤销',
-	               role: 'undo'
-	               },{
-	               label: '重做'
-	               role: 'redo'
-	               },*/ /*{
-	                    type: 'separator'
-	                    },*/{
+					subMenu = [{
+						label: '撤销',
+						accelerator: 'cmd+z',
+						click: (item, focusWindow) => {
+							this.trigger('click', 'undo');
+						}
+					}, {
+						label: '重做',
+						accelerator: 'cmd+y',
+						click: (item, focusWindow) => {
+							this.trigger('click', 'redo');
+						}
+					}, {
+						type: 'separator'
+					}, {
 						label: '剪切',
 						role: 'cut'
 					}, {
@@ -1458,7 +1473,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?3a0cf565"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div\n\t\tid=\"ace_container\"\n\t\tv-on:dragover.prevent=\"onDragOver\"\n\t\tv-on:drop.prevent.stop=\"onDrop\"\n\t\tv-on:paste=\"onPaste\"\n\t></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex';\nimport shortcut from '../modules/shortcut';\nimport io from '../modules/io';\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote'])\n\t},\n\tmethods:{\n\t\tonDragOver(){\n\t\t\t// console.log('dragover');\n\t\t},\n\t\tonDrop(e){\n\t\t\tlet img = e.dataTransfer.files[0];\n\t\t\tif(!img || !/^image/.test(img.type)) return;\n\t\t\tlet ext = io.getExt(img.name);\n\t\t\tlet imagePath = io.saveImage(img.path, ext);\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tonPaste(e){\n\t\t\tif(!e.clipboardData.items || !e.clipboardData.items.length) return;\n\t\t\tlet hasImage = false;\n\t\t\tfor(let i = e.clipboardData.items.length;i--;){\n\t\t\t\tlet item = e.clipboardData.items[i];\n\t\t\t\tif(/^image/.test(item.type)){\n\t\t\t\t\thasImage = true;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(!hasImage) return;\n\n\t\t\tlet imagePath = io.saveImageFromClipboard();\n\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tinsertImg(imagePath){\n\n\t\t\tif(imagePath){\n\t\t\t\timagePath = encodeURI(imagePath);\n\t\t\t\t_aceEditor.insert(`\\n\\n![${name}](${imagePath})\\n\\n`);\n\t\t\t}else{\n\t\t\t\t_aceEditor.insert(`拖拽插入图片出错！`);\n\t\t\t}\n\t\t\tthis.onEditorInput();\n\t\t},\n\t\tonEditorInput(){\n\t\t\t_content = _aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t}\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note.id) return;\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t},\n\t\t'currentNote.content': function(content){\n\t\t\t// console.log('watch currentNote.content change');\n\t\t\tif(!content && content !== '') return\n\t\t\tif(_content !== content){\n\t\t\t\t_aceEditor.setValue(content, -1);\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', this.onEditorInput);\n\n\t\tshortcut(aceEditor);\n\t\t/*for(let cmd in shortcut){\n\t\t\taceEditor.commands.bindKey(cmd, shortcut[cmd]);\n\t\t}*/\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(function(){\n\t\t\taceEditor.resize();\n\t\t},0);\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?e7817722"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div\n\t\tid=\"ace_container\"\n\t\tv-on:dragover.prevent=\"onDragOver\"\n\t\tv-on:drop.prevent.stop=\"onDrop\"\n\t\tv-on:paste=\"onPaste\"\n\t></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex';\nimport shortcut from '../modules/shortcut';\nimport io from '../modules/io';\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote', 'layout', 'editAction'])\n\t},\n\tmethods:{\n\t\tonDragOver(){\n\t\t\t// console.log('dragover');\n\t\t},\n\t\tonDrop(e){\n\t\t\tlet img = e.dataTransfer.files[0];\n\t\t\tif(!img || !/^image/.test(img.type)) return;\n\t\t\tlet ext = io.getExt(img.name);\n\t\t\tlet imagePath = io.saveImage(img.path, ext);\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tonPaste(e){\n\t\t\tif(!e.clipboardData.items || !e.clipboardData.items.length) return;\n\t\t\tlet hasImage = false;\n\t\t\tfor(let i = e.clipboardData.items.length;i--;){\n\t\t\t\tlet item = e.clipboardData.items[i];\n\t\t\t\tif(/^image/.test(item.type)){\n\t\t\t\t\thasImage = true;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(!hasImage) return;\n\n\t\t\tlet imagePath = io.saveImageFromClipboard();\n\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tinsertImg(imagePath){\n\n\t\t\tif(imagePath){\n\t\t\t\timagePath = encodeURI(imagePath);\n\t\t\t\t_aceEditor.insert(`\\n\\n![${name}](${imagePath})\\n\\n`);\n\t\t\t}else{\n\t\t\t\t_aceEditor.insert(`拖拽插入图片出错！`);\n\t\t\t}\n\t\t\tthis.onEditorInput();\n\t\t},\n\t\tonEditorInput(){\n\t\t\t_content = _aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t},\n\t\tresize(){\n\t\t\t_aceEditor.resize();\n\t\t}\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note.id) return;\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t},\n\t\t'currentNote.content': function(content){\n\t\t\t// console.log('watch currentNote.content change');\n\t\t\tif(!content && content !== '') return\n\t\t\tif(_content !== content){\n\t\t\t\t_aceEditor.setValue(content, -1);\n\t\t\t\t// 清除undo列表\n\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t_aceEditor.getSession().getUndoManager().reset();\n\t\t\t\t\tconsole.log(_aceEditor.getSession().getUndoManager().hasUndo());\n\t\t\t\t},0);\n\t\t\t}\n\t\t},\n\t\t'layout.preview': function(){\n\t\t\tthis.resize();\n\t\t},\n\t\t'layout.sidebar': function(){\n\t\t\tthis.resize();\n\t\t},\n\t\t'layout.editor': function(){\n\t\t\tthis.resize();\n\t\t},\n\t\t'editAction': function(){\n\t\t\tif(!this.editAction) return;\n\t\t\tlet undo = _aceEditor.getSession().getUndoManager();\n\t\t\tif(this.editAction === 'undo') {\n\t\t\t\tif(undo.hasUndo()){\n\t\t\t\t\tundo.undo(true);\n\t\t\t\t}\n\t\t\t}else if(this.editAction === 'redo') {\n\t\t\t\tif(undo.hasRedo()){\n\t\t\t\t\tundo.redo(true);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', this.onEditorInput);\n\n\t\tshortcut(aceEditor);\n\t\t/*for(let cmd in shortcut){\n\t\t\taceEditor.commands.bindKey(cmd, shortcut[cmd]);\n\t\t}*/\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(() => {\n\t\t\tthis.resize();\n\t\t},0);\n\n\t\twindow.addEventListener('resize', throttle(this.resize, 50));\n\n\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -1527,7 +1542,7 @@
 	let _aceEditor;
 	let _id, _content;
 	exports.default = {
-		computed: _extends({}, (0, _vuex.mapGetters)(['currentNote'])),
+		computed: _extends({}, (0, _vuex.mapGetters)(['currentNote', 'layout', 'editAction'])),
 		methods: {
 			onDragOver() {
 				// console.log('dragover');
@@ -1568,6 +1583,9 @@
 				_content = _aceEditor.getValue();
 				this.$store.dispatch('changeCurrentNoteContent', _content);
 				// eventHub.$emit('currentNoteContentChange', content);
+			},
+			resize() {
+				_aceEditor.resize();
 			}
 		},
 		watch: {
@@ -1583,6 +1601,33 @@
 				if (!content && content !== '') return;
 				if (_content !== content) {
 					_aceEditor.setValue(content, -1);
+					// 清除undo列表
+					setTimeout(() => {
+						_aceEditor.getSession().getUndoManager().reset();
+						console.log(_aceEditor.getSession().getUndoManager().hasUndo());
+					}, 0);
+				}
+			},
+			'layout.preview': function () {
+				this.resize();
+			},
+			'layout.sidebar': function () {
+				this.resize();
+			},
+			'layout.editor': function () {
+				this.resize();
+			},
+			'editAction': function () {
+				if (!this.editAction) return;
+				let undo = _aceEditor.getSession().getUndoManager();
+				if (this.editAction === 'undo') {
+					if (undo.hasUndo()) {
+						undo.undo(true);
+					}
+				} else if (this.editAction === 'redo') {
+					if (undo.hasRedo()) {
+						undo.redo(true);
+					}
 				}
 			}
 		},
@@ -1626,9 +1671,11 @@
 			// console.log('scroll',scroll);
 	
 			// 重新计算大小
-			setTimeout(function () {
-				aceEditor.resize();
+			setTimeout(() => {
+				this.resize();
 			}, 0);
+	
+			window.addEventListener('resize', (0, _lodash2.default)(this.resize, 50));
 		}
 	};
 	module.exports = exports['default'];
@@ -5031,9 +5078,14 @@
 		let editor = aceEditor;
 		let selection = editor.getSelection();
 		let session = editor.getSession();
+		let undo = session.getUndoManager();
 	
 		editor.commands.bindKey('Cmd-D', null);
 		editor.commands.bindKey('Ctrl-D', null);
+		editor.commands.bindKey('Ctrl-Z', null);
+		editor.commands.bindKey('Cmd-Z', null);
+		editor.commands.bindKey('Ctrl-Y', null);
+		editor.commands.bindKey('Cmd-Y', null);
 	
 		let getCurrentLineText = () => {
 			let row = editor.getSelection().getCursor().row;
@@ -5055,12 +5107,40 @@
 			session.replace(range, newText);
 		};
 	
+		// 撤销
+		editor.commands.addCommand({
+			name: 'undo',
+			bindKey: {
+				win: 'Ctrl-z',
+				mac: 'Cmd-z'
+			},
+			exec: function (editor) {
+				if (undo.hasUndo()) {
+					undo.undo(true);
+				}
+			}
+		});
+	
+		// 反撤销
+		editor.commands.addCommand({
+			name: 'redo',
+			bindKey: {
+				win: 'Ctrl-y',
+				mac: 'Cmd-y'
+			},
+			exec: function (editor) {
+				if (undo.hasRedo()) {
+					undo.redo(true);
+				}
+			}
+		});
+	
 		// 选中整行
 		editor.commands.addCommand({
 			name: 'selectLine',
 			bindKey: {
 				win: 'Ctrl-l',
-				mac: 'Command-l'
+				mac: 'Cmd-l'
 			},
 			exec: function (editor) {
 				if (selection.isMultiLine()) {
@@ -5078,7 +5158,7 @@
 			name: 'splitInfoLines',
 			bindKey: {
 				win: 'Ctrl-Shift-l',
-				mac: 'Command-Shift-l'
+				mac: 'Cmd-Shift-l'
 			},
 			exec: function (editor) {
 				selection.splitIntoLines();
@@ -5090,15 +5170,21 @@
 			name: 'moveDown',
 			bindKey: {
 				win: 'Ctrl-Shift-Down',
-				mac: 'Command-Ctrl-Down'
+				mac: 'Cmd-Ctrl-Down'
 			},
 			exec: function (editor) {
-				if (selection.isEmpty()) {
+				let isSelectionEmpty = selection.isEmpty();
+				console.log(isSelectionEmpty);
+				if (isSelectionEmpty) {
 					selection.selectLine();
 				}
 				editor.moveLinesDown();
-				selection.clearSelection();
-				selection.moveCursorUp();
+				if (isSelectionEmpty) {
+					selection.clearSelection();
+					selection.moveCursorUp();
+				} else {
+					// selection.moveCursorDown()
+				}
 			}
 		});
 	
@@ -5107,15 +5193,21 @@
 			name: 'moveUp',
 			bindKey: {
 				win: 'Ctrl-Shift-Up',
-				mac: 'Command-Ctrl-Up'
+				mac: 'Cmd-Ctrl-Up'
 			},
 			exec: function (editor) {
-				if (selection.isEmpty()) {
+				let isSelectionEmpty = selection.isEmpty();
+				console.log(isSelectionEmpty);
+				if (isSelectionEmpty) {
 					selection.selectLine();
 				}
 				editor.moveLinesUp();
-				selection.clearSelection();
-				selection.moveCursorUp();
+				if (isSelectionEmpty) {
+					selection.clearSelection();
+					selection.moveCursorUp();
+				} else {
+					// selection.moveCursorDown()
+				}
 			}
 		});
 	
@@ -7181,7 +7273,8 @@
 				activeVersionContent: '',
 				list: []
 			},
-			contextMenuVersionId: ''
+			contextMenuVersionId: '',
+			editAction: ''
 		},
 		mutations: {
 			newNote(state, note) {
@@ -7236,6 +7329,9 @@
 			},
 			switchContextMenuVersion(state, versionId) {
 				state.contextMenuVersionId = versionId;
+			},
+			editAction(state, action) {
+				state.editAction = action;
 			}
 		},
 		getters: {
@@ -7302,6 +7398,9 @@
 			},
 			contextMenuVersionId(state) {
 				return state.contextMenuVersionId;
+			},
+			editAction(state) {
+				return state.editAction;
 			}
 			/*currentNoteContent(state, getters){
 	  	return getters.content;

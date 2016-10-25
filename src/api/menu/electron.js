@@ -38,15 +38,21 @@ class ElectronMenu extends Menu{
 					role: 'close',
 				}]);
 			}else if(menuItem.title === 'Edit'){
-				subMenu = [/*{
+				subMenu = [{
 					label: '撤销',
-					role: 'undo'
+					accelerator: 'cmd+z',
+					click: (item, focusWindow) => {
+						this.trigger('click', 'undo');
+					}
 				},{
-					label: '重做'
-					role: 'redo'
-				},*//*{
+					label: '重做',
+					accelerator: 'cmd+y',
+					click: (item, focusWindow) => {
+						this.trigger('click', 'redo');
+					}
+				},{
 					type: 'separator'
-				},*/{
+				},{
 					label: '剪切',
 					role: 'cut'
 				},{

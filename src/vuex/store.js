@@ -40,7 +40,8 @@ const store = new Vuex.Store({
 			activeVersionContent:'',
 			list:[]
 		},
-		contextMenuVersionId: ''
+		contextMenuVersionId: '',
+		editAction: ''
 	},
 	mutations: {
 		newNote(state, note) {
@@ -95,6 +96,9 @@ const store = new Vuex.Store({
 		},
 		switchContextMenuVersion(state, versionId){
 			state.contextMenuVersionId = versionId;
+		},
+		editAction(state, action){
+			state.editAction = action;
 		}
 	},
 	getters: {
@@ -161,6 +165,9 @@ const store = new Vuex.Store({
 		},
 		contextMenuVersionId(state){
 			return state.contextMenuVersionId
+		},
+		editAction(state){
+			return state.editAction
 		}
 		/*currentNoteContent(state, getters){
 			return getters.content;

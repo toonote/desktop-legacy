@@ -54,9 +54,14 @@ let shortcut = function(aceEditor){
 	let editor = aceEditor;
 	let selection = editor.getSelection();
 	let session = editor.getSession();
+	let undo = session.getUndoManager();
 
 	editor.commands.bindKey('Cmd-D', null);
 	editor.commands.bindKey('Ctrl-D', null);
+	editor.commands.bindKey('Ctrl-Z', null);
+	editor.commands.bindKey('Cmd-Z', null);
+	editor.commands.bindKey('Ctrl-Y', null);
+	editor.commands.bindKey('Cmd-Y', null);
 
 
 	let getCurrentLineText = () => {
@@ -79,12 +84,40 @@ let shortcut = function(aceEditor){
 		session.replace(range, newText);
 	};
 
+	// 撤销
+	editor.commands.addCommand({
+		name: 'undo',
+		bindKey: {
+			win: 'Ctrl-z',
+			mac: 'Cmd-z'
+		},
+		exec: function(editor) {
+			if(undo.hasUndo()){
+				undo.undo(true);
+			}
+		}
+	});
+
+	// 反撤销
+	editor.commands.addCommand({
+		name: 'redo',
+		bindKey: {
+			win: 'Ctrl-y',
+			mac: 'Cmd-y'
+		},
+		exec: function(editor) {
+			if(undo.hasRedo()){
+				undo.redo(true);
+			}
+		}
+	});
+
 	// 选中整行
 	editor.commands.addCommand({
 		name: 'selectLine',
 		bindKey: {
 			win: 'Ctrl-l',
-			mac: 'Command-l'
+			mac: 'Cmd-l'
 		},
 		exec: function(editor) {
 			if(selection.isMultiLine()){
@@ -102,7 +135,7 @@ let shortcut = function(aceEditor){
 		name: 'splitInfoLines',
 		bindKey: {
 			win: 'Ctrl-Shift-l',
-			mac: 'Command-Shift-l'
+			mac: 'Cmd-Shift-l'
 		},
 		exec: function(editor) {
 			selection.splitIntoLines();
@@ -114,15 +147,21 @@ let shortcut = function(aceEditor){
 		name: 'moveDown',
 		bindKey: {
 			win: 'Ctrl-Shift-Down',
-			mac: 'Command-Ctrl-Down'
+			mac: 'Cmd-Ctrl-Down'
 		},
 		exec: function(editor) {
-			if(selection.isEmpty()){
+			let isSelectionEmpty = selection.isEmpty();
+			console.log(isSelectionEmpty);
+			if(isSelectionEmpty){
 				selection.selectLine();
 			}
 			editor.moveLinesDown();
-			selection.clearSelection();
-			selection.moveCursorUp()
+			if(isSelectionEmpty){
+				selection.clearSelection();
+				selection.moveCursorUp()
+			}else{
+				// selection.moveCursorDown()
+			}
 		}
 	});
 
@@ -131,15 +170,21 @@ let shortcut = function(aceEditor){
 		name: 'moveUp',
 		bindKey: {
 			win: 'Ctrl-Shift-Up',
-			mac: 'Command-Ctrl-Up'
+			mac: 'Cmd-Ctrl-Up'
 		},
 		exec: function(editor) {
-			if(selection.isEmpty()){
+			let isSelectionEmpty = selection.isEmpty();
+			console.log(isSelectionEmpty);
+			if(isSelectionEmpty){
 				selection.selectLine();
 			}
 			editor.moveLinesUp();
-			selection.clearSelection();
-			selection.moveCursorUp()
+			if(isSelectionEmpty){
+				selection.clearSelection();
+				selection.moveCursorUp()
+			}else{
+				// selection.moveCursorDown()
+			}
 		}
 	});
 
