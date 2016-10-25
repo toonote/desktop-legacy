@@ -11,7 +11,24 @@ body{
 .main{
 	display: flex;
 	height:100%;
+	background:url('../images/bg.jpg') center 40% no-repeat;
 }
+.main.withSidebar{
+	background-position: 60% 40%;
+}
+/*.main::after{
+    content: 'hello world';
+    position: absolute;
+	left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+    color: #ccc;
+    z-index: -1;
+}
+.main.withSidebar::after{
+    left: calc(50% + 100px);
+}*/
 .main.withMenubar{
 	height:calc(100% - 24px);
 }

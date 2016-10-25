@@ -9,7 +9,7 @@
 <body>
 <div id="wrapper">
 	<menubar v-bind:class="{hidden:!withMenubar}"></menubar>
-	<div class="main" v-bind:class="{withMenubar:withMenubar}">
+	<div class="main" v-bind:class="{withMenubar:withMenubar, withSidebar:layout.sidebar}">
 		<sidebar v-show="layout.sidebar"></sidebar>
 		<editor v-show="layout.editor"></editor>
 		<preview v-show="layout.preview"></preview>
