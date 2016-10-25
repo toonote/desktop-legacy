@@ -9,8 +9,6 @@
 	background:rgba(128,128,128,.4);
 }
 .versions{
-	-webkit-user-select: none;
-	user-select: none;
 	position: absolute;
 	z-index: 2;
 	width: 800px;
@@ -25,6 +23,8 @@
 	display: flex;
 }
 .wrapper{
+	-webkit-user-select: none;
+	user-select: none;
 	width: 200px;
 	background:#F6F6F6;
 	border-right:1px solid #E0E0E0;
@@ -67,11 +67,30 @@
 	padding:10px;
 	overflow: auto;
 }
+.closeBtn{
+	position: absolute;
+	right:-15px;
+	top:-15px;
+	width:20px;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size:14px;
+    background: white;
+    border: 5px solid rgba(128,128,128,.6);
+    border-radius: 15px;
+    cursor:pointer;
+	transition: transform .8s;
+}
+.closeBtn:hover{
+	transform: rotateZ(720deg);
+}
 </style>
 
 <template>
-<section class="mask" v-on:click="hideVersions" v-show="versions.currentNote">
+<section tabindex="1" class="mask" v-on:keydown.esc="hideVersions" v-on:click="hideVersions" v-show="versions.currentNote">
 <section class="versions" v-on:click.stop="()=>{}">
+	<div class="closeBtn" v-on:click="hideVersions">✖︎</div>
 	<section class="wrapper">
 		<ul>
 			<li
@@ -113,6 +132,16 @@ export default {
 		])
 	},
 	watch: {
+		// 出现历史版本对话框的时候聚焦
+		// 以便响应ESC按键
+		'versions.currentNote': function(){
+			// console.log('versions.currentNote changed', this.versions.currentNote.id, this.$el);
+			if(this.versions.currentNote){
+				this.$nextTick(() => {
+					this.$el.focus();
+				});
+			}
+		}
 	},
 	methods: {
 		formatDate(date){
