@@ -26,7 +26,10 @@ export default class Git{
 		return fs.existsSync(path.join(this._root, '.git'));
 	}
 	init(){
-		return this.runCommand('init');
+		let ret = this.runCommand('init');
+		ret += ';' + this.runCommand('config user.name "TooNote"');
+		ret += ';' + this.runCommand('config user.email "toonote@local.git"');
+		return ret;
 	}
 	status(){
 		return this.runCommand('status');
