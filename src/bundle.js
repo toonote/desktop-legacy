@@ -5264,9 +5264,14 @@
 				let newText;
 				let isDone = todoItemMatch[1] === 'x';
 				if (isDone) {
-					newText = currText.replace('[x]', '[ ]');
+					newText = currText.replace('[x]', '[ ]').replace(/ \([\d\-: ]+\)\s*$/, '');
 				} else {
-					newText = currText.replace('[ ]', '[x]');
+					let date = new Date();
+					let ts = date.getTime() - date.getTimezoneOffset() * 60 * 1000;
+					let s = new Date(ts).toISOString();
+	
+					let now = s.replace(/T/g, ' ').replace(/^\d{2}/, '').replace(/:\d+\.\d+Z$/, ''); // 16-11-24 14:16
+					newText = currText.replace('[ ]', '[x]') + ` (${ now })`;
 				}
 	
 				replaceCurrentLineText(newText);
