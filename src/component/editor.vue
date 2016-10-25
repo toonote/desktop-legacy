@@ -36,7 +36,7 @@ let _aceEditor;
 let _id,_content;
 export default {
 	computed:{
-		...mapGetters(['currentNote'])
+		...mapGetters(['currentNote', 'layout'])
 	},
 	methods:{
 		onDragOver(){
@@ -78,6 +78,9 @@ export default {
 			_content = _aceEditor.getValue();
 			this.$store.dispatch('changeCurrentNoteContent', _content);
 			// eventHub.$emit('currentNoteContentChange', content);
+		},
+		resize(){
+			_aceEditor.resize();
 		}
 	},
 	watch:{
@@ -94,6 +97,15 @@ export default {
 			if(_content !== content){
 				_aceEditor.setValue(content, -1);
 			}
+		},
+		'layout.preview': function(){
+			this.resize();
+		},
+		'layout.sidebar': function(){
+			this.resize();
+		},
+		'layout.editor': function(){
+			this.resize();
 		}
 	},
 	data(){
@@ -136,9 +148,12 @@ export default {
 			// console.log('scroll',scroll);
 
 		// 重新计算大小
-		setTimeout(function(){
-			aceEditor.resize();
+		setTimeout(() => {
+			this.resize();
 		},0);
+
+		window.addEventListener('resize', throttle(this.resize, 50));
+
 	}
 };
 </script>
