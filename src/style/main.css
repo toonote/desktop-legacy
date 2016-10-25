@@ -6,6 +6,7 @@ html,body,#wrapper{
 	height: 100%;
 }
 body{
+	font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 }
 .main{
 	display: flex;
