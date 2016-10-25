@@ -71,27 +71,27 @@
 	
 	var _editor2 = _interopRequireDefault(_editor);
 	
-	var _preview = __webpack_require__(38);
+	var _preview = __webpack_require__(39);
 	
 	var _preview2 = _interopRequireDefault(_preview);
 	
-	var _menubar = __webpack_require__(50);
+	var _menubar = __webpack_require__(51);
 	
 	var _menubar2 = _interopRequireDefault(_menubar);
 	
-	var _versions = __webpack_require__(55);
+	var _versions = __webpack_require__(56);
 	
 	var _versions2 = _interopRequireDefault(_versions);
 	
-	var _menu = __webpack_require__(60);
+	var _menu = __webpack_require__(61);
 	
 	var _menu2 = _interopRequireDefault(_menu);
 	
-	var _meta = __webpack_require__(66);
+	var _meta = __webpack_require__(67);
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
-	var _note = __webpack_require__(61);
+	var _note = __webpack_require__(62);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
@@ -100,7 +100,7 @@
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	_vue2.default.use(_vuex2.default);
-	let store = __webpack_require__(67);
+	let store = __webpack_require__(68);
 	
 	// Vue.config.debug = true;
 	
@@ -1388,7 +1388,7 @@
 	__vue_exports__ = __webpack_require__(24)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(37)
+	var __vue_template__ = __webpack_require__(38)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -1514,11 +1514,11 @@
 	
 	var _vuex = __webpack_require__(3);
 	
-	var _shortcut = __webpack_require__(70);
+	var _shortcut = __webpack_require__(32);
 	
 	var _shortcut2 = _interopRequireDefault(_shortcut);
 	
-	var _io = __webpack_require__(32);
+	var _io = __webpack_require__(33);
 	
 	var _io2 = _interopRequireDefault(_io);
 	
@@ -4968,6 +4968,248 @@
 
 /***/ },
 /* 32 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	// https://github.com/ajaxorg/ace/issues/1287
+	/*{
+		// "Alt-Left": "goSubwordLeft",
+		// "Alt-Right": "goSubwordRight",
+		// "Ctrl-Up": "scrollLineUp",
+		// "Ctrl-Down": "scrollLineDown",
+		"Shift-Ctrl-L": "splitSelectionByLine",
+		"Shift-Tab": "indentLess",
+		"Esc": "singleSelectionTop",
+		"Cmd-L": "expandtoline",
+		"Shift-Ctrl-K": "deleteLine",
+		"Cmd-Enter": "insertLineAfter",
+		"Shift-Cmd-Enter": "insertLineBefore",
+		"Cmd-D": "selectNextOccurrence",
+		// "Shift-Ctrl-Space": "selectScope",
+		"Shift-Ctrl-M": "selectBetweenBrackets",
+		"Ctrl-M": "goToBracket",
+		"Cmd-Ctrl-Up": "swapLineUp",
+		"Cmd-Ctrl-Down": "swapLineDown",
+		"Ctrl-/": "toggleComment",
+		"Ctrl-J": "joinLines",
+		"Shift-Cmd-D": "duplicateLine",
+		"Ctrl-T": "transposeChars",
+		// "F9": "sortLines",
+		// "Ctrl-F9": "sortLinesInsensitive",
+		"F2": "nextBookmark",
+		"Shift-F2": "prevBookmark",
+		"Cmd-F2": "toggleBookmark",
+		"Shift-Cmd-F2": "clearBookmarks",
+		// "Alt-F2": "selectBookmarks",
+		// "Alt-Q": "wrapLines",
+		"Cmd-K Cmd-Backspace": "delLineLeft",
+		"Cmd-K Cmd-K": "delLineRight",
+		"Cmd-K Cmd-U": "upcaseAtCursor",
+		"Cmd-K Cmd-L": "downcaseAtCursor",
+		// "Cmd-K Cmd-Space": "setSublimeMark",
+		// "Cmd-K Cmd-A": "selectToSublimeMark",
+		// "Cmd-K Cmd-W": "deleteToSublimeMark",
+		// "Cmd-K Cmd-X": "swapWithSublimeMark",
+		// "Cmd-K Cmd-Y": "sublimeYank",
+		// "Cmd-K Cmd-G": "clearBookmarks",
+		// "Cmd-K Cmd-C": "showInCenter",
+		"Shift-Alt-Up": "selectLinesUpward",
+		"Shift-Alt-Down": "selectLinesDownward",
+		// "Ctrl-F3": "findUnder",
+		// "Shift-Ctrl-F3": "findUnderPrevious",
+		// "Shift-Ctrl-[": "fold",
+		// "Shift-Ctrl-]": "unfold",
+		"Ctrl-K Ctrl-j": "unfoldAll",
+		"Ctrl-K Ctrl-0": "unfoldAll",
+		// "Ctrl-H": "replace",
+	}*/
+	let shortcut = function (aceEditor) {
+		let editor = aceEditor;
+		let selection = editor.getSelection();
+		let session = editor.getSession();
+	
+		editor.commands.bindKey('Cmd-D', null);
+		editor.commands.bindKey('Ctrl-D', null);
+	
+		let getCurrentLineText = () => {
+			let row = editor.getSelection().getCursor().row;
+			return session.getLine(row);
+		};
+	
+		let replaceCurrentLineText = newText => {
+			let range = editor.getSelectionRange();
+			let position = aceEditor.getSelection().getCursor();
+			let oldColumn = range.start.column;
+			range.setStart({
+				row: position.row,
+				column: 0
+			});
+			range.setEnd({
+				row: position.row,
+				column: 999999999
+			});
+			session.replace(range, newText);
+		};
+	
+		// 选中整行
+		editor.commands.addCommand({
+			name: 'selectLine',
+			bindKey: {
+				win: 'Ctrl-l',
+				mac: 'Command-l'
+			},
+			exec: function (editor) {
+				if (selection.isMultiLine()) {
+					// 如果已经选中一行了，则选下一行
+					selection.selectDown();
+				} else {
+					// 否则，选中当前行
+					selection.selectLine();
+				}
+			}
+		});
+	
+		// 选中整行
+		editor.commands.addCommand({
+			name: 'splitInfoLines',
+			bindKey: {
+				win: 'Ctrl-Shift-l',
+				mac: 'Command-Shift-l'
+			},
+			exec: function (editor) {
+				selection.splitIntoLines();
+			}
+		});
+	
+		// 向下移动
+		editor.commands.addCommand({
+			name: 'moveDown',
+			bindKey: {
+				win: 'Ctrl-Shift-Down',
+				mac: 'Command-Ctrl-Down'
+			},
+			exec: function (editor) {
+				if (selection.isEmpty()) {
+					selection.selectLine();
+				}
+				editor.moveLinesDown();
+				selection.clearSelection();
+				selection.moveCursorUp();
+			}
+		});
+	
+		// 向上移动
+		editor.commands.addCommand({
+			name: 'moveUp',
+			bindKey: {
+				win: 'Ctrl-Shift-Up',
+				mac: 'Command-Ctrl-Up'
+			},
+			exec: function (editor) {
+				if (selection.isEmpty()) {
+					selection.selectLine();
+				}
+				editor.moveLinesUp();
+				selection.clearSelection();
+				selection.moveCursorUp();
+			}
+		});
+	
+		// 删除行
+		editor.commands.addCommand({
+			name: 'deleteLines',
+			bindKey: {
+				win: 'Ctrl-Shift-k',
+				mac: 'Ctrl-Shift-k'
+			},
+			exec: function (editor) {
+				editor.removeLines();
+			}
+		});
+	
+		// 删除到行尾
+		editor.commands.addCommand({
+			name: 'deleteToEnd',
+			bindKey: {
+				win: 'Ctrl-k Ctrl-k',
+				mac: 'Cmd-k Cmd-k'
+			},
+			exec: function (editor) {
+				editor.removeToLineEnd();
+			}
+		});
+	
+		// 删除到行首
+		editor.commands.addCommand({
+			name: 'deleteToStart',
+			bindKey: {
+				win: 'Ctrl-k Ctrl-backspace',
+				mac: 'Cmd-k Cmd-backspace'
+			},
+			exec: function (editor) {
+				editor.removeToLineStart();
+			}
+		});
+	
+		// TODO完成切换
+		editor.commands.addCommand({
+			name: 'toggleTodoState',
+			bindKey: {
+				win: 'Ctrl-d',
+				mac: 'Cmd-d'
+			},
+			exec: function (editor) {
+				let currText = getCurrentLineText();
+	
+				let todoItemRegExp = /\- \[([x ])\] ?/;
+				let todoItemMatch = currText.match(todoItemRegExp);
+				if (!todoItemMatch || todoItemMatch.length < 2) return;
+	
+				let newText;
+				let isDone = todoItemMatch[1] === 'x';
+				if (isDone) {
+					newText = currText.replace('[x]', '[ ]');
+				} else {
+					newText = currText.replace('[ ]', '[x]');
+				}
+	
+				replaceCurrentLineText(newText);
+			}
+		});
+	
+		// TODO任务切换
+		editor.commands.addCommand({
+			name: 'toggleIsTodo',
+			bindKey: {
+				win: 'Ctrl-i',
+				mac: 'Cmd-i'
+			},
+			exec: function (editor) {
+				let currText = getCurrentLineText();
+				let newText;
+	
+				let todoItemRegExp = /\- \[([x ])\] ?/;
+				let todoItemMatch = currText.match(todoItemRegExp);
+				if (!todoItemMatch || todoItemMatch.length < 2) {
+					newText = '- [ ] ' + currText.replace(/^\- /, '');
+				} else {
+					newText = currText.replace(/^\- \[[x ]\] /, '- ');
+				}
+	
+				replaceCurrentLineText(newText);
+			}
+		});
+	};
+	
+	exports.default = shortcut;
+	module.exports = exports['default'];
+
+/***/ },
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4976,7 +5218,7 @@
 		value: true
 	});
 	
-	var _jszip = __webpack_require__(33);
+	var _jszip = __webpack_require__(34);
 	
 	var _jszip2 = _interopRequireDefault(_jszip);
 	
@@ -4985,8 +5227,8 @@
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	let io = {};
-	let fs = __webpack_require__(34);
-	let path = __webpack_require__(35);
+	let fs = __webpack_require__(35);
+	let path = __webpack_require__(36);
 	
 	io.getExt = filename => {
 		return path.extname(filename);
@@ -5044,7 +5286,7 @@
 		if (!filePath || !filePath.length) return;
 		filePath = filePath[0];
 	
-		var fs = __webpack_require__(34);
+		var fs = __webpack_require__(35);
 		return fs.readFileSync(filePath, 'binary');
 	};
 	
@@ -5111,7 +5353,7 @@
 			htmlTmpPath = path.join(cwd, 'ToonotePdfTmp.html');
 			fs.writeFileSync(htmlTmpPath, content, 'utf8');
 			// 生成pdf
-			let spawn = __webpack_require__(36).spawn;
+			let spawn = __webpack_require__(37).spawn;
 			let pdfprocess = spawn(path.join(__webpack_require__(18).remote.app.getAppPath(), 'lib/phantomjs'), [path.join(__webpack_require__(18).remote.app.getAppPath(), 'lib/html2pdf.js'), encodeURI(htmlTmpPath), filePath], {
 				cwd: cwd
 			});
@@ -5166,31 +5408,31 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 	module.exports = require("jszip");
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports) {
 
 	module.exports = require("fs");
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports) {
 
 	module.exports = require("path");
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports) {
 
 	module.exports = require("child_process");
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -5222,19 +5464,19 @@
 	}
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	
 	/* styles */
-	__webpack_require__(39)
+	__webpack_require__(40)
 	
 	/* script */
-	__vue_exports__ = __webpack_require__(42)
+	__vue_exports__ = __webpack_require__(43)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(49)
+	var __vue_template__ = __webpack_require__(50)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -5270,13 +5512,13 @@
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(40);
+	var content = __webpack_require__(41);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -5296,12 +5538,12 @@
 	}
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
 	// imports
-	exports.i(__webpack_require__(41), "");
+	exports.i(__webpack_require__(42), "");
 	
 	// module
 	exports.push([module.id, "\n.preview[data-v-46603186]{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n", "", {"version":3,"sources":["/./component/preview.vue?c50deb1a"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,gBAAA;CACA,OAAA;CACA,eAAA;CACA,kBAAA;CACA,gBAAA;CACA","file":"preview.vue","sourcesContent":["<style scoped>\n.preview{\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\toverflow-y:auto;\n\tflex:1;\n\tfont-size:14px;\n\tline-height: 28px;\n\tbackground:#fff;\n}\n@import \"../style/htmlbody.css\";\n</style>\n\n<template>\n<section class=\"preview\">\n\t<div class=\"htmlBody\" v-html=\"html\" v-on:click=\"handleContent\"></div>\n</section>\n</template>\n\n\n<script>\n// import 'highlight.js/styles/github-gist.css';\nimport 'highlight.js/styles/tomorrow.css';\nimport {mapGetters} from 'vuex';\nimport renderer from '../modules/renderer';\nexport default {\n\tcomputed:{\n\t\thtml(){\n\t\t\tif(!this.currentNote || !this.currentNote.content){\n\t\t\t\treturn ''\n\t\t\t}\n\t\t\treturn renderer.render(this.currentNote.content)\n\t\t},\n\t\t/*currentNote(){\n\t\t\treturn this.$store.getters.currentNote\n\t\t},*/\n\t\t...mapGetters(['currentNote'])\n\t},\n\tmethods: {\n\t\thandleContent(e) {\n\t\t\tlet $target = e.target;\n\t\t\t// 链接\n\t\t\tif($target.tagName === 'A' && /^https?:\\/\\//.test($target.href)){\n\t\t\t\tlet shell = require('electron').shell;\n\t\t\t\tshell.openExternal($target.href);\n\t\t\t\te.preventDefault();\n\t\t\t}\n\t\t}\n\t},\n\twatch:{\n\t\thtml(){\n\t\t\tthis.$nextTick(() => {\n\t\t\t\tlet scrollMap = [];\n\n\t\t\t\tlet $preview = this.$el;\n\t\t\t\tlet $previewAnchors = $preview.querySelectorAll('.line');\n\t\t\t\tArray.prototype.forEach.call($previewAnchors, function($previewAnchor){\n\t\t\t\t\tlet line = $previewAnchor.dataset.line;\n\t\t\t\t\tlet top = $previewAnchor.offsetTop;\n\t\t\t\t\t/*if(line == 8){\n\t\t\t\t\t\tconsole.log(line, top, $previewAnchor);\n\t\t\t\t\t}*/\n\t\t\t\t\tif(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){\n\t\t\t\t\t\tscrollMap[line] = top;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\tscrollMap[0] = 0;\n\n\t\t\t\tlet contentLines = this.currentNote.content.split('\\n').length;\n\t\t\t\tif(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;\n\n\t\t\t\tfor(var i = 1; i<contentLines -1; i++){\n\t\t\t\t\tif(!scrollMap[i]){\n\t\t\t\t\t\tvar j = i+1;\n\t\t\t\t\t\twhile(!scrollMap[j] && j < contentLines - 1){\n\t\t\t\t\t\t\tj++;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tscrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t// console.log(scrollMap[8]);\n\n\t\t\t\tthis.$store.commit('changeScrollMap', scrollMap);\n\t\t\t\t// console.log(scrollMap);\n\t\t\t\t// console.log('html changed');\n\t\t\t});\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:'',\n\t\t\t// html:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\t// console.log('[preview] mounted', this, this.$store);\n\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
@@ -5310,7 +5552,7 @@
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
@@ -5318,13 +5560,13 @@
 	
 	
 	// module
-	exports.push([module.id, ".htmlBody{\n\tfont-family: \"PingFang SC\", sans-serif;\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n/*todo*/\n.htmlBody li.todo{\n\tlist-style: none;\n}\n/*.htmlBody li.todo.doing::before{\n\tcontent:'☐';\n}\n.htmlBody li.todo.done::before{\n\tcontent:'✔';\n}\n.htmlBody li.todo p{\n\ttext-indent:-1.5em;\n}*/\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,uCAAuC;CACvC,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;AACD,QAAQ;AACR;CACC,iBAAiB;CACjB;AACD;;;;;;;;GAQG;;AAEH,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB,gBAAgB;CAChB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tfont-family: \"PingFang SC\", sans-serif;\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n/*todo*/\n.htmlBody li.todo{\n\tlist-style: none;\n}\n/*.htmlBody li.todo.doing::before{\n\tcontent:'☐';\n}\n.htmlBody li.todo.done::before{\n\tcontent:'✔';\n}\n.htmlBody li.todo p{\n\ttext-indent:-1.5em;\n}*/\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, ".htmlBody{\n\tfont-family: \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"WenQuanYi Micro Hei\", sans-serif;\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n/*todo*/\n.htmlBody li.todo{\n\tlist-style: none;\n}\n.htmlBody li.todo.done{\n\tcolor:#aaa;\n}\n.htmlBody li.todo.done > p::first-letter{\n\tcolor:green;\n}\n.htmlBody li.todo.doing > p::first-letter{\n\t/*color:#aaa;*/\n}\n/*.htmlBody li.todo.doing::before{\n\tcontent:'☐';\n}\n.htmlBody li.todo.done::before{\n\tcontent:'✔';\n}\n.htmlBody li.todo p{\n\ttext-indent:-1.5em;\n}*/\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n", "", {"version":3,"sources":["/./style/htmlbody.css"],"names":[],"mappings":"AAAA;CACC,qGAAqG;CACrG,kBAAkB;CAClB,gBAAgB;CAChB,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf;AACD,MAAM;AACN;;CAEC,cAAc;CACd,cAAc;CACd,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,oBAAoB;CACpB,iBAAiB;CACjB,kBAAkB;CAClB,cAAc;CACd,WAAW;CACX,yBAAyB;CACzB,0BAA0B;CAC1B;AACD;;CAEC,aAAa;CACb,yBAAyB;CACzB;AACD;CACC,mBAAmB;CACnB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB;;AAED,MAAM;AACN;CACC,oBAAoB;CACpB,sBAAsB;CACtB,4BAA4B;CAC5B;AACD;CACC,eAAe;CACf,iBAAiB;CACjB;AACD;;;;CAIC,mBAAmB;CACnB,iBAAiB;CACjB;AACD,QAAQ;AACR;CACC,iBAAiB;CACjB;AACD;CACC,WAAW;CACX;AACD;CACC,YAAY;CACZ;AACD;CACC,eAAe;CACf;AACD;;;;;;;;GAQG;;AAEH,MAAM;AACN;CACC,mBAAmB;CACnB,cAAc;CACd,gFAAgF;CAChF;AACD;CACC,qBAAqB;CACrB,oBAAoB;CACpB,eAAe;CACf,gBAAgB;CAChB,yBAAyB;CACzB,mBAAmB;CACnB,gBAAgB;CAChB;AACD,MAAM;AACN;CACC,qBAAqB;CACrB,eAAe;CACf,oBAAoB;CACpB,eAAe;CACf,mBAAmB;CACnB,8BAA8B;CAC9B;AACD;CACC,eAAe;CACf,oBAAoB;CACpB;AACD,MAAM;AACN;CACC,gBAAgB;CAChB,0BAA0B;CAC1B,aAAa;CACb;;AAED,MAAM;AACN;CACC,cAAc;CACd,sBAAsB;CACtB","file":"htmlbody.css","sourcesContent":[".htmlBody{\n\tfont-family: \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"WenQuanYi Micro Hei\", sans-serif;\n\tline-height: 28px;\n\tfont-size: 14px;\n\tcolor:#4D4D4C;\n\tletter-spacing: 1px;\n\tpadding:0 20px;\n}\n/*标题*/\n.htmlBody h1,.htmlBody h2,.htmlBody h3,\n.htmlBody h4,.htmlBody h5,.htmlBody h6{\n\tmargin:16px 0;\n\tcolor:#718C00;\n\tfont-weight: normal;\n}\n/*表格*/\n.htmlBody table{\n\tmargin-bottom: 28px;\n\tmargin-left:auto;\n\tmargin-right:auto;\n\t/*width:80%;*/\n\twidth:100%;\n\tborder:1px solid #E0E0E0;\n\tborder-collapse: collapse;\n}\n.htmlBody table th,\n.htmlBody table td{\n\tpadding: 3px;\n\tborder:1px solid #E0E0E0;\n}\n.htmlBody table th{\n\tbackground:#F0F0F0;\n}\n\n/*段落*/\n.htmlBody p{\n\tmargin-bottom: 28px;\n\t/*text-indent: 34px;*/\n}\n\n/*列表*/\n.htmlBody ul,.htmlBody ol{\n\tmargin-bottom: 28px;\n\t/*padding-left:34px;*/\n\tlist-style-position: inside;\n}\n.htmlBody li > p{\n\ttext-indent: 0;\n\tmargin-bottom: 0;\n}\n.htmlBody ul ul,\n.htmlBody ul ol,\n.htmlBody ol ol,\n.htmlBody ol ul{\n\tpadding-left: 34px;\n\tmargin-bottom: 0;\n}\n/*todo*/\n.htmlBody li.todo{\n\tlist-style: none;\n}\n.htmlBody li.todo.done{\n\tcolor:#aaa;\n}\n.htmlBody li.todo.done > p::first-letter{\n\tcolor:green;\n}\n.htmlBody li.todo.doing > p::first-letter{\n\t/*color:#aaa;*/\n}\n/*.htmlBody li.todo.doing::before{\n\tcontent:'☐';\n}\n.htmlBody li.todo.done::before{\n\tcontent:'✔';\n}\n.htmlBody li.todo p{\n\ttext-indent:-1.5em;\n}*/\n\n/*代码*/\n.htmlBody code{\n\tbackground:#F0F0F0;\n\tpadding:0 5px;;\n\tfont-family: source-code-pro, Monaco, Menlo, \"Ubuntu Mono\", Consolas, monospace;\n}\n.htmlBody pre code{\n\t/*margin-left:34px;*/\n\tmargin-bottom: 28px;\n\tdisplay: block;\n\tbackground:#fff;\n\tborder:1px solid #E0E0E0;\n\toverflow-x: scroll;\n\tfont-size: 13px;\n}\n/*引用*/\n.htmlBody blockquote{\n\t/*margin-left:34px;*/\n\tfont-size:13px;\n\tmargin-bottom: 28px;\n\tpadding:0 10px;\n\tbackground:#F0F0F0;\n\tborder-left:3px solid #E0E0E0;\n}\n.htmlBody blockquote p{\n\ttext-indent: 0;\n\tmargin-bottom: 14px;\n}\n/*图片*/\n.htmlBody img{\n\tmax-width: 100%;\n\tborder: 1px solid #E0E0E0;\n\tpadding: 1px;\n}\n\n/*链接*/\n.htmlBody a{\n\tcolor:#718C00;\n\ttext-decoration: none;\n}\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5357,11 +5599,11 @@
 	// import 'highlight.js/styles/github-gist.css';
 	
 	
-	__webpack_require__(43);
+	__webpack_require__(44);
 	
 	var _vuex = __webpack_require__(3);
 	
-	var _renderer = __webpack_require__(46);
+	var _renderer = __webpack_require__(47);
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
@@ -5441,15 +5683,15 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 44 */,
 /* 45 */,
-/* 46 */
+/* 46 */,
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5458,11 +5700,11 @@
 		value: true
 	});
 	
-	var _remarkable = __webpack_require__(47);
+	var _remarkable = __webpack_require__(48);
 	
 	var _remarkable2 = _interopRequireDefault(_remarkable);
 	
-	var _highlight = __webpack_require__(48);
+	var _highlight = __webpack_require__(49);
 	
 	var _highlight2 = _interopRequireDefault(_highlight);
 	
@@ -5499,7 +5741,7 @@
 						// console.log(str, char, text);
 						let isDone = char.toLowerCase() === 'x';
 						// return `<input type="checkbox" ${isDone?"checked":""} />` + text;
-						return `${ isDone ? '✔' : '☐' } ` + text;
+						return `${ isDone ? '✓' : '☐' } ` + text;
 					});
 				}
 			}
@@ -5531,8 +5773,8 @@
 	
 	renderer.renderer.rules.list_item_open = function (tokens, idx) {
 		for (let i = idx + 1; i < idx + 3; i++) {
-			if (/[✔☐]/.test(tokens[i].content)) {
-				return `<li class="todo${ /^✔/i.test(tokens[i].content) ? ' done' : ' doing' }">`;
+			if (/[✓☐]/.test(tokens[i].content)) {
+				return `<li class="todo${ /^✓/i.test(tokens[i].content) ? ' done' : ' doing' }">`;
 			}
 		}
 		return '<li>';
@@ -5555,19 +5797,19 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports) {
 
 	module.exports = require("remarkable");
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports) {
 
 	module.exports = require("highlight.js");
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -5591,19 +5833,19 @@
 	}
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	
 	/* styles */
-	__webpack_require__(51)
+	__webpack_require__(52)
 	
 	/* script */
-	__vue_exports__ = __webpack_require__(53)
+	__vue_exports__ = __webpack_require__(54)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(54)
+	var __vue_template__ = __webpack_require__(55)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -5639,13 +5881,13 @@
 
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(52);
+	var content = __webpack_require__(53);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -5665,7 +5907,7 @@
 	}
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
@@ -5679,7 +5921,7 @@
 
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5855,7 +6097,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -5890,19 +6132,19 @@
 	}
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	
 	/* styles */
-	__webpack_require__(56)
+	__webpack_require__(57)
 	
 	/* script */
-	__vue_exports__ = __webpack_require__(58)
+	__vue_exports__ = __webpack_require__(59)
 	
 	/* template */
-	var __vue_template__ = __webpack_require__(59)
+	var __vue_template__ = __webpack_require__(60)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -5938,13 +6180,13 @@
 
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(57);
+	var content = __webpack_require__(58);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -5964,7 +6206,7 @@
 	}
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(7)();
@@ -5972,13 +6214,13 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.mask[data-v-0bf59276]{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions[data-v-0bf59276]{\n\t-webkit-user-select: none;\n\tuser-select: none;\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper[data-v-0bf59276]{\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul[data-v-0bf59276]{\n\tlist-style: none;\n}\n.wrapper li[data-v-0bf59276]{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li[data-v-0bf59276]{\n\ttext-indent: 34px;\n}\n.wrapper li.active[data-v-0bf59276]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-0bf59276] {\n\ttransition: transform .4s;\n}\n.content[data-v-0bf59276]{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n", "", {"version":3,"sources":["/./component/versions.vue?5c071be0"],"names":[],"mappings":";AACA;CACA,mBAAA;CACA,OAAA;CACA,MAAA;CACA,WAAA;CACA,WAAA;CACA,YAAA;CACA,gCAAA;CACA;AACA;CACA,0BAAA;CACA,kBAAA;CACA,mBAAA;CACA,WAAA;CACA,aAAA;CACA,cAAA;CACA,UAAA;CACA,SAAA;CACA,iCAAA;CACA,iBAAA;CACA,sBAAA;CACA,cAAA;CACA,2BAAA;CACA,cAAA;CACA;AACA;CACA,aAAA;CACA,mBAAA;CACA,+BAAA;CACA,kBAAA;CACA,gBAAA;CACA,eAAA;CACA,0BAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA,iBAAA;IACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AACA;CACA,cAAA;CACA,OAAA;CACA,aAAA;CACA,eAAA;CACA","file":"versions.vue","sourcesContent":["<style scoped>\n.mask{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions{\n\t-webkit-user-select: none;\n\tuser-select: none;\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper{\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li{\n\ttext-indent: 34px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n.content{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n</style>\n\n<template>\n<section class=\"mask\" v-on:click=\"hideVersions\" v-show=\"versions.currentNote\">\n<section class=\"versions\" v-on:click.stop=\"()=>{}\">\n\t<section class=\"wrapper\">\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t>{{versions.currentNote && versions.currentNote.title}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(versions.activeVersionId && versions.activeVersionId === version.id) || contextMenuVersionId == version.id}\"\n\t\t\t\t\t\tv-for=\"version in versions.list\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentVersion(version.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(version.id)\"\n\t\t\t\t\t>{{formatDate(version.date)}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"content\"><pre>{{versions.activeVersionContent}}</pre></section>\n</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'versions',\n\t\t\t'contextMenuVersionId'\n\t\t])\n\t},\n\twatch: {\n\t},\n\tmethods: {\n\t\tformatDate(date){\n\t\t\tlet ts = date.getTime() - date.getTimezoneOffset()*60*1000;\n\t\t\tlet s = new Date(ts).toISOString();\n\n\t\t\t// s.replace(/T.+$/,'');\t// 2015-11-24\n\t\t\t// s.replace(/\\-\\d+T.+$/,''); // 2015-11\n\t\t\t// s.replace(/(^\\d+\\-|T.+$)/g,''); // 11-24\n\t\t\t// s.replace(/(^[0-9\\-]+T|\\.\\d+Z$)/g,''); // 14:16:18\n\t\t\t// s.replace(/(^[0-9\\-]+T|:\\d+\\.\\d+Z$)/g,''); // 14:16\n\t\t\t// s.replace(/T/g,' ').replace(/\\.\\d+Z$/,''); // 2015-11-24 14:16:18\n\t\t\t// s.replace(/T/g,' ').replace(/:\\d+\\.\\d+Z$/,''); // 2015-11-24 14:16\n\t\t\treturn s.replace(/T/g,' ').replace(/^\\d+\\-/, '').replace(/:\\d+\\.\\d+Z$/,''); // 11-24 14:16\n\n\t\t},\n\t\tswitchCurrentVersion(versionId){\n\t\t\tthis.$store.dispatch('switchActiveVersion', versionId);\n\t\t},\n\t\thideVersions(){\n\t\t\tthis.$store.commit('hideVersions');\n\t\t},\n\t\tshowContextMenu(versionId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuVersion', versionId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'versionOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'恢复该版本',\n\t\t\t\t\tevent:'versionRestore'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuVersion', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.mask[data-v-0bf59276]{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions[data-v-0bf59276]{\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper[data-v-0bf59276]{\n\t-webkit-user-select: none;\n\tuser-select: none;\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul[data-v-0bf59276]{\n\tlist-style: none;\n}\n.wrapper li[data-v-0bf59276]{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li[data-v-0bf59276]{\n\ttext-indent: 34px;\n}\n.wrapper li.active[data-v-0bf59276]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-0bf59276]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-0bf59276] {\n\ttransition: transform .4s;\n}\n.content[data-v-0bf59276]{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n.closeBtn[data-v-0bf59276]{\n\tposition: absolute;\n\tright:-15px;\n\ttop:-15px;\n\twidth:20px;\n\theight: 20px;\n\tline-height: 20px;\n\ttext-align: center;\n\tfont-size:14px;\n    background: white;\n    border: 5px solid rgba(128,128,128,.6);\n    border-radius: 15px;\n    cursor:pointer;\n\ttransition: transform .8s;\n}\n.closeBtn[data-v-0bf59276]:hover{\n\ttransform: rotateZ(720deg);\n}\n", "", {"version":3,"sources":["/./component/versions.vue?b279243e"],"names":[],"mappings":";AACA;CACA,mBAAA;CACA,OAAA;CACA,MAAA;CACA,WAAA;CACA,WAAA;CACA,YAAA;CACA,gCAAA;CACA;AACA;CACA,mBAAA;CACA,WAAA;CACA,aAAA;CACA,cAAA;CACA,UAAA;CACA,SAAA;CACA,iCAAA;CACA,iBAAA;CACA,sBAAA;CACA,cAAA;CACA,2BAAA;CACA,cAAA;CACA;AACA;CACA,0BAAA;CACA,kBAAA;CACA,aAAA;CACA,mBAAA;CACA,+BAAA;CACA,kBAAA;CACA,gBAAA;CACA,eAAA;CACA,0BAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA,iBAAA;IACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AACA;CACA,cAAA;CACA,OAAA;CACA,aAAA;CACA,eAAA;CACA;AACA;CACA,mBAAA;CACA,YAAA;CACA,UAAA;CACA,WAAA;CACA,aAAA;CACA,kBAAA;CACA,mBAAA;CACA,eAAA;IACA,kBAAA;IACA,uCAAA;IACA,oBAAA;IACA,eAAA;CACA,0BAAA;CACA;AACA;CACA,2BAAA;CACA","file":"versions.vue","sourcesContent":["<style scoped>\n.mask{\n\tposition: absolute;\n\tleft:0;\n\ttop:0;\n\tz-index: 1;\n\twidth:100%;\n\theight:100%;\n\tbackground:rgba(128,128,128,.4);\n}\n.versions{\n\tposition: absolute;\n\tz-index: 2;\n\twidth: 800px;\n\theight: 450px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground:white;\n\tborder:5px solid #bbb;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tdisplay: flex;\n}\n.wrapper{\n\t-webkit-user-select: none;\n\tuser-select: none;\n\twidth: 200px;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tline-height: 24px;\n\tpadding: 10px 0;\n\toverflow: auto;\n\theight: calc(100% - 20px);\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 15px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\toverflow: hidden;\n    white-space: nowrap;\n}\n.wrapper li li{\n\ttext-indent: 34px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n.content{\n\tdisplay: flex;\n\tflex:1;\n\tpadding:10px;\n\toverflow: auto;\n}\n.closeBtn{\n\tposition: absolute;\n\tright:-15px;\n\ttop:-15px;\n\twidth:20px;\n\theight: 20px;\n\tline-height: 20px;\n\ttext-align: center;\n\tfont-size:14px;\n    background: white;\n    border: 5px solid rgba(128,128,128,.6);\n    border-radius: 15px;\n    cursor:pointer;\n\ttransition: transform .8s;\n}\n.closeBtn:hover{\n\ttransform: rotateZ(720deg);\n}\n</style>\n\n<template>\n<section tabindex=\"1\" class=\"mask\" v-on:keydown.esc=\"hideVersions\" v-on:click=\"hideVersions\" v-show=\"versions.currentNote\">\n<section class=\"versions\" v-on:click.stop=\"()=>{}\">\n\t<div class=\"closeBtn\" v-on:click=\"hideVersions\">✖︎</div>\n\t<section class=\"wrapper\">\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t>{{versions.currentNote && versions.currentNote.title}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(versions.activeVersionId && versions.activeVersionId === version.id) || contextMenuVersionId == version.id}\"\n\t\t\t\t\t\tv-for=\"version in versions.list\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentVersion(version.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(version.id)\"\n\t\t\t\t\t>{{formatDate(version.date)}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"content\"><pre>{{versions.activeVersionContent}}</pre></section>\n</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'versions',\n\t\t\t'contextMenuVersionId'\n\t\t])\n\t},\n\twatch: {\n\t\t// 出现历史版本对话框的时候聚焦\n\t\t// 以便响应ESC按键\n\t\t'versions.currentNote': function(){\n\t\t\t// console.log('versions.currentNote changed', this.versions.currentNote.id, this.$el);\n\t\t\tif(this.versions.currentNote){\n\t\t\t\tthis.$nextTick(() => {\n\t\t\t\t\tthis.$el.focus();\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\t},\n\tmethods: {\n\t\tformatDate(date){\n\t\t\tlet ts = date.getTime() - date.getTimezoneOffset()*60*1000;\n\t\t\tlet s = new Date(ts).toISOString();\n\n\t\t\t// s.replace(/T.+$/,'');\t// 2015-11-24\n\t\t\t// s.replace(/\\-\\d+T.+$/,''); // 2015-11\n\t\t\t// s.replace(/(^\\d+\\-|T.+$)/g,''); // 11-24\n\t\t\t// s.replace(/(^[0-9\\-]+T|\\.\\d+Z$)/g,''); // 14:16:18\n\t\t\t// s.replace(/(^[0-9\\-]+T|:\\d+\\.\\d+Z$)/g,''); // 14:16\n\t\t\t// s.replace(/T/g,' ').replace(/\\.\\d+Z$/,''); // 2015-11-24 14:16:18\n\t\t\t// s.replace(/T/g,' ').replace(/:\\d+\\.\\d+Z$/,''); // 2015-11-24 14:16\n\t\t\treturn s.replace(/T/g,' ').replace(/^\\d+\\-/, '').replace(/:\\d+\\.\\d+Z$/,''); // 11-24 14:16\n\n\t\t},\n\t\tswitchCurrentVersion(versionId){\n\t\t\tthis.$store.dispatch('switchActiveVersion', versionId);\n\t\t},\n\t\thideVersions(){\n\t\t\tthis.$store.commit('hideVersions');\n\t\t},\n\t\tshowContextMenu(versionId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuVersion', versionId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'versionOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'恢复该版本',\n\t\t\t\t\tevent:'versionRestore'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuVersion', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5988,6 +6230,25 @@
 	});
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	//
 	//
 	//
@@ -6107,7 +6368,18 @@
 	
 	exports.default = {
 		computed: _extends({}, (0, _vuex.mapGetters)(['versions', 'contextMenuVersionId'])),
-		watch: {},
+		watch: {
+			// 出现历史版本对话框的时候聚焦
+			// 以便响应ESC按键
+			'versions.currentNote': function () {
+				// console.log('versions.currentNote changed', this.versions.currentNote.id, this.$el);
+				if (this.versions.currentNote) {
+					this.$nextTick(() => {
+						this.$el.focus();
+					});
+				}
+			}
+		},
 		methods: {
 			formatDate(date) {
 				let ts = date.getTime() - date.getTimezoneOffset() * 60 * 1000;
@@ -6154,7 +6426,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -6166,7 +6438,14 @@
 	      expression: "versions.currentNote"
 	    }],
 	    staticClass: "mask",
+	    attrs: {
+	      "tabindex": "1"
+	    },
 	    on: {
+	      "keydown": function($event) {
+	        if ($event.keyCode !== 27) return;
+	        hideVersions($event)
+	      },
 	      "click": hideVersions
 	    }
 	  }, [_h('section', {
@@ -6177,7 +6456,12 @@
 	        () => {}
 	      }
 	    }
-	  }, [_h('section', {
+	  }, [_h('div', {
+	    staticClass: "closeBtn",
+	    on: {
+	      "click": hideVersions
+	    }
+	  }, ["✖︎"]), " ", _h('section', {
 	    staticClass: "wrapper"
 	  }, [_h('ul', [_h('li', {
 	    staticClass: "icon folder"
@@ -6208,7 +6492,7 @@
 	}
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6221,11 +6505,11 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _note = __webpack_require__(61);
+	var _note = __webpack_require__(62);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
-	var _meta = __webpack_require__(66);
+	var _meta = __webpack_require__(67);
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
@@ -6248,7 +6532,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6261,19 +6545,19 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _index = __webpack_require__(62);
+	var _index = __webpack_require__(63);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
-	var _git = __webpack_require__(65);
+	var _git = __webpack_require__(66);
 	
 	var _git2 = _interopRequireDefault(_git);
 	
-	var _path = __webpack_require__(35);
+	var _path = __webpack_require__(36);
 	
 	var _path2 = _interopRequireDefault(_path);
 	
-	var _fs = __webpack_require__(34);
+	var _fs = __webpack_require__(35);
 	
 	var _fs2 = _interopRequireDefault(_fs);
 	
@@ -6405,7 +6689,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6414,7 +6698,7 @@
 		value: true
 	});
 	
-	var _web = __webpack_require__(63);
+	var _web = __webpack_require__(64);
 	
 	var _web2 = _interopRequireDefault(_web);
 	
@@ -6430,7 +6714,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6439,7 +6723,7 @@
 		value: true
 	});
 	
-	var _base = __webpack_require__(64);
+	var _base = __webpack_require__(65);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
@@ -6505,7 +6789,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6514,7 +6798,7 @@
 		value: true
 	});
 	
-	var _path = __webpack_require__(35);
+	var _path = __webpack_require__(36);
 	
 	var _path2 = _interopRequireDefault(_path);
 	
@@ -6533,7 +6817,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6542,11 +6826,11 @@
 		value: true
 	});
 	
-	var _path = __webpack_require__(35);
+	var _path = __webpack_require__(36);
 	
 	var _path2 = _interopRequireDefault(_path);
 	
-	var _fs = __webpack_require__(34);
+	var _fs = __webpack_require__(35);
 	
 	var _fs2 = _interopRequireDefault(_fs);
 	
@@ -6562,7 +6846,7 @@
 			}
 		}
 		runCommand(command) {
-			let execSync = __webpack_require__(36).execSync;
+			let execSync = __webpack_require__(37).execSync;
 			try {
 				console.log('[Git runCommand] ' + command);
 				return execSync(`${ this._git } ${ command }`, {
@@ -6577,7 +6861,10 @@
 			return _fs2.default.existsSync(_path2.default.join(this._root, '.git'));
 		}
 		init() {
-			return this.runCommand('init');
+			let ret = this.runCommand('init');
+			ret += ';' + this.runCommand('config user.name "TooNote"');
+			ret += ';' + this.runCommand('config user.email "toonote@local.git"');
+			return ret;
 		}
 		status() {
 			return this.runCommand('status');
@@ -6611,7 +6898,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6624,7 +6911,7 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	var _index = __webpack_require__(62);
+	var _index = __webpack_require__(63);
 	
 	var _index2 = _interopRequireDefault(_index);
 	
@@ -6814,7 +7101,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6831,31 +7118,31 @@
 	
 	var _vuex2 = _interopRequireDefault(_vuex);
 	
-	var _meta = __webpack_require__(66);
+	var _meta = __webpack_require__(67);
 	
 	var _meta2 = _interopRequireDefault(_meta);
 	
-	var _note = __webpack_require__(61);
+	var _note = __webpack_require__(62);
 	
 	var _note2 = _interopRequireDefault(_note);
 	
-	var _io = __webpack_require__(32);
+	var _io = __webpack_require__(33);
 	
 	var _io2 = _interopRequireDefault(_io);
 	
-	var _scroll = __webpack_require__(68);
+	var _scroll = __webpack_require__(69);
 	
 	var _scroll2 = _interopRequireDefault(_scroll);
 	
-	var _renderer = __webpack_require__(46);
+	var _renderer = __webpack_require__(47);
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
-	var _git = __webpack_require__(65);
+	var _git = __webpack_require__(66);
 	
 	var _git2 = _interopRequireDefault(_git);
 	
-	var _path = __webpack_require__(35);
+	var _path = __webpack_require__(36);
 	
 	var _path2 = _interopRequireDefault(_path);
 	
@@ -7231,7 +7518,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7240,7 +7527,7 @@
 		value: true
 	});
 	
-	var _cubicInOut = __webpack_require__(69);
+	var _cubicInOut = __webpack_require__(70);
 	
 	var _cubicInOut2 = _interopRequireDefault(_cubicInOut);
 	
@@ -7289,7 +7576,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports) {
 
 	function cubicInOut(t) {
@@ -7299,248 +7586,6 @@
 	}
 	
 	module.exports = cubicInOut
-
-/***/ },
-/* 70 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	// https://github.com/ajaxorg/ace/issues/1287
-	/*{
-		// "Alt-Left": "goSubwordLeft",
-		// "Alt-Right": "goSubwordRight",
-		// "Ctrl-Up": "scrollLineUp",
-		// "Ctrl-Down": "scrollLineDown",
-		"Shift-Ctrl-L": "splitSelectionByLine",
-		"Shift-Tab": "indentLess",
-		"Esc": "singleSelectionTop",
-		"Cmd-L": "expandtoline",
-		"Shift-Ctrl-K": "deleteLine",
-		"Cmd-Enter": "insertLineAfter",
-		"Shift-Cmd-Enter": "insertLineBefore",
-		"Cmd-D": "selectNextOccurrence",
-		// "Shift-Ctrl-Space": "selectScope",
-		"Shift-Ctrl-M": "selectBetweenBrackets",
-		"Ctrl-M": "goToBracket",
-		"Cmd-Ctrl-Up": "swapLineUp",
-		"Cmd-Ctrl-Down": "swapLineDown",
-		"Ctrl-/": "toggleComment",
-		"Ctrl-J": "joinLines",
-		"Shift-Cmd-D": "duplicateLine",
-		"Ctrl-T": "transposeChars",
-		// "F9": "sortLines",
-		// "Ctrl-F9": "sortLinesInsensitive",
-		"F2": "nextBookmark",
-		"Shift-F2": "prevBookmark",
-		"Cmd-F2": "toggleBookmark",
-		"Shift-Cmd-F2": "clearBookmarks",
-		// "Alt-F2": "selectBookmarks",
-		// "Alt-Q": "wrapLines",
-		"Cmd-K Cmd-Backspace": "delLineLeft",
-		"Cmd-K Cmd-K": "delLineRight",
-		"Cmd-K Cmd-U": "upcaseAtCursor",
-		"Cmd-K Cmd-L": "downcaseAtCursor",
-		// "Cmd-K Cmd-Space": "setSublimeMark",
-		// "Cmd-K Cmd-A": "selectToSublimeMark",
-		// "Cmd-K Cmd-W": "deleteToSublimeMark",
-		// "Cmd-K Cmd-X": "swapWithSublimeMark",
-		// "Cmd-K Cmd-Y": "sublimeYank",
-		// "Cmd-K Cmd-G": "clearBookmarks",
-		// "Cmd-K Cmd-C": "showInCenter",
-		"Shift-Alt-Up": "selectLinesUpward",
-		"Shift-Alt-Down": "selectLinesDownward",
-		// "Ctrl-F3": "findUnder",
-		// "Shift-Ctrl-F3": "findUnderPrevious",
-		// "Shift-Ctrl-[": "fold",
-		// "Shift-Ctrl-]": "unfold",
-		"Ctrl-K Ctrl-j": "unfoldAll",
-		"Ctrl-K Ctrl-0": "unfoldAll",
-		// "Ctrl-H": "replace",
-	}*/
-	let shortcut = function (aceEditor) {
-		let editor = aceEditor;
-		let selection = editor.getSelection();
-		let session = editor.getSession();
-	
-		editor.commands.bindKey('Cmd-D', null);
-		editor.commands.bindKey('Ctrl-D', null);
-	
-		let getCurrentLineText = () => {
-			let row = editor.getSelection().getCursor().row;
-			return session.getLine(row);
-		};
-	
-		let replaceCurrentLineText = newText => {
-			let range = editor.getSelectionRange();
-			let position = aceEditor.getSelection().getCursor();
-			let oldColumn = range.start.column;
-			range.setStart({
-				row: position.row,
-				column: 0
-			});
-			range.setEnd({
-				row: position.row,
-				column: 999999999
-			});
-			session.replace(range, newText);
-		};
-	
-		// 选中整行
-		editor.commands.addCommand({
-			name: 'selectLine',
-			bindKey: {
-				win: 'Ctrl-l',
-				mac: 'Command-l'
-			},
-			exec: function (editor) {
-				if (selection.isMultiLine()) {
-					// 如果已经选中一行了，则选下一行
-					selection.selectDown();
-				} else {
-					// 否则，选中当前行
-					selection.selectLine();
-				}
-			}
-		});
-	
-		// 选中整行
-		editor.commands.addCommand({
-			name: 'splitInfoLines',
-			bindKey: {
-				win: 'Ctrl-Shift-l',
-				mac: 'Command-Shift-l'
-			},
-			exec: function (editor) {
-				selection.splitIntoLines();
-			}
-		});
-	
-		// 向下移动
-		editor.commands.addCommand({
-			name: 'moveDown',
-			bindKey: {
-				win: 'Ctrl-Shift-Down',
-				mac: 'Command-Ctrl-Down'
-			},
-			exec: function (editor) {
-				if (selection.isEmpty()) {
-					selection.selectLine();
-				}
-				editor.moveLinesDown();
-				selection.clearSelection();
-				selection.moveCursorUp();
-			}
-		});
-	
-		// 向上移动
-		editor.commands.addCommand({
-			name: 'moveUp',
-			bindKey: {
-				win: 'Ctrl-Shift-Up',
-				mac: 'Command-Ctrl-Up'
-			},
-			exec: function (editor) {
-				if (selection.isEmpty()) {
-					selection.selectLine();
-				}
-				editor.moveLinesUp();
-				selection.clearSelection();
-				selection.moveCursorUp();
-			}
-		});
-	
-		// 删除行
-		editor.commands.addCommand({
-			name: 'deleteLines',
-			bindKey: {
-				win: 'Ctrl-Shift-k',
-				mac: 'Ctrl-Shift-k'
-			},
-			exec: function (editor) {
-				editor.removeLines();
-			}
-		});
-	
-		// 删除到行尾
-		editor.commands.addCommand({
-			name: 'deleteToEnd',
-			bindKey: {
-				win: 'Ctrl-k Ctrl-k',
-				mac: 'Cmd-k Cmd-k'
-			},
-			exec: function (editor) {
-				editor.removeToLineEnd();
-			}
-		});
-	
-		// 删除到行首
-		editor.commands.addCommand({
-			name: 'deleteToStart',
-			bindKey: {
-				win: 'Ctrl-k Ctrl-backspace',
-				mac: 'Cmd-k Cmd-backspace'
-			},
-			exec: function (editor) {
-				editor.removeToLineStart();
-			}
-		});
-	
-		// TODO完成切换
-		editor.commands.addCommand({
-			name: 'toggleTodoState',
-			bindKey: {
-				win: 'Ctrl-d',
-				mac: 'Cmd-d'
-			},
-			exec: function (editor) {
-				let currText = getCurrentLineText();
-	
-				let todoItemRegExp = /\- \[([x ])\] ?/;
-				let todoItemMatch = currText.match(todoItemRegExp);
-				if (!todoItemMatch || todoItemMatch.length < 2) return;
-	
-				let newText;
-				let isDone = todoItemMatch[1] === 'x';
-				if (isDone) {
-					newText = currText.replace('[x]', '[ ]');
-				} else {
-					newText = currText.replace('[ ]', '[x]');
-				}
-	
-				replaceCurrentLineText(newText);
-			}
-		});
-	
-		// TODO任务切换
-		editor.commands.addCommand({
-			name: 'toggleIsTodo',
-			bindKey: {
-				win: 'Ctrl-i',
-				mac: 'Cmd-i'
-			},
-			exec: function (editor) {
-				let currText = getCurrentLineText();
-				let newText;
-	
-				let todoItemRegExp = /\- \[([x ])\] ?/;
-				let todoItemMatch = currText.match(todoItemRegExp);
-				if (!todoItemMatch || todoItemMatch.length < 2) {
-					newText = '- [ ] ' + currText.replace(/^\- /, '');
-				} else {
-					newText = currText.replace(/^\- \[[x ]\] /, '- ');
-				}
-	
-				replaceCurrentLineText(newText);
-			}
-		});
-	};
-	
-	exports.default = shortcut;
-	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

@@ -32,7 +32,7 @@ renderer.use(function(md) {
 					// console.log(str, char, text);
 					let isDone = char.toLowerCase() === 'x';
 					// return `<input type="checkbox" ${isDone?"checked":""} />` + text;
-					return `${isDone?'✔':'☐'} ` + text;
+					return `${isDone?'✓':'☐'} ` + text;
 				});
 			}
 		}
@@ -66,8 +66,8 @@ for(let token in customerRulesMap){
 
 renderer.renderer.rules.list_item_open = function (tokens, idx) {
 	for(let i = idx + 1; i < idx + 3; i++){
-		if(/[✔☐]/.test(tokens[i].content)){
-			return `<li class="todo${/^✔/i.test(tokens[i].content)?' done':' doing'}">`;
+		if(/[✓☐]/.test(tokens[i].content)){
+			return `<li class="todo${/^✓/i.test(tokens[i].content)?' done':' doing'}">`;
 		}
 	}
 	return '<li>';

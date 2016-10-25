@@ -59,6 +59,15 @@
 .htmlBody li.todo{
 	list-style: none;
 }
+.htmlBody li.todo.done{
+	color:#aaa;
+}
+.htmlBody li.todo.done > p::first-letter{
+	color:green;
+}
+.htmlBody li.todo.doing > p::first-letter{
+	/*color:#aaa;*/
+}
 /*.htmlBody li.todo.doing::before{
 	content:'☐';
 }
