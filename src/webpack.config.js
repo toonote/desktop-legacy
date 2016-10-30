@@ -36,7 +36,8 @@ module.exports = {
             test: /\.css$/,
             // exclude: /\-module\.css$/,
             // loader: ExtractTextPlugin.extract('style-loader','css-loader?root=' + path.normalize(__dirname + '/htdocs').replace(/\\/g,'/'))
-            loader: ExtractTextPlugin.extract('style-loader','css-loader')
+            // loader: ExtractTextPlugin.extract('style-loader','css-loader')
+            loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader' })
 		}]
 	},
 	plugins: [

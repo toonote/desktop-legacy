@@ -17,7 +17,7 @@ let git = new Git({
 });
 // Vue.use(Vuex);
 
-const store = new Vuex.Store({
+const store = () => new Vuex.Store({
 	state: {
 		contextMenuNoteId: '',
 		currentNote: null,

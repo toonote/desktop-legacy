@@ -14,8 +14,6 @@
   "babel": {
     "presets": [],
     "plugins": [
-      "add-module-exports",
-      "transform-es2015-modules-commonjs",
       "transform-async-to-generator",
       "transform-object-rest-spread"
     ]
@@ -44,14 +42,14 @@
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "css-loader": "^0.23.1",
     "electron-devtools-installer": "^2.0.1",
-    "extract-text-webpack-plugin": "^1.0.1",
+    "extract-text-webpack-plugin": "^2.0.0-beta.4",
     "file-loader": "^0.8.5",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
     "vue-hot-reload-api": "^2.0.6",
     "vue-html-loader": "^1.2.3",
-    "vue-loader": "^9.5.1",
+    "vue-loader": "^9.7.0",
     "vue-style-loader": "^1.0.0",
-    "webpack": "^1.12.11"
+    "webpack": "^2.1.0-beta.25"
   }
 }

@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-Vue.use(Vuex);
-let store = require('./vuex/store');
+import getStore from './vuex/store';
+// let store = require('./vuex/store');
 
 // Vue.config.debug = true;
 import Sidebar from './component/sidebar.vue';
@@ -17,7 +17,8 @@ import meta from './modules/meta';
 import note from './modules/note';
 
 // window.eventHub = new Vue();
-
+Vue.use(Vuex);
+let store = getStore();
 let app = new Vue({
 	el: '#wrapper',
 	store,
