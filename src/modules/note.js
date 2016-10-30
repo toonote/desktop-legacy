@@ -1,6 +1,7 @@
 import util from './util';
 import Store from '../api/store/index';
 import Git from './git';
+import io from './io';
 import path from  'path';
 import fs from  'fs';
 import throttle from 'lodash.throttle';
@@ -85,7 +86,7 @@ note.saveNoteContent = async function(note, shouldThrottle){
 };
 
 note.init = async function(id){
-	var content = `# 欢迎使用TooNote\n\nTooNote是一款基于Markdown的笔记软件。`;
+	var content = io.getFileText('./docs/welcome.md');
 	fs.writeFileSync(path.join(gitPath, `note-${id}.md`), content, 'utf8');
 	gitCommit('INIT');
 	return await store.writeFile(`./note-${id}.md`,content);

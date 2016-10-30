@@ -19,7 +19,7 @@ let renderer = new Remarkable({
 
 
 // 解析todo
-let todoRegExp = /^\[([ x])\] ([\s\S]+)/mi;
+let todoRegExp = /^\[([ x])\] ?([\s\S]*)/i;
 
 renderer.use(function(md) {
 	md.core.ruler.after('block', 'todo', function(state){
@@ -27,6 +27,7 @@ renderer.use(function(md) {
 		var len = tokens.length, i = -1;
 		while(++i < len) {
 			var token = tokens[i];
+			// console.log(token);
 			if (token.type === 'inline' && token.content) {
 				token.content = token.content.replace(todoRegExp, (str, char, text) => {
 					// console.log(str, char, text);
