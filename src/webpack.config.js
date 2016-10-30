@@ -43,5 +43,5 @@ module.exports = {
         new ExtractTextPlugin('style/bundle.css')
     ],
 	externals: externals,
-    devtool: '#source-map'
+    devtool: process.env.NODE_ENV === 'production'?'':'#source-map'
 };

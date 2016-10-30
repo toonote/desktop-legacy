@@ -2,7 +2,6 @@ toonote.sublime-project
 toonote.sublime-workspace
 dist
 src/node_modules
-dist.sh
 logo
 other
 src/public/node_modules
