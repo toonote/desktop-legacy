@@ -8,6 +8,20 @@ html,body,#wrapper{
 body{
 	font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 }
+/*动画*/
+.slide-enter-active, .slide-leave-active {
+	transition: width .5s;
+}
+.slide-enter, .slide-leave-active {
+	width: 0!important;
+}
+.slide-flex-enter-active, .slide-flex-leave-active {
+	transition: flex .5s;
+}
+.slide-flex-enter, .slide-flex-leave-active {
+	flex: 0!important;
+}
+
 .main{
 	display: flex;
 	height:100%;

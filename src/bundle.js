@@ -232,6 +232,9 @@
 				case 'exportHtmlBody':
 					app.export('htmlBody');
 					break;
+				case 'exportHtmlBodyWithCss':
+					app.export('htmlBodyWithCss');
+					break;
 				case 'exportHtml':
 					app.export('html');
 					break;
@@ -300,7 +303,6 @@
 	if (typeof __vue_options__ === "function") {
 	  __vue_options__ = __vue_options__.options
 	}
-	__vue_options__.name = __vue_options__.name || "sidebar"
 	__vue_options__.__file = "/Users/TooBug/work/github/TooNote/src/component/sidebar.vue"
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
@@ -308,7 +310,7 @@
 	
 	/* hot reload */
 	if (false) {(function () {
-	  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), false)
 	  if (!hotAPI.compatible) return
 	  module.hot.accept()
@@ -339,8 +341,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-114b24d1&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./sidebar.vue", function() {
-				var newContent = require("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-114b24d1&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./sidebar.vue");
+			module.hot.accept("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-114b24d1&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./sidebar.vue", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-114b24d1&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./sidebar.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -358,7 +360,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1],\n.wrapper .notFound[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li[data-v-114b24d1]{\n\ttext-indent: 44px;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-114b24d1] {\n\ttransition: transform .4s;\n}\n.searchWrapper input[data-v-114b24d1]{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input[data-v-114b24d1]:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?ef17a992"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;;CAEA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AAEA;CACA,eAAA;IACA,eAAA;IACA,YAAA;IACA,aAAA;IACA,iCAAA;IACA,wBAAA;IACA,gBAAA;CACA;AACA;CACA,kBAAA;CACA,gBAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2,\n.wrapper .notFound{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n}\n.wrapper li li{\n\ttext-indent: 44px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n\n.searchWrapper input{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"searchWrapper\">\n\t\t<input type=\"search\" v-model.trim=\"keyword\" placeholder=\"搜索...\" />\n\t</section>\n\t<section class=\"wrapper\" v-show=\"!isSearching\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<transition-group\n\t\t\t\t\tname=\"note-list\"\n\t\t\t\t\ttag=\"ul\"\n\t\t\t\t\tdroppable=\"true\"\n\t\t\t\t\tv-on:drop=\"drop\"\n\t\t\t\t\t>\n\t\t\t\t\t<li\n\t\t\t\t\t\tdraggable=\"true\"\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:key=\"note.id\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu.stop=\"showContextMenu(note.id)\"\n\t\t\t\t\t\tv-on:dragstart=\"dragStart($event, note.id)\"\n\t\t\t\t\t\tv-on:dragover.prevent=\"dragOver($event, note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"wrapper\" v-show=\"isSearching\">\n\t\t<div class=\"notFound\" v-show=\"!searchResults.length\">搜的什么鬼 一篇都没有</div>\n\t\t<ul v-show=\"searchResults.length\">\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in searchResultsWithCategories\"\n\t\t\t>{{category}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'notebooks',\n\t\t\t'currentNote',\n\t\t\t'contextMenuNoteId',\n\t\t\t'notebooksWithCategories',\n\t\t\t'isSearching',\n\t\t\t'searchResults',\n\t\t\t'searchResultsWithCategories'\n\t\t])\n\t},\n\twatch: {\n\t\tkeyword(){\n\t\t\tif(this.keyword){\n\t\t\t\tthis.$store.dispatch('search', this.keyword);\n\t\t\t}else{\n\t\t\t\tthis.$store.commit('switchSearching', false);\n\t\t\t}\n\t\t}\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'新建',\n\t\t\t\t\tevent:'newNote'\n\t\t\t\t},{\n\t\t\t\t\ttype:'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'历史版本',\n\t\t\t\t\tevent:'noteHistory'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\tdragStart(e, noteId){\n\t\t\tthis.currentMovingNoteId = noteId;\n\t\t\t// e.dataTransfer.dropEffect = 'move';\n\t\t\t// e.dataTransfer.effectAllowed = 'move';\n\t\t\t// console.log('start', noteId);\n\t\t},\n\t\tdragOver(e, noteId){\n\t\t\tif(this.isAnimating) return;\n\t\t\tif(this.currentMovingNoteId === noteId) return;\n\n\t\t\t// console.log('over', noteId);\n\n\t\t\tthis.currentTargetingNoteId = noteId;\n\n\t\t\tif(!_doExchange){\n\t\t\t\t_doExchange = throttle(() => {\n\t\t\t\t\tthis.isAnimating = true;\n\t\t\t\t\tthis.$store.dispatch('exchangeNote', {\n\t\t\t\t\t\tid1:this.currentMovingNoteId,\n\t\t\t\t\t\tid2:this.currentTargetingNoteId\n\t\t\t\t\t});\n\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\tthis.isAnimating = false;\n\t\t\t\t\t}, 500);\n\t\t\t\t}, 500);\n\t\t\t}\n\t\t\t_doExchange();\n\t\t},\n\t\tdrop(e){\n\t\t\tthis.currentMovingNoteId = 0;\n\t\t\t// console.log('drop', e);\n\t\t}\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\tcurrentMovingNoteId:0,\n\t\t\tcurrentTargetingNoteId:0,\n\t\t\tisAnimating:false,\n\t\t\tkeyword:''\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.sidebar[data-v-114b24d1]{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper[data-v-114b24d1]{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2[data-v-114b24d1],\n.wrapper .notFound[data-v-114b24d1]{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul[data-v-114b24d1]{\n\tlist-style: none;\n}\n.wrapper li[data-v-114b24d1]{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\twhite-space: nowrap;\n\toverflow: hidden;\n}\n.wrapper li li[data-v-114b24d1]{\n\ttext-indent: 44px;\n}\n.wrapper li.active[data-v-114b24d1]{\n\tbackground: #CECECE;\n}\n.wrapper li.note[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(8) + ");\n}\n.wrapper li.folder[data-v-114b24d1]::before{\n\tpadding-right:3px;\n\tbackground-image:url(" + __webpack_require__(9) + ");\n}\n.wrapper .note-list-move[data-v-114b24d1] {\n\ttransition: transform .4s;\n}\n.searchWrapper input[data-v-114b24d1]{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input[data-v-114b24d1]:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n", "", {"version":3,"sources":["/./component/sidebar.vue?1debee84"],"names":[],"mappings":";AACA;CACA,0BAAA;CACA,iBAAA;CACA,mBAAA;CACA,+BAAA;CACA,cAAA;CACA,2BAAA;CACA,gBAAA;CACA,YAAA;CACA;AACA;CACA,kBAAA;CACA,kBAAA;CACA;AACA;;CAEA,eAAA;CACA,kBAAA;CACA,oBAAA;CACA;AACA;CACA,iBAAA;CACA;AACA;CACA,eAAA;CACA,kBAAA;CACA,sBAAA;CACA,eAAA;CACA,oBAAA;CACA,iBAAA;CACA;AACA;CACA,kBAAA;CACA;AACA;CACA,oBAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,kBAAA;CACA,+CAAA;CACA;AACA;CACA,0BAAA;CACA;AAEA;CACA,eAAA;IACA,eAAA;IACA,YAAA;IACA,aAAA;IACA,iCAAA;IACA,wBAAA;IACA,gBAAA;CACA;AACA;CACA,kBAAA;CACA,gBAAA;CACA","file":"sidebar.vue","sourcesContent":["<style scoped>\n.sidebar{\n\t-webkit-user-select: none;\n\tuser-select:none;\n\tbackground:#F6F6F6;\n\tborder-right:1px solid #E0E0E0;\n\tcolor:#585858;\n\tfont-family: \"PingFang SC\";\n\tmin-height:100%;\n\twidth:250px;\n}\n.wrapper{\n\tline-height: 24px;\n\tpadding-top: 10px;\n}\n.wrapper h2,\n.wrapper .notFound{\n\tfont-size:12px;\n\tpadding-left:15px;\n\tfont-weight: normal;\n}\n.wrapper ul{\n\tlist-style: none;\n}\n.wrapper li{\n\tfont-size:13px;\n\ttext-indent: 25px;\n\t/*padding-left:25px;*/\n\tcursor:default;\n\twhite-space: nowrap;\n\toverflow: hidden;\n}\n.wrapper li li{\n\ttext-indent: 44px;\n}\n.wrapper li.active{\n\tbackground: #CECECE;\n}\n.wrapper li.note::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-file.png);\n}\n.wrapper li.folder::before{\n\tpadding-right:3px;\n\tbackground-image:url(../images/icon-folder.png);\n}\n.wrapper .note-list-move {\n\ttransition: transform .4s;\n}\n\n.searchWrapper input{\n\tdisplay: block;\n    border: 0 none;\n    width: 100%;\n    height: 28px;\n    border-bottom: 1px solid #e0e0e0;\n    background: transparent;\n    padding: 0 10px;\n}\n.searchWrapper input:focus{\n\tbackground: white;\n\toutline: 0 none;\n}\n</style>\n\n<template>\n<section class=\"sidebar\">\n\t<section class=\"searchWrapper\">\n\t\t<input type=\"search\" v-model.trim=\"keyword\" placeholder=\"搜索...\" />\n\t</section>\n\t<section class=\"wrapper\" v-show=\"!isSearching\" v-for=\"notebook in notebooksWithCategories\">\n\t\t<h2>{{notebook.title}}</h2>\n\t\t<ul>\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in notebook.categories\"\n\t\t\t>{{category}}\n\t\t\t\t<transition-group\n\t\t\t\t\tname=\"note-list\"\n\t\t\t\t\ttag=\"ul\"\n\t\t\t\t\tdroppable=\"true\"\n\t\t\t\t\tv-on:drop=\"drop\"\n\t\t\t\t\t>\n\t\t\t\t\t<li\n\t\t\t\t\t\tdraggable=\"true\"\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:key=\"note.id\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu.stop=\"showContextMenu(note.id)\"\n\t\t\t\t\t\tv-on:dragstart=\"dragStart($event, note.id)\"\n\t\t\t\t\t\tv-on:dragover.prevent=\"dragOver($event, note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</transition-group>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n\t<section class=\"wrapper\" v-show=\"isSearching\">\n\t\t<div class=\"notFound\" v-show=\"!searchResults.length\">搜的什么鬼 一篇都没有</div>\n\t\t<ul v-show=\"searchResults.length\">\n\t\t\t<li\n\t\t\t\tclass=\"icon folder\"\n\t\t\t\tv-for=\"(notes,category) in searchResultsWithCategories\"\n\t\t\t>{{category}}\n\t\t\t\t<ul>\n\t\t\t\t\t<li\n\t\t\t\t\t\tclass=\"icon note\"\n\t\t\t\t\t\tv-bind:class=\"{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}\"\n\t\t\t\t\t\tv-for=\"note in notes\"\n\t\t\t\t\t\tv-on:click=\"switchCurrentNote(note.id)\"\n\t\t\t\t\t\tv-on:contextmenu=\"showContextMenu(note.id)\"\n\t\t\t\t\t>{{note.title}}</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t</section>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport {mapGetters} from 'vuex';\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\n\nlet menu = new Menu(util.platform);\n\nlet _doExchange;\n\nexport default {\n\tcomputed: {\n\t\t...mapGetters([\n\t\t\t'notebooks',\n\t\t\t'currentNote',\n\t\t\t'contextMenuNoteId',\n\t\t\t'notebooksWithCategories',\n\t\t\t'isSearching',\n\t\t\t'searchResults',\n\t\t\t'searchResultsWithCategories'\n\t\t])\n\t},\n\twatch: {\n\t\tkeyword(){\n\t\t\tif(this.keyword){\n\t\t\t\tthis.$store.dispatch('search', this.keyword);\n\t\t\t}else{\n\t\t\t\tthis.$store.commit('switchSearching', false);\n\t\t\t}\n\t\t}\n\t},\n\tmethods: {\n\t\tisActive(noteId){\n\t\t\tlet ret = false;\n\t\t\t// 当前笔记\n\t\t\tif(this.currentNote && noteId === this.currentNote.id){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\t// 当前右键笔记\n\t\t\tif(this.contextMenuNoteId === noteId){\n\t\t\t\tret = true;\n\t\t\t}\n\t\t\treturn ret;\n\t\t},\n\t\tswitchCurrentNote(noteId){\n\t\t\tthis.$store.dispatch('switchCurrentNoteById', noteId);\n\t\t\t// eventHub.$emit('currentNoteChange', noteId);\n\t\t},\n\t\tshowContextMenu(noteId){\n\t\t\t// console.log('contextmenu');\n\t\t\tthis.$store.commit('switchContextMenuNote', noteId);\n\t\t\t// this.$nextTick(() => {\n\t\t\tsetTimeout(() => {\n\t\t\t\tmenu.showContextMenu([{\n\t\t\t\t\ttitle:'打开',\n\t\t\t\t\tevent:'noteOpen'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'删除',\n\t\t\t\t\tevent:'noteDelete'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'新建',\n\t\t\t\t\tevent:'newNote'\n\t\t\t\t},{\n\t\t\t\t\ttype:'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'历史版本',\n\t\t\t\t\tevent:'noteHistory'\n\t\t\t\t}]);\n\t\t\t\tsetTimeout(()=>{\n\t\t\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t\t\t},30);\n\t\t\t},30);\n\t\t},\n\t\tdragStart(e, noteId){\n\t\t\tthis.currentMovingNoteId = noteId;\n\t\t\t// e.dataTransfer.dropEffect = 'move';\n\t\t\t// e.dataTransfer.effectAllowed = 'move';\n\t\t\t// console.log('start', noteId);\n\t\t},\n\t\tdragOver(e, noteId){\n\t\t\tif(this.isAnimating) return;\n\t\t\tif(this.currentMovingNoteId === noteId) return;\n\n\t\t\t// console.log('over', noteId);\n\n\t\t\tthis.currentTargetingNoteId = noteId;\n\n\t\t\tif(!_doExchange){\n\t\t\t\t_doExchange = throttle(() => {\n\t\t\t\t\tthis.isAnimating = true;\n\t\t\t\t\tthis.$store.dispatch('exchangeNote', {\n\t\t\t\t\t\tid1:this.currentMovingNoteId,\n\t\t\t\t\t\tid2:this.currentTargetingNoteId\n\t\t\t\t\t});\n\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\tthis.isAnimating = false;\n\t\t\t\t\t}, 500);\n\t\t\t\t}, 500);\n\t\t\t}\n\t\t\t_doExchange();\n\t\t},\n\t\tdrop(e){\n\t\t\tthis.currentMovingNoteId = 0;\n\t\t\t// console.log('drop', e);\n\t\t}\n\t\t/*hideContextMenu(){\n\t\t\t// 会自动关闭，这里主要是将当前右键笔记置空\n\t\t\tthis.$store.commit('switchContextMenuNote', 0);\n\t\t}*/\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\tcurrentMovingNoteId:0,\n\t\t\tcurrentTargetingNoteId:0,\n\t\t\tisAnimating:false,\n\t\t\tkeyword:''\n\t\t};\n\t\treturn data;\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -782,6 +784,8 @@
 	//
 	//
 	//
+	//
+	//
 	
 	var _lodash = __webpack_require__(12);
 	
@@ -998,10 +1002,10 @@
 	});
 	class Menu {
 		constructor() {
-			console.log('Menu init.');
+			// console.log('Menu init.');
 		}
 		on(eventType, callback) {
-			console.log('menu on');
+			// console.log('menu on');
 			if (!this._eventList) {
 				this._eventList = {};
 			}
@@ -1021,7 +1025,7 @@
 			}
 		}
 		trigger(eventType, data) {
-			console.log('menu trigger', this._eventList, this);
+			// console.log('menu trigger',this._eventList,this);
 			if (!this._eventList || !this._eventList[eventType]) return;
 			this._eventList[eventType].forEach(callback => {
 				callback(eventType, data);
@@ -1386,7 +1390,7 @@
 	if (false) {
 	  module.hot.accept()
 	  if (module.hot.data) {
-	     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-114b24d1", module.exports)
+	     require("vue-hot-reload-api").rerender("data-v-114b24d1", module.exports)
 	  }
 	}
 
@@ -1415,7 +1419,6 @@
 	if (typeof __vue_options__ === "function") {
 	  __vue_options__ = __vue_options__.options
 	}
-	__vue_options__.name = __vue_options__.name || "editor"
 	__vue_options__.__file = "/Users/TooBug/work/github/TooNote/src/component/editor.vue"
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
@@ -1423,7 +1426,7 @@
 	
 	/* hot reload */
 	if (false) {(function () {
-	  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), false)
 	  if (!hotAPI.compatible) return
 	  module.hot.accept()
@@ -1454,8 +1457,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-435b5df0&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./editor.vue", function() {
-				var newContent = require("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-435b5df0&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./editor.vue");
+			module.hot.accept("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-435b5df0&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editor.vue", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-435b5df0&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editor.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -1473,7 +1476,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?e7817722"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div\n\t\tid=\"ace_container\"\n\t\tv-on:dragover.prevent=\"onDragOver\"\n\t\tv-on:drop.prevent.stop=\"onDrop\"\n\t\tv-on:paste=\"onPaste\"\n\t></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex';\nimport shortcut from '../modules/shortcut';\nimport io from '../modules/io';\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote', 'layout', 'editAction'])\n\t},\n\tmethods:{\n\t\tonDragOver(){\n\t\t\t// console.log('dragover');\n\t\t},\n\t\tonDrop(e){\n\t\t\tlet img = e.dataTransfer.files[0];\n\t\t\tif(!img || !/^image/.test(img.type)) return;\n\t\t\tlet ext = io.getExt(img.name);\n\t\t\tlet imagePath = io.saveImage(img.path, ext);\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tonPaste(e){\n\t\t\tif(!e.clipboardData.items || !e.clipboardData.items.length) return;\n\t\t\tlet hasImage = false;\n\t\t\tfor(let i = e.clipboardData.items.length;i--;){\n\t\t\t\tlet item = e.clipboardData.items[i];\n\t\t\t\tif(/^image/.test(item.type)){\n\t\t\t\t\thasImage = true;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(!hasImage) return;\n\n\t\t\tlet imagePath = io.saveImageFromClipboard();\n\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tinsertImg(imagePath){\n\n\t\t\tif(imagePath){\n\t\t\t\timagePath = encodeURI(imagePath);\n\t\t\t\t_aceEditor.insert(`\\n\\n![${name}](${imagePath})\\n\\n`);\n\t\t\t}else{\n\t\t\t\t_aceEditor.insert(`拖拽插入图片出错！`);\n\t\t\t}\n\t\t\tthis.onEditorInput();\n\t\t},\n\t\tonEditorInput(){\n\t\t\t_content = _aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t},\n\t\tresize(){\n\t\t\t_aceEditor.resize();\n\t\t}\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note.id) return;\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t},\n\t\t'currentNote.content': function(content){\n\t\t\t// console.log('watch currentNote.content change');\n\t\t\tif(!content && content !== '') return\n\t\t\tif(_content !== content){\n\t\t\t\t_aceEditor.setValue(content, -1);\n\t\t\t\t// 清除undo列表\n\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t_aceEditor.getSession().getUndoManager().reset();\n\t\t\t\t\tconsole.log(_aceEditor.getSession().getUndoManager().hasUndo());\n\t\t\t\t},0);\n\t\t\t}\n\t\t},\n\t\t'layout.preview': function(){\n\t\t\tthis.resize();\n\t\t},\n\t\t'layout.sidebar': function(){\n\t\t\tthis.resize();\n\t\t},\n\t\t'layout.editor': function(){\n\t\t\tthis.resize();\n\t\t},\n\t\t'editAction': function(){\n\t\t\tif(!this.editAction) return;\n\t\t\tlet undo = _aceEditor.getSession().getUndoManager();\n\t\t\tif(this.editAction === 'undo') {\n\t\t\t\tif(undo.hasUndo()){\n\t\t\t\t\tundo.undo(true);\n\t\t\t\t}\n\t\t\t}else if(this.editAction === 'redo') {\n\t\t\t\tif(undo.hasRedo()){\n\t\t\t\t\tundo.redo(true);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', this.onEditorInput);\n\n\t\tshortcut(aceEditor);\n\t\t/*for(let cmd in shortcut){\n\t\t\taceEditor.commands.bindKey(cmd, shortcut[cmd]);\n\t\t}*/\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(() => {\n\t\t\tthis.resize();\n\t\t},0);\n\n\t\twindow.addEventListener('resize', throttle(this.resize, 50));\n\n\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.editor[data-v-435b5df0]{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container[data-v-435b5df0]{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n", "", {"version":3,"sources":["/./component/editor.vue?e338c7ae"],"names":[],"mappings":";AACA;CACA,+BAAA;CACA,2BAAA;CACA,YAAA;CACA,OAAA;CACA;AACA;CACA,YAAA;CACA,gBAAA;IACA,kBAAA;CACA","file":"editor.vue","sourcesContent":["<style scoped>\n.editor{\n\tborder-right:1px solid #E0E0E0;\n\tfont-family: \"PingFang SC\";\n\theight:100%;\n\tflex:1;\n}\n#ace_container{\n\theight:100%;\n\tfont-size: 14px;\n    line-height: 28px;\n}\n</style>\n\n<template>\n<section class=\"editor\">\n\t<div\n\t\tid=\"ace_container\"\n\t\tv-on:dragover.prevent=\"onDragOver\"\n\t\tv-on:drop.prevent.stop=\"onDrop\"\n\t\tv-on:paste=\"onPaste\"\n\t></div>\n</section>\n</template>\n\n\n<script>\nimport throttle from 'lodash.throttle';\nimport ace from 'brace';\nimport 'brace/theme/tomorrow';\nimport 'brace/mode/markdown';\nimport {mapGetters} from 'vuex';\nimport shortcut from '../modules/shortcut';\nimport io from '../modules/io';\nlet _aceEditor;\nlet _id,_content;\nexport default {\n\tcomputed:{\n\t\t...mapGetters(['currentNote', 'layout', 'editAction'])\n\t},\n\tmethods:{\n\t\tonDragOver(){\n\t\t\t// console.log('dragover');\n\t\t},\n\t\tonDrop(e){\n\t\t\tlet img = e.dataTransfer.files[0];\n\t\t\tif(!img || !/^image/.test(img.type)) return;\n\t\t\tlet ext = io.getExt(img.name);\n\t\t\tlet imagePath = io.saveImage(img.path, ext);\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tonPaste(e){\n\t\t\tif(!e.clipboardData.items || !e.clipboardData.items.length) return;\n\t\t\tlet hasImage = false;\n\t\t\tfor(let i = e.clipboardData.items.length;i--;){\n\t\t\t\tlet item = e.clipboardData.items[i];\n\t\t\t\tif(/^image/.test(item.type)){\n\t\t\t\t\thasImage = true;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(!hasImage) return;\n\n\t\t\tlet imagePath = io.saveImageFromClipboard();\n\n\t\t\tthis.insertImg(imagePath);\n\t\t},\n\t\tinsertImg(imagePath){\n\n\t\t\tif(imagePath){\n\t\t\t\timagePath = encodeURI(imagePath);\n\t\t\t\t_aceEditor.insert(`\\n\\n![${name}](${imagePath})\\n\\n`);\n\t\t\t}else{\n\t\t\t\t_aceEditor.insert(`拖拽插入图片出错！`);\n\t\t\t}\n\t\t\tthis.onEditorInput();\n\t\t},\n\t\tonEditorInput(){\n\t\t\t_content = _aceEditor.getValue();\n\t\t\tthis.$store.dispatch('changeCurrentNoteContent', _content);\n\t\t\t// eventHub.$emit('currentNoteContentChange', content);\n\t\t},\n\t\tresize(){\n\t\t\t_aceEditor.resize();\n\t\t}\n\t},\n\twatch:{\n\t\tcurrentNote(note){\n\t\t\tif(!note.id) return;\n\t\t\tif(_id !== note.id){\n\t\t\t\t_content = '';\n\t\t\t\t_id = note.id;\n\t\t\t}\n\t\t},\n\t\t'currentNote.content': function(content){\n\t\t\t// console.log('watch currentNote.content change');\n\t\t\tif(!content && content !== '') return\n\t\t\tif(_content !== content){\n\t\t\t\t_aceEditor.setValue(content, -1);\n\t\t\t\t// 清除undo列表\n\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t_aceEditor.getSession().getUndoManager().reset();\n\t\t\t\t\t// console.log(_aceEditor.getSession().getUndoManager().hasUndo());\n\t\t\t\t},0);\n\t\t\t}\n\t\t},\n\t\t'layout.preview': function(){\n\t\t\tthis.resize();\n\t\t},\n\t\t'layout.sidebar': function(){\n\t\t\tthis.resize();\n\t\t},\n\t\t'layout.editor': function(){\n\t\t\tthis.resize();\n\t\t},\n\t\t'editAction': function(){\n\t\t\tif(!this.editAction) return;\n\t\t\tlet undo = _aceEditor.getSession().getUndoManager();\n\t\t\tif(this.editAction === 'undo') {\n\t\t\t\tif(undo.hasUndo()){\n\t\t\t\t\tundo.undo(true);\n\t\t\t\t}\n\t\t\t}else if(this.editAction === 'redo') {\n\t\t\t\tif(undo.hasRedo()){\n\t\t\t\t\tundo.redo(true);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t},\n\tdata(){\n\t\tvar data = {\n\t\t\t// content:''\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tvar aceEditor = ace.edit('ace_container');\n\t\tvar session = aceEditor.getSession();\n\t\t_aceEditor = aceEditor;\n\t\taceEditor.setTheme('ace/theme/tomorrow');\n\t\tsession.setMode('ace/mode/markdown');\n\t\tsession.setUseWrapMode(true);\n\t\taceEditor.renderer.setHScrollBarAlwaysVisible(false);\n\t\taceEditor.renderer.setShowGutter(false);\n\t\taceEditor.renderer.setPadding(20);\n\t\taceEditor.setShowPrintMargin(false);\n\t\taceEditor.$blockScrolling = Infinity;\n\t\taceEditor.on('input', this.onEditorInput);\n\n\t\tshortcut(aceEditor);\n\t\t/*for(let cmd in shortcut){\n\t\t\taceEditor.commands.bindKey(cmd, shortcut[cmd]);\n\t\t}*/\n\n\t\t// 同步滚动\n\t\tsession.on('changeScrollTop', throttle((scroll) => {\n\t\t\tlet targetRow = aceEditor.getFirstVisibleRow();\n\t\t\tthis.$store.dispatch('syncScroll', targetRow);\n\t\t}, 500));\n\t\t// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);\n\t\t// timing = setTimeout(function(){\n\t\t\t// console.log(targetRow,scrollMap[targetRow]);\n\t\t\t/*animatedScroll($preview, scrollMap[targetRow], 500);\n\t\t\twaitStart = Date.now();\n\t\t\ttiming = 0;*/\n\t\t\t// },100);\n\t\t\t// console.log('scroll',scroll);\n\n\t\t// 重新计算大小\n\t\tsetTimeout(() => {\n\t\t\tthis.resize();\n\t\t},0);\n\n\t\twindow.addEventListener('resize', throttle(this.resize, 50));\n\n\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -1604,7 +1607,7 @@
 					// 清除undo列表
 					setTimeout(() => {
 						_aceEditor.getSession().getUndoManager().reset();
-						console.log(_aceEditor.getSession().getUndoManager().hasUndo());
+						// console.log(_aceEditor.getSession().getUndoManager().hasUndo());
 					}, 0);
 				}
 			},
@@ -5333,7 +5336,6 @@
 	
 	io.getFileText = filePath => {
 		filePath = path.join(__webpack_require__(18).remote.app.getAppPath(), filePath);
-		console.log(filePath);
 		return fs.readFileSync(filePath, 'utf8');
 	};
 	
@@ -5430,7 +5432,7 @@
 				name: 'Markdown文件',
 				extensions: ['md']
 			});
-		} else if (format === 'htmlBody' || format === 'html') {
+		} else if (format === 'htmlBody' || format === 'htmlBodyWithCss' || format === 'html') {
 			filters.push({
 				name: 'HTML文件',
 				extensions: ['html']
@@ -5556,7 +5558,7 @@
 	if (false) {
 	  module.hot.accept()
 	  if (module.hot.data) {
-	     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-435b5df0", module.exports)
+	     require("vue-hot-reload-api").rerender("data-v-435b5df0", module.exports)
 	  }
 	}
 
@@ -5585,7 +5587,6 @@
 	if (typeof __vue_options__ === "function") {
 	  __vue_options__ = __vue_options__.options
 	}
-	__vue_options__.name = __vue_options__.name || "preview"
 	__vue_options__.__file = "/Users/TooBug/work/github/TooNote/src/component/preview.vue"
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
@@ -5593,7 +5594,7 @@
 	
 	/* hot reload */
 	if (false) {(function () {
-	  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), false)
 	  if (!hotAPI.compatible) return
 	  module.hot.accept()
@@ -5624,8 +5625,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-46603186&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./preview.vue", function() {
-				var newContent = require("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-46603186&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./preview.vue");
+			module.hot.accept("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-46603186&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./preview.vue", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-46603186&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./preview.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -5824,7 +5825,7 @@
 	});
 	
 	// 解析todo
-	let todoRegExp = /^\[([ x])\] ([\s\S]+)/mi;
+	let todoRegExp = /^\[([ x])\] ?([\s\S]*)/i;
 	
 	renderer.use(function (md) {
 		md.core.ruler.after('block', 'todo', function (state) {
@@ -5833,6 +5834,7 @@
 			    i = -1;
 			while (++i < len) {
 				var token = tokens[i];
+				// console.log(token);
 				if (token.type === 'inline' && token.content) {
 					token.content = token.content.replace(todoRegExp, (str, char, text) => {
 						// console.log(str, char, text);
@@ -5925,7 +5927,7 @@
 	if (false) {
 	  module.hot.accept()
 	  if (module.hot.data) {
-	     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-46603186", module.exports)
+	     require("vue-hot-reload-api").rerender("data-v-46603186", module.exports)
 	  }
 	}
 
@@ -5954,7 +5956,6 @@
 	if (typeof __vue_options__ === "function") {
 	  __vue_options__ = __vue_options__.options
 	}
-	__vue_options__.name = __vue_options__.name || "menubar"
 	__vue_options__.__file = "/Users/TooBug/work/github/TooNote/src/component/menubar.vue"
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
@@ -5962,7 +5963,7 @@
 	
 	/* hot reload */
 	if (false) {(function () {
-	  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), false)
 	  if (!hotAPI.compatible) return
 	  module.hot.accept()
@@ -5993,8 +5994,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0b8853c9&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./menubar.vue", function() {
-				var newContent = require("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0b8853c9&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./menubar.vue");
+			module.hot.accept("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-0b8853c9&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./menubar.vue", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-0b8853c9&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./menubar.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -6012,7 +6013,7 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.menubar[data-v-0b8853c9]{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden[data-v-0b8853c9]{\n\tdisplay: none;\n}\n.menubar ul[data-v-0b8853c9]{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li[data-v-0b8853c9]{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active[data-v-0b8853c9]{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span[data-v-0b8853c9]{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul[data-v-0b8853c9]{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul[data-v-0b8853c9]{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li[data-v-0b8853c9]{\n\tmargin:0;\n}\n.menubar ul > li > ul > li[data-v-0b8853c9]:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span[data-v-0b8853c9]{\n\tpadding:0 20px;\n}\n", "", {"version":3,"sources":["/./component/menubar.vue?02b52470"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,eAAA;CACA,kBAAA;CACA,0CAAA;CACA,gBAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,eAAA;CACA,iBAAA;CACA;AACA;CACA,sBAAA;CACA,kBAAA;CACA;AACA;CACA,2BAAA;CACA,aAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,mBAAA;CACA,mBAAA;CACA,WAAA;CACA,YAAA;CACA,cAAA;CACA,0CAAA;CACA,UAAA;CACA,sBAAA;CACA;AACA;CACA,eAAA;CACA;AACA;CACA,SAAA;CACA;AACA;CACA,YAAA;CACA,2BAAA;CACA;AACA;CACA,eAAA;CACA","file":"menubar.vue","sourcesContent":["<style scoped>\n.menubar{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden{\n\tdisplay: none;\n}\n.menubar ul{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li{\n\tmargin:0;\n}\n.menubar ul > li > ul > li:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span{\n\tpadding:0 20px;\n}\n</style>\n\n<template>\n<section class=\"menubar\">\n\t<ul>\n\t\t<li v-for=\"menu in menuList\" v-bind:class=\"{active:menu.isActive}\" v-on:click=\"menuClick(menu.title)\">\n\t\t\t<span>{{menu.title}}</span>\n\t\t\t<ul v-if=\"menu.subMenu && menu.subMenu.length\">\n\t\t\t\t<li v-for=\"subMenu in menu.subMenu\" v-on:click=\"subMenuClick(subMenu.event)\"><span>{{subMenu.title}}</span></li>\n\t\t\t</ul>\n\t\t</li>\n\t</ul>\n</section>\n</template>\n\n\n<script>\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\nlet menu = new Menu(util.platform);\nexport default {\n\tmethods:{\n\t\tmenuClick(title){\n\t\t\tthis.menuList.forEach(function(menu){\n\t\t\t\tif(menu.title === title){\n\t\t\t\t\tmenu.isActive = !menu.isActive;\n\t\t\t\t}else{\n\t\t\t\t\tmenu.isActive = false;\n\t\t\t\t}\n\t\t\t});\n\t\t\t// 触发vue更新\n\t\t\t// this.menuList = this.menuList.concat([]);\n\t\t},\n\t\tsubMenuClick(event){\n\t\t\tmenu.onClick(event);\n\t\t}\n\t},\n\tdata(){\n\t\tlet data = {\n\t\t\tisShow:menu.isVue,\n\t\t\tmenuList:[{\n\t\t\t\ttitle:'TooNote',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'File',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'新建笔记',\n\t\t\t\t\tevent:'newNote',\n\t\t\t\t\thotKey:'cmd+n'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'保存',\n\t\t\t\t\tevent:'saveNote',\n\t\t\t\t\thotKey:'cmd+s'\n\t\t\t\t},{\n\t\t\t\t\ttype: 'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出MarkDown',\n\t\t\t\t\tevent:'exportMd',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出HTML Body',\n\t\t\t\t\tevent:'exportHtmlBody',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出完整HTML',\n\t\t\t\t\tevent:'exportHtml',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出PDF',\n\t\t\t\t\tevent:'exportPdf',\n\t\t\t\t},{\n\t\t\t\t\ttype: 'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导入备份',\n\t\t\t\t\tevent:'importBackup'\n\t\t\t\t}]\n\t\t\t},{\n\t\t\t\ttitle:'Edit',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'View',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'切换笔记列表',\n\t\t\t\t\tevent:'switchLayoutSidebar',\n\t\t\t\t\thotKey:'cmd+1'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'切换编辑区',\n\t\t\t\t\tevent:'switchLayoutEditor',\n\t\t\t\t\thotKey:'cmd+2'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'切换预览区',\n\t\t\t\t\tevent:'switchLayoutPreview',\n\t\t\t\t\thotKey:'cmd+3'\n\t\t\t\t}]\n\t\t\t}]\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tmenu.buildMenu(this.menuList);\n\t\t/*this.$nextTick(()=>{\n\t\t\tthis.$dispatch('toggleMenubar', menu.isVue);\n\t\t});*/\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, "\n.menubar[data-v-0b8853c9]{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden[data-v-0b8853c9]{\n\tdisplay: none;\n}\n.menubar ul[data-v-0b8853c9]{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li[data-v-0b8853c9]{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active[data-v-0b8853c9]{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span[data-v-0b8853c9]{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul[data-v-0b8853c9]{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul[data-v-0b8853c9]{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li[data-v-0b8853c9]{\n\tmargin:0;\n}\n.menubar ul > li > ul > li[data-v-0b8853c9]:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span[data-v-0b8853c9]{\n\tpadding:0 20px;\n}\n", "", {"version":3,"sources":["/./component/menubar.vue?61e2e19a"],"names":[],"mappings":";AACA;CACA,2BAAA;CACA,YAAA;CACA,eAAA;CACA,kBAAA;CACA,0CAAA;CACA,gBAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,eAAA;CACA,iBAAA;CACA;AACA;CACA,sBAAA;CACA,kBAAA;CACA;AACA;CACA,2BAAA;CACA,aAAA;CACA;AACA;CACA,cAAA;CACA;AACA;CACA,mBAAA;CACA,mBAAA;CACA,WAAA;CACA,YAAA;CACA,cAAA;CACA,0CAAA;CACA,UAAA;CACA,sBAAA;CACA;AACA;CACA,eAAA;CACA;AACA;CACA,SAAA;CACA;AACA;CACA,YAAA;CACA,2BAAA;CACA;AACA;CACA,eAAA;CACA","file":"menubar.vue","sourcesContent":["<style scoped>\n.menubar{\n\tfont-family: \"PingFang SC\";\n\theight:24px;\n\tfont-size:13px;\n\tline-height: 24px;\n\tbackground:linear-gradient(top,#EEE,#CCC);\n\tcursor: default;\n}\n.menubar.hidden{\n\tdisplay: none;\n}\n.menubar ul{\n\tpadding:0 20px;\n\tlist-style: none;\n}\n.menubar ul li{\n\tdisplay: inline-block;\n\tmargin-right:10px;\n}\n.menubar ul li.active{\n\tbackground:rgb(40,141,248);\n\tcolor: white;\n}\n.menubar ul li span{\n\tpadding:0 5px;\n}\n.menubar ul > li > ul{\n\tposition: absolute;\n\tbackground:#D6D6D6;\n\tcolor:#333;\n\topacity: .9;\n\tdisplay: none;\n\tbox-shadow:0 3px 3px rgba(192,192,192,.5);\n\tpadding:0;\n\tborder:1px solid #ccc;\n}\n.menubar ul > li.active > ul{\n\tdisplay: block;\n}\n.menubar ul > li > ul > li{\n\tmargin:0;\n}\n.menubar ul > li > ul > li:hover{\n\tcolor:white;\n\tbackground:rgb(40,141,248);\n}\n.menubar ul > li > ul > li > span{\n\tpadding:0 20px;\n}\n</style>\n\n<template>\n<section class=\"menubar\">\n\t<ul>\n\t\t<li v-for=\"menu in menuList\" v-bind:class=\"{active:menu.isActive}\" v-on:click=\"menuClick(menu.title)\">\n\t\t\t<span>{{menu.title}}</span>\n\t\t\t<ul v-if=\"menu.subMenu && menu.subMenu.length\">\n\t\t\t\t<li v-for=\"subMenu in menu.subMenu\" v-on:click=\"subMenuClick(subMenu.event)\"><span>{{subMenu.title}}</span></li>\n\t\t\t</ul>\n\t\t</li>\n\t</ul>\n</section>\n</template>\n\n\n<script>\nimport Menu from '../api/menu/index';\nimport util from '../modules/util';\nlet menu = new Menu(util.platform);\nexport default {\n\tmethods:{\n\t\tmenuClick(title){\n\t\t\tthis.menuList.forEach(function(menu){\n\t\t\t\tif(menu.title === title){\n\t\t\t\t\tmenu.isActive = !menu.isActive;\n\t\t\t\t}else{\n\t\t\t\t\tmenu.isActive = false;\n\t\t\t\t}\n\t\t\t});\n\t\t\t// 触发vue更新\n\t\t\t// this.menuList = this.menuList.concat([]);\n\t\t},\n\t\tsubMenuClick(event){\n\t\t\tmenu.onClick(event);\n\t\t}\n\t},\n\tdata(){\n\t\tlet data = {\n\t\t\tisShow:menu.isVue,\n\t\t\tmenuList:[{\n\t\t\t\ttitle:'TooNote',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'File',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'新建笔记',\n\t\t\t\t\tevent:'newNote',\n\t\t\t\t\thotKey:'cmd+n'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'保存',\n\t\t\t\t\tevent:'saveNote',\n\t\t\t\t\thotKey:'cmd+s'\n\t\t\t\t},{\n\t\t\t\t\ttype: 'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出MarkDown',\n\t\t\t\t\tevent:'exportMd',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出HTML Body',\n\t\t\t\t\tevent:'exportHtmlBody',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出HTML Body（带样式）',\n\t\t\t\t\tevent:'exportHtmlBodyWithCss',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出完整HTML',\n\t\t\t\t\tevent:'exportHtml',\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导出PDF',\n\t\t\t\t\tevent:'exportPdf',\n\t\t\t\t},{\n\t\t\t\t\ttype: 'separator'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'导入备份',\n\t\t\t\t\tevent:'importBackup'\n\t\t\t\t}]\n\t\t\t},{\n\t\t\t\ttitle:'Edit',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[]\n\t\t\t},{\n\t\t\t\ttitle:'View',\n\t\t\t\tisActive:false,\n\t\t\t\tsubMenu:[{\n\t\t\t\t\ttitle:'切换笔记列表',\n\t\t\t\t\tevent:'switchLayoutSidebar',\n\t\t\t\t\thotKey:'cmd+1'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'切换编辑区',\n\t\t\t\t\tevent:'switchLayoutEditor',\n\t\t\t\t\thotKey:'cmd+2'\n\t\t\t\t},{\n\t\t\t\t\ttitle:'切换预览区',\n\t\t\t\t\tevent:'switchLayoutPreview',\n\t\t\t\t\thotKey:'cmd+3'\n\t\t\t\t}]\n\t\t\t}]\n\t\t};\n\t\treturn data;\n\t},\n\tmounted(){\n\t\tmenu.buildMenu(this.menuList);\n\t\t/*this.$nextTick(()=>{\n\t\t\tthis.$dispatch('toggleMenubar', menu.isVue);\n\t\t});*/\n\t}\n};\n</script>\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 
@@ -6149,6 +6150,9 @@
 						title: '导出HTML Body',
 						event: 'exportHtmlBody'
 					}, {
+						title: '导出HTML Body（带样式）',
+						event: 'exportHtmlBodyWithCss'
+					}, {
 						title: '导出完整HTML',
 						event: 'exportHtml'
 					}, {
@@ -6224,7 +6228,7 @@
 	if (false) {
 	  module.hot.accept()
 	  if (module.hot.data) {
-	     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-0b8853c9", module.exports)
+	     require("vue-hot-reload-api").rerender("data-v-0b8853c9", module.exports)
 	  }
 	}
 
@@ -6253,7 +6257,6 @@
 	if (typeof __vue_options__ === "function") {
 	  __vue_options__ = __vue_options__.options
 	}
-	__vue_options__.name = __vue_options__.name || "versions"
 	__vue_options__.__file = "/Users/TooBug/work/github/TooNote/src/component/versions.vue"
 	__vue_options__.render = __vue_template__.render
 	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
@@ -6261,7 +6264,7 @@
 	
 	/* hot reload */
 	if (false) {(function () {
-	  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), false)
 	  if (!hotAPI.compatible) return
 	  module.hot.accept()
@@ -6292,8 +6295,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./versions.vue", function() {
-				var newContent = require("!!./../node_modules/.0.23.1@css-loader/index.js?sourceMap!./../node_modules/.9.5.3@vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/.9.5.3@vue-loader/lib/selector.js?type=styles&index=0!./versions.vue");
+			module.hot.accept("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./versions.vue", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-0bf59276&scoped=true!./../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./versions.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -6584,7 +6587,7 @@
 	if (false) {
 	  module.hot.accept()
 	  if (module.hot.data) {
-	     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-0bf59276", module.exports)
+	     require("vue-hot-reload-api").rerender("data-v-0bf59276", module.exports)
 	  }
 	}
 
@@ -6649,6 +6652,10 @@
 	var _git = __webpack_require__(66);
 	
 	var _git2 = _interopRequireDefault(_git);
+	
+	var _io = __webpack_require__(33);
+	
+	var _io2 = _interopRequireDefault(_io);
 	
 	var _path = __webpack_require__(36);
 	
@@ -6771,7 +6778,7 @@
 	
 	note.init = (() => {
 		var _ref5 = _asyncToGenerator(function* (id) {
-			var content = `# 欢迎使用TooNote\n\nTooNote是一款基于Markdown的笔记软件。`;
+			var content = _io2.default.getFileText('./docs/welcome.md');
 			_fs2.default.writeFileSync(_path2.default.join(gitPath, `note-${ id }.md`), content, 'utf8');
 			gitCommit('INIT');
 			return yield store.writeFile(`./note-${ id }.md`, content);
@@ -7215,6 +7222,14 @@
 	
 	var _vuex2 = _interopRequireDefault(_vuex);
 	
+	var _path = __webpack_require__(36);
+	
+	var _path2 = _interopRequireDefault(_path);
+	
+	var _inlineCss = __webpack_require__(69);
+	
+	var _inlineCss2 = _interopRequireDefault(_inlineCss);
+	
 	var _meta = __webpack_require__(67);
 	
 	var _meta2 = _interopRequireDefault(_meta);
@@ -7227,7 +7242,7 @@
 	
 	var _io2 = _interopRequireDefault(_io);
 	
-	var _scroll = __webpack_require__(69);
+	var _scroll = __webpack_require__(70);
 	
 	var _scroll2 = _interopRequireDefault(_scroll);
 	
@@ -7238,10 +7253,6 @@
 	var _git = __webpack_require__(66);
 	
 	var _git2 = _interopRequireDefault(_git);
-	
-	var _path = __webpack_require__(36);
-	
-	var _path2 = _interopRequireDefault(_path);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -7565,6 +7576,15 @@
 						case 'htmlBody':
 							content = _renderer2.default.render(context.state.currentNote.content);
 							break;
+						case 'htmlBodyWithCss':
+							content = _renderer2.default.render(context.state.currentNote.content);
+							let cssText = _io2.default.getFileText('/style/htmlbody.css');
+							content = yield (0, _inlineCss2.default)(`<body class="htmlBody">${ content }</body>`, {
+								url: '/',
+								extraCss: cssText
+							});
+							console.log(content);
+							break;
 						case 'html':
 						case 'pdf':
 							let body = _renderer2.default.render(context.state.currentNote.content);
@@ -7623,6 +7643,12 @@
 
 /***/ },
 /* 69 */
+/***/ function(module, exports) {
+
+	module.exports = require("inline-css");
+
+/***/ },
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7631,7 +7657,7 @@
 		value: true
 	});
 	
-	var _cubicInOut = __webpack_require__(70);
+	var _cubicInOut = __webpack_require__(71);
 	
 	var _cubicInOut2 = _interopRequireDefault(_cubicInOut);
 	
@@ -7680,7 +7706,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports) {
 
 	function cubicInOut(t) {

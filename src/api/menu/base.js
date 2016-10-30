@@ -1,9 +1,9 @@
 class Menu{
 	constructor(){
-		console.log('Menu init.');
+		// console.log('Menu init.');
 	}
 	on(eventType,callback){
-		console.log('menu on');
+		// console.log('menu on');
 		if(!this._eventList){
 			this._eventList = {};
 		}
@@ -23,7 +23,7 @@ class Menu{
 		}
 	}
 	trigger(eventType,data){
-		console.log('menu trigger',this._eventList,this);
+		// console.log('menu trigger',this._eventList,this);
 		if(!this._eventList || !this._eventList[eventType]) return;
 		this._eventList[eventType].forEach((callback) => {
 			callback(eventType,data);

@@ -27,6 +27,8 @@
 	text-indent: 25px;
 	/*padding-left:25px;*/
 	cursor:default;
+	white-space: nowrap;
+	overflow: hidden;
 }
 .wrapper li li{
 	text-indent: 44px;

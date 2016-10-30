@@ -99,7 +99,7 @@ export default {
 				// 清除undo列表
 				setTimeout(() => {
 					_aceEditor.getSession().getUndoManager().reset();
-					console.log(_aceEditor.getSession().getUndoManager().hasUndo());
+					// console.log(_aceEditor.getSession().getUndoManager().hasUndo());
 				},0);
 			}
 		},
