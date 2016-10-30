@@ -9,7 +9,6 @@ io.getExt = (filename) => {
 
 io.getFileText = (filePath) => {
 	filePath = path.join(require('electron').remote.app.getAppPath(), filePath);
-	console.log(filePath);
 	return fs.readFileSync(filePath, 'utf8');
 };
 
@@ -107,7 +106,7 @@ io.export = function(format, content){
 			name: 'Markdown文件',
 			extensions: ['md']
 		});
-	}else if(format === 'htmlBody' || format === 'html'){
+	}else if(format === 'htmlBody' || format === 'htmlBodyWithCss' || format === 'html'){
 		filters.push({
 			name: 'HTML文件',
 			extensions: ['html']

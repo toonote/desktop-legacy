@@ -1,13 +1,15 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import path from 'path';
+import inlineCss from 'inline-css';
+
 import meta from '../modules/meta';
 import note from '../modules/note';
 import io from '../modules/io';
 import scroll from '../modules/scroll';
 import renderer from '../modules/renderer';
 import Git from '../modules/git';
-import path from 'path';
 
 let gitPath = path.join(require('electron').remote.app.getPath('userData'), 'git');
 let git = new Git({
@@ -301,6 +303,15 @@ const store = new Vuex.Store({
 					break;
 				case 'htmlBody':
 					content = renderer.render(context.state.currentNote.content);
+					break;
+				case 'htmlBodyWithCss':
+					content = renderer.render(context.state.currentNote.content);
+					let cssText = io.getFileText('/style/htmlbody.css');
+					content = await inlineCss(`<body class="htmlBody">${content}</body>`, {
+						url: '/',
+						extraCss: cssText
+					});
+					console.log(content);
 					break;
 				case 'html':
 				case 'pdf':

@@ -144,6 +144,9 @@ let app = new Vue({
 			case 'exportHtmlBody':
 				app.export('htmlBody');
 				break;
+			case 'exportHtmlBodyWithCss':
+				app.export('htmlBodyWithCss');
+				break;
 			case 'exportHtml':
 				app.export('html');
 				break;

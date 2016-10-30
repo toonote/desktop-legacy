@@ -112,6 +112,9 @@ export default {
 					title:'导出HTML Body',
 					event:'exportHtmlBody',
 				},{
+					title:'导出HTML Body（带样式）',
+					event:'exportHtmlBodyWithCss',
+				},{
 					title:'导出完整HTML',
 					event:'exportHtml',
 				},{
