@@ -16,7 +16,12 @@
     "plugins": [
       "transform-async-to-generator",
       "transform-object-rest-spread"
-    ]
+    ],
+    "env": {
+      "production": {
+        "presets": ["babili"]
+      }
+    }
   },
   "jshintConfig": {
     "esversion": 6,
@@ -40,6 +45,7 @@
     "babel-plugin-transform-async-to-generator": "^6.16.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.16.0",
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "babel-preset-babili": "0.0.5",
     "css-loader": "^0.23.1",
     "electron-devtools-installer": "^2.0.1",
     "extract-text-webpack-plugin": "^2.0.0-beta.4",
