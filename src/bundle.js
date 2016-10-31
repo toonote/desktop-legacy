@@ -75,21 +75,7 @@ module.exports = require("electron");
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-let util = {};
-
-if (typeof MacGap !== 'undefined') {
-	util.platform = 'macgap';
-} else if (typeof process !== 'undefined') {
-	// if(process.browser){
-	util.platform = 'electron';
-	// }else{
-	// util.platform = 'electron';
-	// }
-} else {
-	util.platform = 'web';
-}
-console.log(util.platform);
-/* harmony default export */ exports["a"] = util;
+let util={};util.platform='undefined'==typeof MacGap?'undefined'==typeof process?'web':'electron':'macgap',console.log(util.platform);/* harmony default export */ exports["a"] = util;
 
 /***/ },
 /* 2 */
@@ -389,24 +375,7 @@ module.exports = require("path");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__web__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__macgap__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__electron__ = __webpack_require__(26);
-
-
-
-
-class Menu {
-	constructor(platform) {
-		this._platform = platform;
-		if (platform === 'web') {
-			return new __WEBPACK_IMPORTED_MODULE_0__web__["a" /* default */]();
-		} else if (platform === 'macgap') {
-			return new __WEBPACK_IMPORTED_MODULE_1__macgap__["a" /* default */]();
-		} else if (platform === 'electron') {
-			return new __WEBPACK_IMPORTED_MODULE_2__electron__["a" /* default */]();
-		}
-	}
-}
-
-/* harmony default export */ exports["a"] = Menu;
+class Menu{constructor(a){return(this._platform=a,'web'===a)?new __WEBPACK_IMPORTED_MODULE_0__web__["a" /* default */]:'macgap'===a?new __WEBPACK_IMPORTED_MODULE_1__macgap__["a" /* default */]:'electron'===a?new __WEBPACK_IMPORTED_MODULE_2__electron__["a" /* default */]:void 0}}/* harmony default export */ exports["a"] = Menu;
 
 /***/ },
 /* 7 */
@@ -425,44 +394,8 @@ module.exports = require("lodash.throttle");
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-class Menu {
-	constructor() {
-		// console.log('Menu init.');
-	}
-	on(eventType, callback) {
-		// console.log('menu on');
-		if (!this._eventList) {
-			this._eventList = {};
-		}
-		if (!this._eventList[eventType]) {
-			this._eventList[eventType] = [];
-		}
-		this._eventList[eventType].push(callback);
-	}
-	off(eventType, callback) {
-		if (!this._eventList || !this._eventList[eventType]) return;
-		if (!callback) {
-			this._eventList[eventType] = [];
-		} else {
-			let index = this._eventList[eventType].indexOf(callback);
-			if (index === -1) return;
-			this._eventList[eventType].splice(index, 1);
-		}
-	}
-	trigger(eventType, data) {
-		// console.log('menu trigger',this._eventList,this);
-		if (!this._eventList || !this._eventList[eventType]) return;
-		this._eventList[eventType].forEach(callback => {
-			callback(eventType, data);
-		});
-	}
-	onClick(command) {
-		this.trigger('click', command);
-	}
-	buildMenu(menuList) {}
-}
-
-/* harmony default export */ exports["a"] = Menu;
+class Menu{constructor(){// console.log('Menu init.');
+}on(a,b){this._eventList||(this._eventList={}),this._eventList[a]||(this._eventList[a]=[]),this._eventList[a].push(b)}off(a,b){if(this._eventList&&this._eventList[a])if(!b)this._eventList[a]=[];else{let c=this._eventList[a].indexOf(b);if(-1===c)return;this._eventList[a].splice(c,1)}}trigger(a,b){!this._eventList||!this._eventList[a]||this._eventList[a].forEach(c=>{c(a,b)})}onClick(a){this.trigger('click',a)}buildMenu(a){}}/* harmony default export */ exports["a"] = Menu;
 
 /***/ },
 /* 10 */
@@ -471,158 +404,9 @@ class Menu {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jszip__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jszip___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jszip__);
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-
-let io = {};
-let fs = __webpack_require__(7);
-let path = __webpack_require__(5);
-
-io.getExt = filename => {
-	return path.extname(filename);
-};
-
-io.getFileText = filePath => {
-	filePath = path.join(__webpack_require__(0).remote.app.getAppPath(), filePath);
-	return fs.readFileSync(filePath, 'utf8');
-};
-
-io.saveFile = (data, ext) => {
-	let userDataPath = __webpack_require__(0).remote.app.getPath('userData');
-	let savePath = path.join(userDataPath, 'images');
-	let saveFilePath = path.join(savePath, (Date.now() + '' + Math.random()).replace('.', ''));
-	if (ext) {
-		saveFilePath += ext;
-	}
-
-	if (!fs.existsSync(savePath)) {
-		fs.mkdirSync(savePath);
-	}
-
-	try {
-		fs.writeFileSync(saveFilePath, data, 'binary');
-	} catch (e) {
-		console.log('saveFile Error', e);
-		return false;
-	}
-	return saveFilePath;
-};
-
-io.saveImageFromClipboard = () => {
-	let img = __webpack_require__(0).clipboard.readImage();
-	let imgData = img.toPng();
-
-	return io.saveFile(imgData, '.png');
-};
-
-io.saveImage = (imagePath, ext) => {
-
-	let data = fs.readFileSync(imagePath);
-	return io.saveFile(data, ext);
-};
-
-// 选择文件
-io.selectFileContent = filters => {
-	var remote = __webpack_require__(0).remote;
-	var dialog = remote.dialog;
-	var filePath = dialog.showOpenDialog({
-		filters,
-		properties: ['openFile']
-	});
-
-	if (!filePath || !filePath.length) return;
-	filePath = filePath[0];
-
-	var fs = __webpack_require__(7);
-	return fs.readFileSync(filePath, 'binary');
-};
-
-// 选择写入路径
-io.selectPathForWrite = filters => {
-	var remote = __webpack_require__(0).remote;
-	var dialog = remote.dialog;
-	var filePath = dialog.showSaveDialog({
-		filters: filters,
-		properties: ['createDirectory']
-	});
-	if (!filePath) return;
-
-	return filePath;
-};
-
-// 从备份文件恢复
-io.getNotesFromBackUp = _asyncToGenerator(function* () {
-	let fileContent = io.selectFileContent([{
-		name: 'TooNote备份文件',
-		extensions: ['tnt']
-	}]);
-	let zip = yield __WEBPACK_IMPORTED_MODULE_0_jszip___default.a.loadAsync(fileContent);
-	let indexFile = yield zip.file('index').async('string');
-	let zipNoteIndex = JSON.parse(indexFile || '{}');
-
-	let newNotes = [];
-	for (let id in zipNoteIndex) {
-		let content = yield zip.file(id).async('string');
-		newNotes.push({
-			id: id,
-			title: zipNoteIndex[id],
-			content: JSON.parse(content)
-		});
-	}
-	return newNotes;
-});
-
-// 导出为各种格式文件
-io.export = function (format, content) {
-	var filters = [];
-	if (format === 'md') {
-		filters.push({
-			name: 'Markdown文件',
-			extensions: ['md']
-		});
-	} else if (format === 'htmlBody' || format === 'htmlBodyWithCss' || format === 'html') {
-		filters.push({
-			name: 'HTML文件',
-			extensions: ['html']
-		});
-	} else if (format === 'pdf') {
-		filters.push({
-			name: 'PDF文件',
-			extensions: ['pdf']
-		});
-	}
-	let filePath = io.selectPathForWrite(filters);
-	let htmlTmpPath;
-
-	if (format === 'pdf') {
-		let cwd = path.dirname(filePath);
-		// 如果是pdf，先生成一个临时HTML文件
-		htmlTmpPath = path.join(cwd, 'ToonotePdfTmp.html');
-		fs.writeFileSync(htmlTmpPath, content, 'utf8');
-		// 生成pdf
-		let spawn = __webpack_require__(18).spawn;
-		let pdfprocess = spawn(path.join(__webpack_require__(0).remote.app.getAppPath(), 'lib/phantomjs'), [path.join(__webpack_require__(0).remote.app.getAppPath(), 'lib/html2pdf.js'), encodeURI(htmlTmpPath), filePath], {
-			cwd: cwd
-		});
-		pdfprocess.stdout.on('data', function (data) {
-			console.log('stdout' + data);
-		});
-		pdfprocess.stderr.on('data', function (data) {
-			console.log('stderr' + data);
-		});
-		pdfprocess.on('close', function () {
-			console.log('closed');
-			// 删除HTML文件
-			fs.unlink(htmlTmpPath, function () {
-				console.log('htm deleted');
-			});
-		});
-	} else {
-		fs.writeFileSync(filePath, content, 'utf8');
-	}
-};
-
-/*// 创建备份文件
+function _asyncToGenerator(fn){return function(){var gen=fn.apply(this,arguments);return new Promise(function(resolve,reject){function step(key,arg){try{var info=gen[key](arg),value=info.value}catch(error){return void reject(error)}return info.done?void resolve(value):Promise.resolve(value).then(function(value){step('next',value)},function(err){step('throw',err)})}return step('next')})}}let io={},fs=__webpack_require__(7),path=__webpack_require__(5);io.getExt=a=>{return path.extname(a)},io.getFileText=a=>{return a=path.join(__webpack_require__(0).remote.app.getAppPath(),a),fs.readFileSync(a,'utf8')},io.saveFile=(a,b)=>{let c=__webpack_require__(0).remote.app.getPath('userData'),d=path.join(c,'images'),f=path.join(d,(Date.now()+''+Math.random()).replace('.',''));b&&(f+=b),fs.existsSync(d)||fs.mkdirSync(d);try{fs.writeFileSync(f,a,'binary')}catch(g){return console.log('saveFile Error',g),!1}return f},io.saveImageFromClipboard=()=>{let a=__webpack_require__(0).clipboard.readImage(),b=a.toPng();return io.saveFile(b,'.png')},io.saveImage=(a,b)=>{let c=fs.readFileSync(a);return io.saveFile(c,b)},io.selectFileContent=a=>{var b=__webpack_require__(0).remote,c=b.dialog,d=c.showOpenDialog({filters:a,properties:['openFile']});if(d&&d.length){d=d[0];var f=__webpack_require__(7);return f.readFileSync(d,'binary')}},io.selectPathForWrite=a=>{var b=__webpack_require__(0).remote,c=b.dialog,d=c.showSaveDialog({filters:a,properties:['createDirectory']});if(d)return d},io.getNotesFromBackUp=_asyncToGenerator(function*(){let a=io.selectFileContent([{name:'TooNote\u5907\u4EFD\u6587\u4EF6',extensions:['tnt']}]),b=yield __WEBPACK_IMPORTED_MODULE_0_jszip___default.a.loadAsync(a),c=yield b.file('index').async('string'),d=JSON.parse(c||'{}'),f=[];for(let g in d){let h=yield b.file(g).async('string');f.push({id:g,title:d[g],content:JSON.parse(h)})}return f}),io.export=function(a,b){var c=[];'md'===a?c.push({name:'Markdown\u6587\u4EF6',extensions:['md']}):'htmlBody'===a||'htmlBodyWithCss'===a||'html'===a?c.push({name:'HTML\u6587\u4EF6',extensions:['html']}):'pdf'==a&&c.push({name:'PDF\u6587\u4EF6',extensions:['pdf']});let d=io.selectPathForWrite(c),f;if('pdf'===a){let g=path.dirname(d);// 如果是pdf，先生成一个临时HTML文件
+f=path.join(g,'ToonotePdfTmp.html'),fs.writeFileSync(f,b,'utf8');// 生成pdf
+let h=__webpack_require__(18).spawn,i=h(path.join(__webpack_require__(0).remote.app.getAppPath(),'lib/phantomjs'),[path.join(__webpack_require__(0).remote.app.getAppPath(),'lib/html2pdf.js'),encodeURI(f),d],{cwd:g});i.stdout.on('data',function(j){console.log('stdout'+j)}),i.stderr.on('data',function(j){console.log('stderr'+j)}),i.on('close',function(){console.log('closed'),fs.unlink(f,function(){console.log('htm deleted')})})}else fs.writeFileSync(d,b,'utf8')};/*// 创建备份文件
 function createBackUp(){
 	var filters = [{
 		name: 'TooNote备份文件',
@@ -649,9 +433,7 @@ function createBackUp(){
 			console.log('tnt create fail.' + err.message);
 		}
 	});
-}*/
-
-/* harmony default export */ exports["a"] = io;
+}*//* harmony default export */ exports["a"] = io;
 
 /***/ },
 /* 11 */
@@ -660,190 +442,9 @@ function createBackUp(){
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__api_store_index__ = __webpack_require__(13);
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-
-
-
-let store = new __WEBPACK_IMPORTED_MODULE_1__api_store_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__util__["a" /* default */].platform);
-
-class Meta {
-	constructor() {}
-	get data() {
-		return store.readFile('/meta.json').then(content => {
-			if (content) {
-				return JSON.parse(content);
-			} else {
-				return this._initData();
-			}
-		});
-	}
-	_initData() {
-		return _asyncToGenerator(function* () {
-			let data = {
-				init: false,
-				recent: [],
-				notebook: [{
-					id: Date.now() + (Math.random() * 10000 >> 0),
-					title: 'TooNote',
-					notes: [{
-						id: Date.now() + (Math.random() * 10000 >> 0),
-						title: '欢迎使用TooNote'
-					}]
-				}]
-			};
-			yield store.writeFile('/meta.json', JSON.stringify(data));
-			return data;
-		})();
-	}
-	init() {
-		var _this = this;
-
-		return _asyncToGenerator(function* () {
-			let data = yield _this.data;
-			data.init = true;
-			yield store.writeFile('/meta.json', JSON.stringify(data));
-		})();
-	}
-	addNote(notebookId, note) {
-		var _this2 = this;
-
-		return _asyncToGenerator(function* () {
-			let data = yield _this2.data;
-			var targetNotebook = data.notebook.filter(function (metaNotebook) {
-				return metaNotebook.id === notebookId;
-			})[0];
-
-			if (!note) {
-				note = {
-					id: Date.now() + (Math.random() * 10000 >> 0),
-					title: 'Unititled Note'
-				};
-			}
-			targetNotebook.notes.push(note);
-			yield store.writeFile('/meta.json', JSON.stringify(data));
-			return note;
-		})();
-	}
-	deleteNote(noteId) {
-		var _this3 = this;
-
-		return _asyncToGenerator(function* () {
-			let data = yield _this3.data;
-			data.notebook.forEach(function (notebook) {
-				notebook.notes.forEach(function (note, index) {
-					if (note.id === noteId) {
-						notebook.notes.splice(index, 1);
-					}
-				});
-			});
-			yield store.writeFile('/meta.json', JSON.stringify(data));
-		})();
-	}
-	updateNote(noteId, noteTitle) {
-		var _this4 = this;
-
-		return _asyncToGenerator(function* () {
-			let data = yield _this4.data;
-			data.notebook.forEach(function (notebook) {
-				notebook.notes.forEach(function (note) {
-					if (note.id === noteId) {
-						note.title = noteTitle;
-					}
-				});
-			});
-			yield store.writeFile('/meta.json', JSON.stringify(data));
-			return data;
-		})();
-	}
-	findNoteById(noteId) {
-		var _this5 = this;
-
-		return _asyncToGenerator(function* () {
-			let data = yield _this5.data;
-			let target;
-			data.notebook.forEach(function (notebook) {
-				notebook.notes.forEach(function (note) {
-					if (note.id === noteId) {
-						target = note;
-					}
-				});
-			});
-			return target;
-		})();
-	}
-	searchNote(keyword) {
-		var _this6 = this;
-
-		return _asyncToGenerator(function* () {
-			let data = yield _this6.data;
-			let ret = [];
-			data.notebook.forEach(function (notebook) {
-				notebook.notes.forEach(function (note) {
-					if (note.title.toLowerCase().indexOf(keyword) > -1) {
-						ret.push(note);
-					}
-				});
-			});
-			return ret;
-		})();
-	}
-	findNotebookOfNote(noteId) {
-		var _this7 = this;
-
-		return _asyncToGenerator(function* () {
-			let data = yield _this7.data;
-			let target;
-			data.notebook.forEach(function (notebook) {
-				notebook.notes.forEach(function (note) {
-					if (note.id === noteId) {
-						target = notebook;
-					}
-				});
-			});
-			return target;
-		})();
-	}
-	exchange(id1, id2) {
-		var _this8 = this;
-
-		return _asyncToGenerator(function* () {
-			let data = yield _this8.data;
-
-			let notebook1, notebook2;
-			let note1, note2;
-			let index1, index2;
-
-			data.notebook.forEach(function (notebook) {
-				notebook.notes.forEach(function (note, index) {
-					if (note.id === id1) {
-						notebook1 = notebook;
-						note1 = note;
-						index1 = index;
-					}
-					if (note.id === id2) {
-						notebook2 = notebook;
-						note2 = note;
-						index2 = index;
-					}
-				});
-			});
-
-			// 只能交换同一笔记本中的笔记
-			if (notebook1 !== notebook2) return data;
-			// 交换
-			notebook1.notes.splice(index1, 1, note2);
-			notebook1.notes.splice(index2, 1, note1);
-
-			yield store.writeFile('/meta.json', JSON.stringify(data));
-			return data;
-		})();
-	}
-};
-
-let meta = new Meta();
-
-/* harmony default export */ exports["a"] = meta;
+function _asyncToGenerator(fn){return function(){var gen=fn.apply(this,arguments);return new Promise(function(resolve,reject){function step(key,arg){try{var info=gen[key](arg),value=info.value}catch(error){return void reject(error)}return info.done?void resolve(value):Promise.resolve(value).then(function(value){step('next',value)},function(err){step('throw',err)})}return step('next')})}}let store=new __WEBPACK_IMPORTED_MODULE_1__api_store_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__util__["a" /* default */].platform);class Meta{constructor(){}get data(){return store.readFile('/meta.json').then(a=>{return a?JSON.parse(a):this._initData()})}_initData(){return _asyncToGenerator(function*(){let a={init:!1,recent:[],notebook:[{id:Date.now()+(10000*Math.random()>>0),title:'TooNote',notes:[{id:Date.now()+(10000*Math.random()>>0),title:'\u6B22\u8FCE\u4F7F\u7528TooNote'}]}]};return yield store.writeFile('/meta.json',JSON.stringify(a)),a})()}init(){var _this=this;return _asyncToGenerator(function*(){let a=yield _this.data;a.init=!0,yield store.writeFile('/meta.json',JSON.stringify(a))})()}addNote(a,b){var _this2=this;return _asyncToGenerator(function*(){let c=yield _this2.data;var d=c.notebook.filter(function(e){return e.id===a})[0];return b||(b={id:Date.now()+(10000*Math.random()>>0),title:'Unititled Note'}),d.notes.push(b),yield store.writeFile('/meta.json',JSON.stringify(c)),b})()}deleteNote(a){var _this3=this;return _asyncToGenerator(function*(){let b=yield _this3.data;b.notebook.forEach(function(c){c.notes.forEach(function(d,e){d.id===a&&c.notes.splice(e,1)})}),yield store.writeFile('/meta.json',JSON.stringify(b))})()}updateNote(a,b){var _this4=this;return _asyncToGenerator(function*(){let c=yield _this4.data;return c.notebook.forEach(function(d){d.notes.forEach(function(e){e.id===a&&(e.title=b)})}),yield store.writeFile('/meta.json',JSON.stringify(c)),c})()}findNoteById(a){var _this5=this;return _asyncToGenerator(function*(){let c,b=yield _this5.data;return b.notebook.forEach(function(d){d.notes.forEach(function(e){e.id===a&&(c=e)})}),c})()}searchNote(a){var _this6=this;return _asyncToGenerator(function*(){let b=yield _this6.data,c=[];return b.notebook.forEach(function(d){d.notes.forEach(function(e){-1<e.title.toLowerCase().indexOf(a)&&c.push(e)})}),c})()}findNotebookOfNote(a){var _this7=this;return _asyncToGenerator(function*(){let c,b=yield _this7.data;return b.notebook.forEach(function(d){d.notes.forEach(function(e){e.id===a&&(c=d)})}),c})()}exchange(a,b){var _this8=this;return _asyncToGenerator(function*(){let d,e,f,g,h,i,c=yield _this8.data;// 只能交换同一笔记本中的笔记
+return(c.notebook.forEach(function(j){j.notes.forEach(function(k,l){k.id===a&&(d=j,f=k,h=l),k.id===b&&(e=j,g=k,i=l)})}),d!==e)?c:(d.notes.splice(h,1,g),d.notes.splice(i,1,f),yield store.writeFile('/meta.json',JSON.stringify(c)),c);// 交换
+})()}};let meta=new Meta;/* harmony default export */ exports["a"] = meta;
 
 /***/ },
 /* 12 */
@@ -860,133 +461,10 @@ let meta = new Meta();
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_fs__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash_throttle__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash_throttle___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_lodash_throttle__);
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-
-
-
-
-
-
-
-
-let note = {};
-let store = new __WEBPACK_IMPORTED_MODULE_1__api_store_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__util__["a" /* default */].platform);
-
-let gitPath = __WEBPACK_IMPORTED_MODULE_4_path___default.a.join(__webpack_require__(0).remote.app.getPath('userData'), 'git');
-let git = new __WEBPACK_IMPORTED_MODULE_2__git__["a" /* default */]({
-	path: gitPath
-});
-
-if (!git.hasInited()) git.init();
-
-let commitTitles = [];
-let doGitCommit = __WEBPACK_IMPORTED_MODULE_6_lodash_throttle___default()(() => {
-	git.commit(commitTitles.join(' '));
-	commitTitles = [];
-}, 5 * 60 * 1000);
-let gitCommit = msg => {
-	if (commitTitles.indexOf(msg) === -1) {
-		commitTitles.push(msg);
-	}
-	doGitCommit();
-};
-
-// app退出前提交git
+function _asyncToGenerator(fn){return function(){var gen=fn.apply(this,arguments);return new Promise(function(resolve,reject){function step(key,arg){try{var info=gen[key](arg),value=info.value}catch(error){return void reject(error)}return info.done?void resolve(value):Promise.resolve(value).then(function(value){step('next',value)},function(err){step('throw',err)})}return step('next')})}}let note={},store=new __WEBPACK_IMPORTED_MODULE_1__api_store_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__util__["a" /* default */].platform),gitPath=__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(__webpack_require__(0).remote.app.getPath('userData'),'git'),git=new __WEBPACK_IMPORTED_MODULE_2__git__["a" /* default */]({path:gitPath});git.hasInited()||git.init();let commitTitles=[],doGitCommit=__WEBPACK_IMPORTED_MODULE_6_lodash_throttle___default()(()=>{git.commit(commitTitles.join(' ')),commitTitles=[]},300000),gitCommit=a=>{-1===commitTitles.indexOf(a)&&commitTitles.push(a),doGitCommit()};// app退出前提交git
 // 无效，待查
 // let app = require('electron').remote.app;
-window.addEventListener('beforeunload', e => {
-	// console.log('ready to quit');
-	// e.preventDefault();
-	git.commit(commitTitles.join(' '));
-	// app.exit();
-});
-
-note.getTitleFromContent = function (content) {
-	let firstLine = content.split('\n', 2)[0];
-	if (!firstLine) return '';
-	return firstLine.replace(/#/g, '').trim();
-};
-
-note.getTitleWithoutCategory = function (title) {
-	let titlePart = title.split('\\', 2);
-	if (titlePart.length === 1) {
-		return title;
-	} else {
-		return title.replace(titlePart[0] + '\\', '');
-	}
-};
-
-note.getCategoryFromTitle = function (title) {
-	let titlePart = title.split('\\', 2);
-	if (titlePart.length === 1) {
-		return '未分类';
-	} else {
-		return titlePart[0];
-	}
-};
-
-note.getNote = (() => {
-	var _ref = _asyncToGenerator(function* (id) {
-		return yield store.readFile(`/note-${ id }.md`);
-	});
-
-	return function (_x) {
-		return _ref.apply(this, arguments);
-	};
-})();
-
-note.addNote = (() => {
-	var _ref2 = _asyncToGenerator(function* (note) {
-		if (!note.content) {
-			note.content = '# Untitled Note';
-		}
-		return yield this.saveNoteContent(note);
-	});
-
-	return function (_x2) {
-		return _ref2.apply(this, arguments);
-	};
-})();
-
-note.deleteNote = (() => {
-	var _ref3 = _asyncToGenerator(function* (id) {
-		__WEBPACK_IMPORTED_MODULE_5_fs___default.a.unlinkSync(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(gitPath, `note-${ id }.md`));
-		gitCommit(`删除${ id }`);
-		return yield store.deleteFile(`./note-${ id }.md`);
-	});
-
-	return function (_x3) {
-		return _ref3.apply(this, arguments);
-	};
-})();
-
-note.saveNoteContent = (() => {
-	var _ref4 = _asyncToGenerator(function* (note, shouldThrottle) {
-		__WEBPACK_IMPORTED_MODULE_5_fs___default.a.writeFileSync(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(gitPath, `note-${ note.id }.md`), note.content, 'utf8');
-		gitCommit(note.title);
-		return yield store.writeFile(`/note-${ note.id }.md`, note.content);
-	});
-
-	return function (_x4, _x5) {
-		return _ref4.apply(this, arguments);
-	};
-})();
-
-note.init = (() => {
-	var _ref5 = _asyncToGenerator(function* (id) {
-		var content = __WEBPACK_IMPORTED_MODULE_3__io__["a" /* default */].getFileText('./docs/welcome.md');
-		__WEBPACK_IMPORTED_MODULE_5_fs___default.a.writeFileSync(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(gitPath, `note-${ id }.md`), content, 'utf8');
-		gitCommit('INIT');
-		return yield store.writeFile(`./note-${ id }.md`, content);
-	});
-
-	return function (_x6) {
-		return _ref5.apply(this, arguments);
-	};
-})();
-
-/* harmony default export */ exports["a"] = note;
+window.addEventListener('beforeunload',a=>{git.commit(commitTitles.join(' '))}),note.getTitleFromContent=function(a){let b=a.split('\n',2)[0];return b?b.replace(/#/g,'').trim():''},note.getTitleWithoutCategory=function(a){let b=a.split('\\',2);return 1===b.length?a:a.replace(b[0]+'\\','')},note.getCategoryFromTitle=function(a){let b=a.split('\\',2);return 1===b.length?'\u672A\u5206\u7C7B':b[0]},note.getNote=(()=>{var _ref=_asyncToGenerator(function*(a){return yield store.readFile(`/note-${a}.md`)});return function(_x){return _ref.apply(this,arguments)}})(),note.addNote=(()=>{var _ref2=_asyncToGenerator(function*(a){return a.content||(a.content='# Untitled Note'),yield this.saveNoteContent(a)});return function(_x2){return _ref2.apply(this,arguments)}})(),note.deleteNote=(()=>{var _ref3=_asyncToGenerator(function*(a){return __WEBPACK_IMPORTED_MODULE_5_fs___default.a.unlinkSync(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(gitPath,`note-${a}.md`)),gitCommit(`删除${a}`),yield store.deleteFile(`./note-${a}.md`)});return function(_x3){return _ref3.apply(this,arguments)}})(),note.saveNoteContent=(()=>{var _ref4=_asyncToGenerator(function*(a,b){return __WEBPACK_IMPORTED_MODULE_5_fs___default.a.writeFileSync(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(gitPath,`note-${a.id}.md`),a.content,'utf8'),gitCommit(a.title),yield store.writeFile(`/note-${a.id}.md`,a.content)});return function(_x4,_x5){return _ref4.apply(this,arguments)}})(),note.init=(()=>{var _ref5=_asyncToGenerator(function*(a){var b=__WEBPACK_IMPORTED_MODULE_3__io__["a" /* default */].getFileText('./docs/welcome.md');return __WEBPACK_IMPORTED_MODULE_5_fs___default.a.writeFileSync(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(gitPath,`note-${a}.md`),b,'utf8'),gitCommit('INIT'),yield store.writeFile(`./note-${a}.md`,b)});return function(_x6){return _ref5.apply(this,arguments)}})();/* harmony default export */ exports["a"] = note;
 
 /***/ },
 /* 13 */
@@ -994,15 +472,7 @@ note.init = (() => {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__web__ = __webpack_require__(30);
-
-
-class Store {
-	constructor(platform) {
-		return new __WEBPACK_IMPORTED_MODULE_0__web__["a" /* default */]();
-	}
-}
-
-/* harmony default export */ exports["a"] = Store;
+class Store{constructor(a){return new __WEBPACK_IMPORTED_MODULE_0__web__["a" /* default */]}}/* harmony default export */ exports["a"] = Store;
 
 /***/ },
 /* 14 */
@@ -1013,67 +483,7 @@ class Store {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_path__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_fs__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_fs__);
-
-
-
-class Git {
-
-	constructor(options) {
-		this._git = __WEBPACK_IMPORTED_MODULE_0_path___default.a.join(__webpack_require__(0).remote.app.getAppPath(), 'lib/git');
-		this._root = options.path;
-		if (!__WEBPACK_IMPORTED_MODULE_1_fs___default.a.existsSync(this._root)) {
-			__WEBPACK_IMPORTED_MODULE_1_fs___default.a.mkdirSync(this._root);
-		}
-	}
-	runCommand(command) {
-		let execSync = __webpack_require__(18).execSync;
-		try {
-			console.log('[Git runCommand] ' + command);
-			return execSync(`${ this._git } ${ command }`, {
-				cwd: this._root
-			}).toString();
-		} catch (e) {
-			console.log('[Git runCommand Error]', e);
-			return false;
-		}
-	}
-	hasInited() {
-		return __WEBPACK_IMPORTED_MODULE_1_fs___default.a.existsSync(__WEBPACK_IMPORTED_MODULE_0_path___default.a.join(this._root, '.git'));
-	}
-	init() {
-		let ret = this.runCommand('init');
-		ret += ';' + this.runCommand('config user.name "TooNote"');
-		ret += ';' + this.runCommand('config user.email "toonote@local.git"');
-		return ret;
-	}
-	status() {
-		return this.runCommand('status');
-	}
-	checkout(commitOrPath) {
-		return this.runCommand(`checkout ${ commitOrPath }`);
-	}
-	log(path) {
-		let log = this.runCommand(`log --pretty=format:"%H %ct" ${ path }`);
-		if (!log) {
-			return [];
-		}
-		let logArray = log.trim().split('\n').map(line => {
-			let linePart = line.split(' ');
-			return {
-				id: linePart[0],
-				date: new Date(linePart[1] * 1000)
-			};
-		});
-		return logArray;
-	}
-	commit(msg) {
-		this.runCommand('add .');
-		return this.runCommand(`commit -am "${ msg }"`);
-	}
-	show(version, path) {
-		return this.runCommand(`show ${ version }:${ path }`);
-	}
-}
+class Git{constructor(a){this._git=__WEBPACK_IMPORTED_MODULE_0_path___default.a.join(__webpack_require__(0).remote.app.getAppPath(),'lib/git'),this._root=a.path,__WEBPACK_IMPORTED_MODULE_1_fs___default.a.existsSync(this._root)||__WEBPACK_IMPORTED_MODULE_1_fs___default.a.mkdirSync(this._root)}runCommand(a){let b=__webpack_require__(18).execSync;try{return console.log('[Git runCommand] '+a),b(`${this._git} ${a}`,{cwd:this._root}).toString()}catch(c){return console.log('[Git runCommand Error]',c),!1}}hasInited(){return __WEBPACK_IMPORTED_MODULE_1_fs___default.a.existsSync(__WEBPACK_IMPORTED_MODULE_0_path___default.a.join(this._root,'.git'))}init(){let a=this.runCommand('init');return a+=';'+this.runCommand('config user.name "TooNote"'),a+=';'+this.runCommand('config user.email "toonote@local.git"'),a}status(){return this.runCommand('status')}checkout(a){return this.runCommand(`checkout ${a}`)}log(a){let b=this.runCommand(`log --pretty=format:"%H %ct" ${a}`);if(!b)return[];let c=b.trim().split('\n').map(d=>{let f=d.split(' ');return{id:f[0],date:new Date(1000*f[1])}});return c}commit(a){return this.runCommand('add .'),this.runCommand(`commit -am "${a}"`)}show(a,b){return this.runCommand(`show ${a}:${b}`)}}
 /* harmony export (immutable) */ exports["a"] = Git;
 
 
@@ -1086,94 +496,12 @@ class Git {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_remarkable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_remarkable__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_highlight_js__ = __webpack_require__(65);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_highlight_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_highlight_js__);
-
-
-
-let renderer = new __WEBPACK_IMPORTED_MODULE_0_remarkable___default.a({
-	highlight: function (str, lang) {
-		if (lang && __WEBPACK_IMPORTED_MODULE_1_highlight_js___default.a.getLanguage(lang)) {
-			try {
-				return __WEBPACK_IMPORTED_MODULE_1_highlight_js___default.a.highlight(lang, str).value;
-			} catch (err) {}
-		}
-
-		try {
-			return __WEBPACK_IMPORTED_MODULE_1_highlight_js___default.a.highlightAuto(str).value;
-		} catch (err) {}
-
-		return ''; // use external default escaping
-	}
-});
-
-// 解析todo
-let todoRegExp = /^\[([ x])\] ?([\s\S]*)/i;
-
-renderer.use(function (md) {
-	md.core.ruler.after('block', 'todo', function (state) {
-		var tokens = state.tokens;
-		var len = tokens.length,
-		    i = -1;
-		while (++i < len) {
-			var token = tokens[i];
-			// console.log(token);
-			if (token.type === 'inline' && token.content) {
-				token.content = token.content.replace(todoRegExp, (str, char, text) => {
-					// console.log(str, char, text);
-					let isDone = char.toLowerCase() === 'x';
-					// return `<input type="checkbox" ${isDone?"checked":""} />` + text;
-					return `${ isDone ? '✓' : '☐' } ` + text;
-				});
-			}
-		}
-	}, { alt: [] });
-});
-
-let index = 0;
-
-let customerRulesMap = {
-	paragraph: 'p',
-	table: 'table'
-};
-
-for (let token in customerRulesMap) {
-	console.log('[preview]', token);
-	let tag = customerRulesMap[token];
-	renderer.renderer.rules[`${ token }_open`] = function (tokens, idx) {
-		var line;
-		if (tag === 'tr') {
-			// console.log(tokens[idx]);
-		}
-		if (tokens[idx].lines /* && tokens[idx].level === 0*/) {
-				line = tokens[idx].lines[0];
-				return `<${ tag } class="line" data-line="${ line }">`;
-			}
-		return `<${ tag }>`;
-	};
-}
-
-renderer.renderer.rules.list_item_open = function (tokens, idx) {
-	for (let i = idx + 1; i < idx + 3; i++) {
-		if (/[✓☐]/.test(tokens[i].content)) {
-			return `<li class="todo${ /^✓/i.test(tokens[i].content) ? ' done' : ' doing' }">`;
-		}
-	}
-	return '<li>';
-};
-
-renderer.renderer.rules.heading_open = function (tokens, idx) {
-	var line;
-	if (tokens[idx].lines && tokens[idx].level === 0) {
-		line = tokens[idx].lines[0];
-		return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor' + index++ + '">';
-	}
-	return '<h' + tokens[idx].hLevel + '>';
-};
-
-renderer.renderer.rules.heading_close = function (tokens, idx) {
-	return '</a></h' + tokens[idx].hLevel + '>';
-};
-
-/* harmony default export */ exports["a"] = renderer;
+let renderer=new __WEBPACK_IMPORTED_MODULE_0_remarkable___default.a({highlight:function(a,b){if(b&&__WEBPACK_IMPORTED_MODULE_1_highlight_js___default.a.getLanguage(b))try{return __WEBPACK_IMPORTED_MODULE_1_highlight_js___default.a.highlight(b,a).value}catch(c){}try{return __WEBPACK_IMPORTED_MODULE_1_highlight_js___default.a.highlightAuto(a).value}catch(c){}return'';// use external default escaping
+}}),todoRegExp=/^\[([ x])\] ?([\s\S]*)/i;// 解析todo
+renderer.use(function(a){a.core.ruler.after('block','todo',function(b){for(var c=b.tokens,d=c.length,e=-1;++e<d;){var f=c[e];// console.log(token);
+'inline'===f.type&&f.content&&(f.content=f.content.replace(todoRegExp,(g,h,j)=>{// console.log(str, char, text);
+let k='x'===h.toLowerCase();// return `<input type="checkbox" ${isDone?"checked":""} />` + text;
+return`${k?'\u2713':'\u2610'} `+j}))}},{alt:[]})});let index=0,customerRulesMap={paragraph:'p',table:'table'};for(let a in customerRulesMap){console.log('[preview]',a);let b=customerRulesMap[a];renderer.renderer.rules[`${a}_open`]=function(c,d){var e;return'tr'===b,c[d].lines/* && tokens[idx].level === 0*/?(e=c[d].lines[0],`<${b} class="line" data-line="${e}">`):`<${b}>`}}renderer.renderer.rules.list_item_open=function(a,b){for(let c=b+1;c<b+3;c++)if(/[✓☐]/.test(a[c].content))return`<li class="todo${/^✓/i.test(a[c].content)?' done':' doing'}">`;return'<li>'},renderer.renderer.rules.heading_open=function(a,b){var c;return a[b].lines&&0===a[b].level?(c=a[b].lines[0],'<h'+a[b].hLevel+' class="line" data-line="'+c+'"><a name="anchor'+index++ +'">'):'<h'+a[b].hLevel+'>'},renderer.renderer.rules.heading_close=function(a,b){return'</a></h'+a[b].hLevel+'>'};/* harmony default export */ exports["a"] = renderer;
 
 /***/ },
 /* 16 */
@@ -1222,186 +550,11 @@ module.exports = require("vue/dist/vue.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_menu__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__modules_meta__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__modules_note__ = __webpack_require__(12);
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-
-
-
-
-// let store = require('./vuex/store');
-
+var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source)Object.prototype.hasOwnProperty.call(source,key)&&(target[key]=source[key])}return target};function _asyncToGenerator(fn){return function(){var gen=fn.apply(this,arguments);return new Promise(function(resolve,reject){function step(key,arg){try{var info=gen[key](arg),value=info.value}catch(error){return void reject(error)}return info.done?void resolve(value):Promise.resolve(value).then(function(value){step('next',value)},function(err){step('throw',err)})}return step('next')})}}// let store = require('./vuex/store');
 // Vue.config.debug = true;
-
-
-
-
-
-
 // import config from './modules/config';
-
-
-
-
 // window.eventHub = new Vue();
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex___default.a);
-let store = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__vuex_store__["a" /* default */])();
-let app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
-	el: '#wrapper',
-	store,
-	computed: _extends({}, __WEBPACK_IMPORTED_MODULE_1_vuex___default.a.mapGetters(['layout'])),
-	watch: {
-		layout() {
-			console.log('layout changed', this.layout);
-		}
-	},
-	methods: {
-		_getTitle(content) {
-			return content.split('\n', 2)[0].replace(/^[# \xa0]*/g, '');
-		},
-		newNote() {
-			store.dispatch('newNote');
-		},
-		switchCurrentNote(note) {
-			store.commit('switchCurrentNote', note);
-		},
-		openContextMenuNote() {
-			store.dispatch('openContextMenuNote');
-		},
-		deleteContextMenuNote() {
-			store.dispatch('deleteContextMenuNote');
-		},
-		historyContextMenuNote() {
-			store.dispatch('historyContextMenuNote');
-		},
-		switchCurrentNotebook(notebook) {
-			store.commit('switchCurrentNotebook', notebook);
-		},
-		updateMeta(metaData) {
-			store.commit('updateNotebooks', metaData.notebook);
-		},
-		importBackup() {
-			store.dispatch('importBackup');
-		},
-		export(format) {
-			store.dispatch('export', format);
-		},
-		switchLayout(component) {
-			store.commit('switchLayout', component);
-		},
-		versionOpen() {
-			store.dispatch('switchActiveVersion');
-		},
-		versionRestore() {
-			store.dispatch('restoreActiveVersion');
-		},
-		doEdit(action) {
-			store.commit('editAction', action);
-		}
-	},
-	data: {
-		withMenubar: false
-	},
-	components: {
-		menubar: __WEBPACK_IMPORTED_MODULE_6__component_menubar_vue___default.a,
-		sidebar: __WEBPACK_IMPORTED_MODULE_3__component_sidebar_vue___default.a,
-		editor: __WEBPACK_IMPORTED_MODULE_4__component_editor_vue___default.a,
-		preview: __WEBPACK_IMPORTED_MODULE_5__component_preview_vue___default.a,
-		versions: __WEBPACK_IMPORTED_MODULE_7__component_versions_vue___default.a
-	}
-});
-
-_asyncToGenerator(function* () {
-	try {
-		console.log(app.$store);
-		// eventHub.$emit('metaWillChange');
-		app.metaData = yield __WEBPACK_IMPORTED_MODULE_9__modules_meta__["a" /* default */].data;
-
-		app.updateMeta(app.metaData);
-		// eventHub.$emit('metaDidChange', app.metaData);
-
-		// 初始化欢迎笔记
-		if (!app.metaData.init) {
-			yield __WEBPACK_IMPORTED_MODULE_10__modules_note__["a" /* default */].init(app.metaData.notebook[0].notes[0].id);
-			yield __WEBPACK_IMPORTED_MODULE_9__modules_meta__["a" /* default */].init();
-		}
-
-		app.currentNotebook = app.metaData.notebook[0];
-		app.switchCurrentNotebook(app.currentNotebook);
-
-		var noteMeta = Object.assign({}, app.currentNotebook.notes[0]);
-		noteMeta.content = yield __WEBPACK_IMPORTED_MODULE_10__modules_note__["a" /* default */].getNote(noteMeta.id);
-		app.currentNote = noteMeta;
-
-		// vuex:new
-		app.switchCurrentNote(app.currentNote);
-	} catch (e) {
-		console.log(e);
-		throw e;
-	}
-
-	__WEBPACK_IMPORTED_MODULE_8__modules_menu__["a" /* default */].on('click', function (eventType, command) {
-		switch (command) {
-			case 'newNote':
-				app.newNote();
-				break;
-			case 'devReload':
-				location.reload(true);
-				break;
-			case 'noteOpen':
-				app.openContextMenuNote();
-				break;
-			case 'noteDelete':
-				if (confirm('确定要删除该笔记吗？删除后将无法找回该笔记内容')) {
-					app.deleteContextMenuNote();
-				}
-				break;
-			case 'noteHistory':
-				app.historyContextMenuNote();
-				break;
-			case 'importBackup':
-				app.importBackup();
-				break;
-			case 'exportMd':
-				app.export('md');
-				break;
-			case 'exportHtmlBody':
-				app.export('htmlBody');
-				break;
-			case 'exportHtmlBodyWithCss':
-				app.export('htmlBodyWithCss');
-				break;
-			case 'exportHtml':
-				app.export('html');
-				break;
-			case 'exportPdf':
-				app.export('pdf');
-				break;
-			case 'switchLayoutSidebar':
-				app.switchLayout('sidebar');
-				break;
-			case 'switchLayoutEditor':
-				app.switchLayout('editor');
-				break;
-			case 'switchLayoutPreview':
-				app.switchLayout('preview');
-				break;
-			case 'versionOpen':
-				app.versionOpen();
-				break;
-			case 'versionRestore':
-				app.versionRestore();
-				break;
-			case 'undo':
-				app.doEdit('undo');
-				break;
-			case 'redo':
-				app.doEdit('redo');
-				break;
-		}
-	});
-})();
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex___default.a);let store=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__vuex_store__["a" /* default */])(),app=new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({el:'#wrapper',store,computed:_extends({},__WEBPACK_IMPORTED_MODULE_1_vuex___default.a.mapGetters(['layout'])),watch:{layout(){console.log('layout changed',this.layout)}},methods:{_getTitle(a){return a.split('\n',2)[0].replace(/^[# \xa0]*/g,'')},newNote(){store.dispatch('newNote')},switchCurrentNote(a){store.commit('switchCurrentNote',a)},openContextMenuNote(){store.dispatch('openContextMenuNote')},deleteContextMenuNote(){store.dispatch('deleteContextMenuNote')},historyContextMenuNote(){store.dispatch('historyContextMenuNote')},switchCurrentNotebook(a){store.commit('switchCurrentNotebook',a)},updateMeta(a){store.commit('updateNotebooks',a.notebook)},importBackup(){store.dispatch('importBackup')},export(a){store.dispatch('export',a)},switchLayout(a){store.commit('switchLayout',a)},versionOpen(){store.dispatch('switchActiveVersion')},versionRestore(){store.dispatch('restoreActiveVersion')},doEdit(a){store.commit('editAction',a)}},data:{withMenubar:!1},components:{menubar:__WEBPACK_IMPORTED_MODULE_6__component_menubar_vue___default.a,sidebar:__WEBPACK_IMPORTED_MODULE_3__component_sidebar_vue___default.a,editor:__WEBPACK_IMPORTED_MODULE_4__component_editor_vue___default.a,preview:__WEBPACK_IMPORTED_MODULE_5__component_preview_vue___default.a,versions:__WEBPACK_IMPORTED_MODULE_7__component_versions_vue___default.a}});_asyncToGenerator(function*(){try{console.log(app.$store),app.metaData=yield __WEBPACK_IMPORTED_MODULE_9__modules_meta__["a" /* default */].data,app.updateMeta(app.metaData),app.metaData.init||(yield __WEBPACK_IMPORTED_MODULE_10__modules_note__["a" /* default */].init(app.metaData.notebook[0].notes[0].id),yield __WEBPACK_IMPORTED_MODULE_9__modules_meta__["a" /* default */].init()),app.currentNotebook=app.metaData.notebook[0],app.switchCurrentNotebook(app.currentNotebook);var a=Object.assign({},app.currentNotebook.notes[0]);a.content=yield __WEBPACK_IMPORTED_MODULE_10__modules_note__["a" /* default */].getNote(a.id),app.currentNote=a,app.switchCurrentNote(app.currentNote)}catch(b){throw console.log(b),b}__WEBPACK_IMPORTED_MODULE_8__modules_menu__["a" /* default */].on('click',function(b,c){'newNote'===c?app.newNote():'devReload'===c?location.reload(!0):'noteOpen'===c?app.openContextMenuNote():'noteDelete'===c?confirm('\u786E\u5B9A\u8981\u5220\u9664\u8BE5\u7B14\u8BB0\u5417\uFF1F\u5220\u9664\u540E\u5C06\u65E0\u6CD5\u627E\u56DE\u8BE5\u7B14\u8BB0\u5185\u5BB9')&&app.deleteContextMenuNote():'noteHistory'===c?app.historyContextMenuNote():'importBackup'===c?app.importBackup():'exportMd'===c?app.export('md'):'exportHtmlBody'===c?app.export('htmlBody'):'exportHtmlBodyWithCss'===c?app.export('htmlBodyWithCss'):'exportHtml'===c?app.export('html'):'exportPdf'===c?app.export('pdf'):'switchLayoutSidebar'===c?app.switchLayout('sidebar'):'switchLayoutEditor'===c?app.switchLayout('editor'):'switchLayoutPreview'===c?app.switchLayout('preview'):'versionOpen'===c?app.versionOpen():'versionRestore'===c?app.versionRestore():'undo'===c?app.doEdit('undo'):'redo'===c?app.doEdit('redo'):void 0})})();
 
 /***/ },
 /* 21 */
@@ -1420,8 +573,7 @@ _asyncToGenerator(function* () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_vuex___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_vuex__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_shortcut__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_io__ = __webpack_require__(10);
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
+var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source)Object.prototype.hasOwnProperty.call(source,key)&&(target[key]=source[key])}return target};//
 //
 //
 //
@@ -1447,154 +599,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
-//
-
-
-
-
-
-
-
-
-let _aceEditor;
-let _id, _content;
-/* harmony default export */ exports["default"] = {
-	computed: _extends({}, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_vuex__["mapGetters"])(['currentNote', 'layout', 'editAction'])),
-	methods: {
-		onDragOver() {
-			// console.log('dragover');
-		},
-		onDrop(e) {
-			let img = e.dataTransfer.files[0];
-			if (!img || !/^image/.test(img.type)) return;
-			let ext = __WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getExt(img.name);
-			let imagePath = __WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].saveImage(img.path, ext);
-			this.insertImg(imagePath);
-		},
-		onPaste(e) {
-			if (!e.clipboardData.items || !e.clipboardData.items.length) return;
-			let hasImage = false;
-			for (let i = e.clipboardData.items.length; i--;) {
-				let item = e.clipboardData.items[i];
-				if (/^image/.test(item.type)) {
-					hasImage = true;
-				}
-			}
-			if (!hasImage) return;
-
-			let imagePath = __WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].saveImageFromClipboard();
-
-			this.insertImg(imagePath);
-		},
-		insertImg(imagePath) {
-
-			if (imagePath) {
-				imagePath = encodeURI(imagePath);
-				_aceEditor.insert(`\n\n![${ name }](${ imagePath })\n\n`);
-			} else {
-				_aceEditor.insert(`拖拽插入图片出错！`);
-			}
-			this.onEditorInput();
-		},
-		onEditorInput() {
-			_content = _aceEditor.getValue();
-			this.$store.dispatch('changeCurrentNoteContent', _content);
-			// eventHub.$emit('currentNoteContentChange', content);
-		},
-		resize() {
-			_aceEditor.resize();
-		}
-	},
-	watch: {
-		currentNote(note) {
-			if (!note.id) return;
-			if (_id !== note.id) {
-				_content = '';
-				_id = note.id;
-			}
-		},
-		'currentNote.content': function (content) {
-			// console.log('watch currentNote.content change');
-			if (!content && content !== '') return;
-			if (_content !== content) {
-				_aceEditor.setValue(content, -1);
-				// 清除undo列表
-				setTimeout(() => {
-					_aceEditor.getSession().getUndoManager().reset();
-					// console.log(_aceEditor.getSession().getUndoManager().hasUndo());
-				}, 0);
-			}
-		},
-		'layout.preview': function () {
-			this.resize();
-		},
-		'layout.sidebar': function () {
-			this.resize();
-		},
-		'layout.editor': function () {
-			this.resize();
-		},
-		'editAction': function () {
-			if (!this.editAction) return;
-			let undo = _aceEditor.getSession().getUndoManager();
-			if (this.editAction === 'undo') {
-				if (undo.hasUndo()) {
-					undo.undo(true);
-				}
-			} else if (this.editAction === 'redo') {
-				if (undo.hasRedo()) {
-					undo.redo(true);
-				}
-			}
-		}
-	},
-	data() {
-		var data = {
-			// content:''
-		};
-		return data;
-	},
-	mounted() {
-		var aceEditor = __WEBPACK_IMPORTED_MODULE_1_brace___default.a.edit('ace_container');
-		var session = aceEditor.getSession();
-		_aceEditor = aceEditor;
-		aceEditor.setTheme('ace/theme/tomorrow');
-		session.setMode('ace/mode/markdown');
-		session.setUseWrapMode(true);
-		aceEditor.renderer.setHScrollBarAlwaysVisible(false);
-		aceEditor.renderer.setShowGutter(false);
-		aceEditor.renderer.setPadding(20);
-		aceEditor.setShowPrintMargin(false);
-		aceEditor.$blockScrolling = Infinity;
-		aceEditor.on('input', this.onEditorInput);
-
-		__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__modules_shortcut__["a" /* default */])(aceEditor);
-		/*for(let cmd in shortcut){
-  	aceEditor.commands.bindKey(cmd, shortcut[cmd]);
-  }*/
-
-		// 同步滚动
-		session.on('changeScrollTop', __WEBPACK_IMPORTED_MODULE_0_lodash_throttle___default()(scroll => {
-			let targetRow = aceEditor.getFirstVisibleRow();
-			this.$store.dispatch('syncScroll', targetRow);
-		}, 500));
-		// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);
-		// timing = setTimeout(function(){
-		// console.log(targetRow,scrollMap[targetRow]);
-		/*animatedScroll($preview, scrollMap[targetRow], 500);
-  waitStart = Date.now();
-  timing = 0;*/
-		// },100);
-		// console.log('scroll',scroll);
-
-		// 重新计算大小
-		setTimeout(() => {
-			this.resize();
-		}, 0);
-
-		window.addEventListener('resize', __WEBPACK_IMPORTED_MODULE_0_lodash_throttle___default()(this.resize, 50));
-	}
-};
+let _aceEditor,_id,_content;/* harmony default export */ exports["default"] = {computed:_extends({},__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_vuex__["mapGetters"])(['currentNote','layout','editAction'])),methods:{onDragOver(){// console.log('dragover');
+},onDrop(a){let b=a.dataTransfer.files[0];if(b&&/^image/.test(b.type)){let f=__WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getExt(b.name),g=__WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].saveImage(b.path,f);this.insertImg(g)}},onPaste(a){if(a.clipboardData.items&&a.clipboardData.items.length){let g=!1;for(let h=a.clipboardData.items.length;h--;){let j=a.clipboardData.items[h];/^image/.test(j.type)&&(g=!0)}if(g){let h=__WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].saveImageFromClipboard();this.insertImg(h)}}},insertImg(a){a?(a=encodeURI(a),_aceEditor.insert(`\n\n![${name}](${a})\n\n`)):_aceEditor.insert(`拖拽插入图片出错！`),this.onEditorInput()},onEditorInput(){_content=_aceEditor.getValue(),this.$store.dispatch('changeCurrentNoteContent',_content)},resize(){_aceEditor.resize()}},watch:{currentNote(a){a.id&&_id!==a.id&&(_content='',_id=a.id)},'currentNote.content':function(a){!a&&''!==a||_content===a||(_aceEditor.setValue(a,-1),setTimeout(()=>{_aceEditor.getSession().getUndoManager().reset()},0))},'layout.preview':function(){this.resize()},'layout.sidebar':function(){this.resize()},'layout.editor':function(){this.resize()},editAction:function(){if(this.editAction){let g=_aceEditor.getSession().getUndoManager();'undo'===this.editAction?g.hasUndo()&&g.undo(!0):'redo'===this.editAction&&g.hasRedo()&&g.redo(!0)}}},data(){return{// content:''
+}},mounted(){var a=__WEBPACK_IMPORTED_MODULE_1_brace___default.a.edit('ace_container'),b=a.getSession();_aceEditor=a,a.setTheme('ace/theme/tomorrow'),b.setMode('ace/mode/markdown'),b.setUseWrapMode(!0),a.renderer.setHScrollBarAlwaysVisible(!1),a.renderer.setShowGutter(!1),a.renderer.setPadding(20),a.setShowPrintMargin(!1),a.$blockScrolling=1/0,a.on('input',this.onEditorInput),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__modules_shortcut__["a" /* default */])(a),b.on('changeScrollTop',__WEBPACK_IMPORTED_MODULE_0_lodash_throttle___default()(c=>{let d=a.getFirstVisibleRow();this.$store.dispatch('syncScroll',d)},500)),setTimeout(()=>{this.resize()},0),window.addEventListener('resize',__WEBPACK_IMPORTED_MODULE_0_lodash_throttle___default()(this.resize,50))}};
 
 /***/ },
 /* 22 */
@@ -1669,99 +676,7 @@ let _id, _content;
 //
 //
 //
-
-
-
-let menu = new __WEBPACK_IMPORTED_MODULE_0__api_menu_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_1__modules_util__["a" /* default */].platform);
-/* harmony default export */ exports["default"] = {
-	methods: {
-		menuClick(title) {
-			this.menuList.forEach(function (menu) {
-				if (menu.title === title) {
-					menu.isActive = !menu.isActive;
-				} else {
-					menu.isActive = false;
-				}
-			});
-			// 触发vue更新
-			// this.menuList = this.menuList.concat([]);
-		},
-		subMenuClick(event) {
-			menu.onClick(event);
-		}
-	},
-	data() {
-		let data = {
-			isShow: menu.isVue,
-			menuList: [{
-				title: 'TooNote',
-				isActive: false,
-				subMenu: []
-			}, {
-				title: 'File',
-				isActive: false,
-				subMenu: [{
-					title: '新建笔记',
-					event: 'newNote',
-					hotKey: 'cmd+n'
-				}, {
-					title: '保存',
-					event: 'saveNote',
-					hotKey: 'cmd+s'
-				}, {
-					type: 'separator'
-				}, {
-					title: '导出MarkDown',
-					event: 'exportMd'
-				}, {
-					title: '导出HTML Body',
-					event: 'exportHtmlBody'
-				}, {
-					title: '导出HTML Body（带样式）',
-					event: 'exportHtmlBodyWithCss'
-				}, {
-					title: '导出完整HTML',
-					event: 'exportHtml'
-				}, {
-					title: '导出PDF',
-					event: 'exportPdf'
-				}, {
-					type: 'separator'
-				}, {
-					title: '导入备份',
-					event: 'importBackup'
-				}]
-			}, {
-				title: 'Edit',
-				isActive: false,
-				subMenu: []
-			}, {
-				title: 'View',
-				isActive: false,
-				subMenu: [{
-					title: '切换笔记列表',
-					event: 'switchLayoutSidebar',
-					hotKey: 'cmd+1'
-				}, {
-					title: '切换编辑区',
-					event: 'switchLayoutEditor',
-					hotKey: 'cmd+2'
-				}, {
-					title: '切换预览区',
-					event: 'switchLayoutPreview',
-					hotKey: 'cmd+3'
-				}]
-			}]
-		};
-		return data;
-	},
-	mounted() {
-		menu.buildMenu(this.menuList);
-		/*this.$nextTick(()=>{
-  	this.$dispatch('toggleMenubar', menu.isVue);
-  });*/
-	}
-};
+let menu=new __WEBPACK_IMPORTED_MODULE_0__api_menu_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_1__modules_util__["a" /* default */].platform);/* harmony default export */ exports["default"] = {methods:{menuClick(a){this.menuList.forEach(function(b){b.isActive=!(b.title!==a)&&!b.isActive})},subMenuClick(a){menu.onClick(a)}},data(){let a={isShow:menu.isVue,menuList:[{title:'TooNote',isActive:!1,subMenu:[]},{title:'File',isActive:!1,subMenu:[{title:'\u65B0\u5EFA\u7B14\u8BB0',event:'newNote',hotKey:'cmd+n'},{title:'\u4FDD\u5B58',event:'saveNote',hotKey:'cmd+s'},{type:'separator'},{title:'\u5BFC\u51FAMarkDown',event:'exportMd'},{title:'\u5BFC\u51FAHTML Body',event:'exportHtmlBody'},{title:'\u5BFC\u51FAHTML Body\uFF08\u5E26\u6837\u5F0F\uFF09',event:'exportHtmlBodyWithCss'},{title:'\u5BFC\u51FA\u5B8C\u6574HTML',event:'exportHtml'},{title:'\u5BFC\u51FAPDF',event:'exportPdf'},{type:'separator'},{title:'\u5BFC\u5165\u5907\u4EFD',event:'importBackup'}]},{title:'Edit',isActive:!1,subMenu:[]},{title:'View',isActive:!1,subMenu:[{title:'\u5207\u6362\u7B14\u8BB0\u5217\u8868',event:'switchLayoutSidebar',hotKey:'cmd+1'},{title:'\u5207\u6362\u7F16\u8F91\u533A',event:'switchLayoutEditor',hotKey:'cmd+2'},{title:'\u5207\u6362\u9884\u89C8\u533A',event:'switchLayoutPreview',hotKey:'cmd+3'}]}]};return a},mounted(){menu.buildMenu(this.menuList)}};
 
 /***/ },
 /* 23 */
@@ -1773,8 +688,7 @@ let menu = new __WEBPACK_IMPORTED_MODULE_0__api_menu_index__["a" /* default */](
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuex__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_renderer__ = __webpack_require__(15);
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
+var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source)Object.prototype.hasOwnProperty.call(source,key)&&(target[key]=source[key])}return target};//
 //
 //
 //
@@ -1794,83 +708,15 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
-//
-
 // import 'highlight.js/styles/github-gist.css';
-
-
-
-/* harmony default export */ exports["default"] = {
-	computed: _extends({
-		html() {
-			if (!this.currentNote || !this.currentNote.content) {
-				return '';
-			}
-			return __WEBPACK_IMPORTED_MODULE_2__modules_renderer__["a" /* default */].render(this.currentNote.content);
-		}
-	}, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_vuex__["mapGetters"])(['currentNote'])),
-	methods: {
-		handleContent(e) {
-			let $target = e.target;
-			// 链接
-			if ($target.tagName === 'A' && /^https?:\/\//.test($target.href)) {
-				let shell = __webpack_require__(0).shell;
-				shell.openExternal($target.href);
-				e.preventDefault();
-			}
-		}
-	},
-	watch: {
-		html() {
-			this.$nextTick(() => {
-				let scrollMap = [];
-
-				let $preview = this.$el;
-				let $previewAnchors = $preview.querySelectorAll('.line');
-				Array.prototype.forEach.call($previewAnchors, function ($previewAnchor) {
-					let line = $previewAnchor.dataset.line;
-					let top = $previewAnchor.offsetTop;
-					/*if(line == 8){
-     	console.log(line, top, $previewAnchor);
-     }*/
-					if (top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')) {
-						scrollMap[line] = top;
-					}
-				});
-				scrollMap[0] = 0;
-
-				let contentLines = this.currentNote.content.split('\n').length;
-				if (!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;
-
-				for (var i = 1; i < contentLines - 1; i++) {
-					if (!scrollMap[i]) {
-						var j = i + 1;
-						while (!scrollMap[j] && j < contentLines - 1) {
-							j++;
-						}
-						scrollMap[i] = scrollMap[i - 1] + (scrollMap[j] - scrollMap[i - 1]) / (j - i + 1);
-					}
-				}
-				// console.log(scrollMap[8]);
-
-				this.$store.commit('changeScrollMap', scrollMap);
-				// console.log(scrollMap);
-				// console.log('html changed');
-			});
-		}
-	},
-	data() {
-		var data = {
-			// content:'',
-			// html:''
-		};
-		return data;
-	},
-	mounted() {
-		// console.log('[preview] mounted', this, this.$store);
-
-	}
-};
+/* harmony default export */ exports["default"] = {computed:_extends({html(){return this.currentNote&&this.currentNote.content?__WEBPACK_IMPORTED_MODULE_2__modules_renderer__["a" /* default */].render(this.currentNote.content):''}},__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_vuex__["mapGetters"])(['currentNote'])),methods:{handleContent(a){let b=a.target;// 链接
+if('A'===b.tagName&&/^https?:\/\//.test(b.href)){let c=__webpack_require__(0).shell;c.openExternal(b.href),a.preventDefault()}}},watch:{html(){this.$nextTick(()=>{let a=[],b=this.$el,c=b.querySelectorAll('.line');Array.prototype.forEach.call(c,function(h){let k=h.dataset.line,l=h.offsetTop;/*if(line == 8){
+						console.log(line, top, $previewAnchor);
+					}*/l&&(l>a[k]||'undefined'==typeof a[k])&&(a[k]=l)}),a[0]=0;let d=this.currentNote.content.split('\n').length;a[d-1]||(a[d-1]=b.scrollHeight);for(var f=1;f<d-1;f++)if(!a[f]){for(var g=f+1;!a[g]&&g<d-1;)g++;a[f]=a[f-1]+(a[g]-a[f-1])/(g-f+1)}// console.log(scrollMap[8]);
+this.$store.commit('changeScrollMap',a)})}},data(){return{// content:'',
+// html:''
+}},mounted(){// console.log('[preview] mounted', this, this.$store);
+}};
 
 /***/ },
 /* 24 */
@@ -1883,8 +729,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuex__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__api_menu_index__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_util__ = __webpack_require__(1);
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
+var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source)Object.prototype.hasOwnProperty.call(source,key)&&(target[key]=source[key])}return target};//
 //
 //
 //
@@ -2005,117 +850,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
-//
-
-
-
-
-
-
-let menu = new __WEBPACK_IMPORTED_MODULE_2__api_menu_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__modules_util__["a" /* default */].platform);
-
-let _doExchange;
-
-/* harmony default export */ exports["default"] = {
-	computed: _extends({}, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_vuex__["mapGetters"])(['notebooks', 'currentNote', 'contextMenuNoteId', 'notebooksWithCategories', 'isSearching', 'searchResults', 'searchResultsWithCategories'])),
-	watch: {
-		keyword() {
-			if (this.keyword) {
-				this.$store.dispatch('search', this.keyword);
-			} else {
-				this.$store.commit('switchSearching', false);
-			}
-		}
-	},
-	methods: {
-		isActive(noteId) {
-			let ret = false;
-			// 当前笔记
-			if (this.currentNote && noteId === this.currentNote.id) {
-				ret = true;
-			}
-			// 当前右键笔记
-			if (this.contextMenuNoteId === noteId) {
-				ret = true;
-			}
-			return ret;
-		},
-		switchCurrentNote(noteId) {
-			this.$store.dispatch('switchCurrentNoteById', noteId);
-			// eventHub.$emit('currentNoteChange', noteId);
-		},
-		showContextMenu(noteId) {
-			// console.log('contextmenu');
-			this.$store.commit('switchContextMenuNote', noteId);
-			// this.$nextTick(() => {
-			setTimeout(() => {
-				menu.showContextMenu([{
-					title: '打开',
-					event: 'noteOpen'
-				}, {
-					title: '删除',
-					event: 'noteDelete'
-				}, {
-					title: '新建',
-					event: 'newNote'
-				}, {
-					type: 'separator'
-				}, {
-					title: '历史版本',
-					event: 'noteHistory'
-				}]);
-				setTimeout(() => {
-					this.$store.commit('switchContextMenuNote', 0);
-				}, 30);
-			}, 30);
-		},
-		dragStart(e, noteId) {
-			this.currentMovingNoteId = noteId;
-			// e.dataTransfer.dropEffect = 'move';
-			// e.dataTransfer.effectAllowed = 'move';
-			// console.log('start', noteId);
-		},
-		dragOver(e, noteId) {
-			if (this.isAnimating) return;
-			if (this.currentMovingNoteId === noteId) return;
-
-			// console.log('over', noteId);
-
-			this.currentTargetingNoteId = noteId;
-
-			if (!_doExchange) {
-				_doExchange = __WEBPACK_IMPORTED_MODULE_0_lodash_throttle___default()(() => {
-					this.isAnimating = true;
-					this.$store.dispatch('exchangeNote', {
-						id1: this.currentMovingNoteId,
-						id2: this.currentTargetingNoteId
-					});
-					setTimeout(() => {
-						this.isAnimating = false;
-					}, 500);
-				}, 500);
-			}
-			_doExchange();
-		},
-		drop(e) {
-			this.currentMovingNoteId = 0;
-			// console.log('drop', e);
-		}
-		/*hideContextMenu(){
-  	// 会自动关闭，这里主要是将当前右键笔记置空
-  	this.$store.commit('switchContextMenuNote', 0);
-  }*/
-	},
-	data() {
-		var data = {
-			currentMovingNoteId: 0,
-			currentTargetingNoteId: 0,
-			isAnimating: false,
-			keyword: ''
-		};
-		return data;
-	}
-};
+let menu=new __WEBPACK_IMPORTED_MODULE_2__api_menu_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__modules_util__["a" /* default */].platform),_doExchange;/* harmony default export */ exports["default"] = {computed:_extends({},__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_vuex__["mapGetters"])(['notebooks','currentNote','contextMenuNoteId','notebooksWithCategories','isSearching','searchResults','searchResultsWithCategories'])),watch:{keyword(){this.keyword?this.$store.dispatch('search',this.keyword):this.$store.commit('switchSearching',!1)}},methods:{isActive(a){let b=!1;// 当前笔记
+return this.currentNote&&a===this.currentNote.id&&(b=!0),this.contextMenuNoteId===a&&(b=!0),b},switchCurrentNote(a){this.$store.dispatch('switchCurrentNoteById',a)},showContextMenu(a){this.$store.commit('switchContextMenuNote',a),setTimeout(()=>{menu.showContextMenu([{title:'\u6253\u5F00',event:'noteOpen'},{title:'\u5220\u9664',event:'noteDelete'},{title:'\u65B0\u5EFA',event:'newNote'},{type:'separator'},{title:'\u5386\u53F2\u7248\u672C',event:'noteHistory'}]),setTimeout(()=>{this.$store.commit('switchContextMenuNote',0)},30)},30)},dragStart(a,b){this.currentMovingNoteId=b},dragOver(a,b){this.isAnimating||this.currentMovingNoteId===b||(this.currentTargetingNoteId=b,!_doExchange&&(_doExchange=__WEBPACK_IMPORTED_MODULE_0_lodash_throttle___default()(()=>{this.isAnimating=!0,this.$store.dispatch('exchangeNote',{id1:this.currentMovingNoteId,id2:this.currentTargetingNoteId}),setTimeout(()=>{this.isAnimating=!1},500)},500)),_doExchange())},drop(a){this.currentMovingNoteId=0}/*hideContextMenu(){
+			// 会自动关闭，这里主要是将当前右键笔记置空
+			this.$store.commit('switchContextMenuNote', 0);
+		}*/},data(){return{currentMovingNoteId:0,currentTargetingNoteId:0,isAnimating:!1,keyword:''}}};
 
 /***/ },
 /* 25 */
@@ -2128,8 +867,7 @@ let _doExchange;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuex__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__api_menu_index__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_util__ = __webpack_require__(1);
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
+var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source)Object.prototype.hasOwnProperty.call(source,key)&&(target[key]=source[key])}return target};//
 //
 //
 //
@@ -2245,74 +983,17 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
-//
-
-
-
-
-
-
-let menu = new __WEBPACK_IMPORTED_MODULE_2__api_menu_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__modules_util__["a" /* default */].platform);
-
-let _doExchange;
-
-/* harmony default export */ exports["default"] = {
-	computed: _extends({}, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_vuex__["mapGetters"])(['versions', 'contextMenuVersionId'])),
-	watch: {
-		// 出现历史版本对话框的时候聚焦
-		// 以便响应ESC按键
-		'versions.currentNote': function () {
-			// console.log('versions.currentNote changed', this.versions.currentNote.id, this.$el);
-			if (this.versions.currentNote) {
-				this.$nextTick(() => {
-					this.$el.focus();
-				});
-			}
-		}
-	},
-	methods: {
-		formatDate(date) {
-			let ts = date.getTime() - date.getTimezoneOffset() * 60 * 1000;
-			let s = new Date(ts).toISOString();
-
-			// s.replace(/T.+$/,'');	// 2015-11-24
-			// s.replace(/\-\d+T.+$/,''); // 2015-11
-			// s.replace(/(^\d+\-|T.+$)/g,''); // 11-24
-			// s.replace(/(^[0-9\-]+T|\.\d+Z$)/g,''); // 14:16:18
-			// s.replace(/(^[0-9\-]+T|:\d+\.\d+Z$)/g,''); // 14:16
-			// s.replace(/T/g,' ').replace(/\.\d+Z$/,''); // 2015-11-24 14:16:18
-			// s.replace(/T/g,' ').replace(/:\d+\.\d+Z$/,''); // 2015-11-24 14:16
-			return s.replace(/T/g, ' ').replace(/^\d+\-/, '').replace(/:\d+\.\d+Z$/, ''); // 11-24 14:16
-		},
-		switchCurrentVersion(versionId) {
-			this.$store.dispatch('switchActiveVersion', versionId);
-		},
-		hideVersions() {
-			this.$store.commit('hideVersions');
-		},
-		showContextMenu(versionId) {
-			// console.log('contextmenu');
-			this.$store.commit('switchContextMenuVersion', versionId);
-			// this.$nextTick(() => {
-			setTimeout(() => {
-				menu.showContextMenu([{
-					title: '打开',
-					event: 'versionOpen'
-				}, {
-					title: '恢复该版本',
-					event: 'versionRestore'
-				}]);
-				setTimeout(() => {
-					this.$store.commit('switchContextMenuVersion', 0);
-				}, 30);
-			}, 30);
-		}
-	},
-	data() {
-		var data = {};
-		return data;
-	}
-};
+let menu=new __WEBPACK_IMPORTED_MODULE_2__api_menu_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__modules_util__["a" /* default */].platform),_doExchange;/* harmony default export */ exports["default"] = {computed:_extends({},__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_vuex__["mapGetters"])(['versions','contextMenuVersionId'])),watch:{// 出现历史版本对话框的时候聚焦
+// 以便响应ESC按键
+'versions.currentNote':function(){this.versions.currentNote&&this.$nextTick(()=>{this.$el.focus()})}},methods:{formatDate(a){let b=a.getTime()-1000*(60*a.getTimezoneOffset()),c=new Date(b).toISOString();// s.replace(/T.+$/,'');	// 2015-11-24
+// s.replace(/\-\d+T.+$/,''); // 2015-11
+// s.replace(/(^\d+\-|T.+$)/g,''); // 11-24
+// s.replace(/(^[0-9\-]+T|\.\d+Z$)/g,''); // 14:16:18
+// s.replace(/(^[0-9\-]+T|:\d+\.\d+Z$)/g,''); // 14:16
+// s.replace(/T/g,' ').replace(/\.\d+Z$/,''); // 2015-11-24 14:16:18
+// s.replace(/T/g,' ').replace(/:\d+\.\d+Z$/,''); // 2015-11-24 14:16
+return c.replace(/T/g,' ').replace(/^\d+\-/,'').replace(/:\d+\.\d+Z$/,'');// 11-24 14:16
+},switchCurrentVersion(a){this.$store.dispatch('switchActiveVersion',a)},hideVersions(){this.$store.commit('hideVersions')},showContextMenu(a){this.$store.commit('switchContextMenuVersion',a),setTimeout(()=>{menu.showContextMenu([{title:'\u6253\u5F00',event:'versionOpen'},{title:'\u6062\u590D\u8BE5\u7248\u672C',event:'versionRestore'}]),setTimeout(()=>{this.$store.commit('switchContextMenuVersion',0)},30)},30)}},data(){return{}}};
 
 /***/ },
 /* 26 */
@@ -2322,112 +1003,9 @@ let _doExchange;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__base__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_electron__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_electron___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_electron__);
-
-
-
-class ElectronMenu extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */] {
-	constructor() {
-		// console.log('electron menu init');
-		super();
-		if (ElectronMenu._instance) {
-			// console.log('cache');
-			return ElectronMenu._instance;
-		}
-		// console.log('no cache');
-		ElectronMenu._instance = this;
-	}
-	_getMenu(menuList) {
-		let buildMenu = menuItem => {
-			let subMenu;
-
-			if (menuItem.subMenu) {
-				subMenu = menuItem.subMenu.map(menuItem => {
-					return buildMenu(menuItem);
-				});
-			}
-			if (menuItem.title === 'TooNote') {
-				subMenu.unshift({
-					label: '关于TooNote',
-					role: 'about'
-				});
-				subMenu = subMenu.concat([{
-					label: 'Reload',
-					accelerator: 'cmd+r',
-					click: (item, focusWindow) => {
-						this.trigger('click', 'devReload');
-					}
-				}, {
-					label: '退出',
-					accelerator: 'cmd+q',
-					role: 'quit'
-				}]);
-			} else if (menuItem.title === 'Edit') {
-				subMenu = [{
-					label: '撤销',
-					accelerator: 'cmd+z',
-					click: (item, focusWindow) => {
-						this.trigger('click', 'undo');
-					}
-				}, {
-					label: '重做',
-					accelerator: 'cmd+y',
-					click: (item, focusWindow) => {
-						this.trigger('click', 'redo');
-					}
-				}, {
-					type: 'separator'
-				}, {
-					label: '剪切',
-					role: 'cut'
-				}, {
-					label: '复制',
-					role: 'copy'
-				}, {
-					label: '粘贴',
-					role: 'paste'
-				}, {
-					label: '删除',
-					role: 'delete'
-				}, {
-					label: '全选',
-					role: 'selectall'
-				}].concat(subMenu);
-			}
-			let thisMenu = {
-				type: menuItem.type,
-				label: menuItem.title,
-				accelerator: menuItem.hotKey,
-				click: menuItem.event ? (event => {
-					// console.log('[menu electron] bind click', event);
-					return (item, focusWindow) => {
-						// console.log('[menu electron] click', event);
-						this.trigger('click', event);
-					};
-				})(menuItem.event) : undefined,
-				submenu: subMenu
-			};
-			return thisMenu;
-		};
-		let template = menuList.map(menuItem => {
-			return buildMenu(menuItem);
-		});
-		let menu = __WEBPACK_IMPORTED_MODULE_1_electron__["remote"].Menu.buildFromTemplate(template);
-		return menu;
-	}
-	buildMenu(menuList) {
-		let menu = this._getMenu(menuList);
-		__WEBPACK_IMPORTED_MODULE_1_electron__["remote"].Menu.setApplicationMenu(menu);
-	}
-	showContextMenu(menuList) {
-		let contextMenu = this._getMenu(menuList);
-		contextMenu.popup(__WEBPACK_IMPORTED_MODULE_1_electron__["remote"].getCurrentWindow());
-	}
-	get isVue() {
-		return true;
-	}
-}
-
-/* harmony default export */ exports["a"] = ElectronMenu;
+class ElectronMenu extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */]{constructor(){return super(),ElectronMenu._instance?ElectronMenu._instance:void(ElectronMenu._instance=this);// console.log('no cache');
+}_getMenu(a){let b=e=>{let f;e.subMenu&&(f=e.subMenu.map(h=>{return b(h)})),'TooNote'===e.title?(f.unshift({label:'\u5173\u4E8ETooNote',role:'about'}),f=f.concat([{label:'Reload',accelerator:'cmd+r',click:(h,i)=>{this.trigger('click','devReload')}},{label:'\u9000\u51FA',accelerator:'cmd+q',role:'quit'}])):'Edit'===e.title&&(f=[{label:'\u64A4\u9500',accelerator:'cmd+z',click:(h,i)=>{this.trigger('click','undo')}},{label:'\u91CD\u505A',accelerator:'cmd+y',click:(h,i)=>{this.trigger('click','redo')}},{type:'separator'},{label:'\u526A\u5207',role:'cut'},{label:'\u590D\u5236',role:'copy'},{label:'\u7C98\u8D34',role:'paste'},{label:'\u5220\u9664',role:'delete'},{label:'\u5168\u9009',role:'selectall'}].concat(f));let g={type:e.type,label:e.title,accelerator:e.hotKey,click:e.event?(h=>{// console.log('[menu electron] bind click', event);
+return(i,j)=>{this.trigger('click',h)}})(e.event):void 0,submenu:f};return g},c=a.map(e=>{return b(e)}),d=__WEBPACK_IMPORTED_MODULE_1_electron__["remote"].Menu.buildFromTemplate(c);return d}buildMenu(a){let b=this._getMenu(a);__WEBPACK_IMPORTED_MODULE_1_electron__["remote"].Menu.setApplicationMenu(b)}showContextMenu(a){let b=this._getMenu(a);b.popup(__WEBPACK_IMPORTED_MODULE_1_electron__["remote"].getCurrentWindow())}get isVue(){return!0}}/* harmony default export */ exports["a"] = ElectronMenu;
 
 /***/ },
 /* 27 */
@@ -2435,56 +1013,7 @@ class ElectronMenu extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__base__ = __webpack_require__(9);
-
-
-class MacgapMenu extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */] {
-	constructor() {
-		console.log('macgap menu init');
-		super();
-		if (MacgapMenu._instance) {
-			console.log('cache');
-			return MacgapMenu._instance;
-		}
-		console.log('no cache');
-		MacgapMenu._instance = this;
-	}
-	buildMenu(menuList) {
-		menuList.forEach(menu => {
-			var macgapMenu = MacGap.Menu.getItem(menu.title);
-			if (!macgapMenu) {
-				MacGap.Menu.addItem({
-					label: menu.title
-				});
-				macgapMenu = MacGap.Menu.getItem(menu.title);
-			}
-			if (menu.title === 'TooNote') {
-				menu.subMenu.push({
-					title: 'Reload',
-					event: 'devReload',
-					hotKey: 'cmd+r'
-				});
-			}
-			menu.subMenu.forEach(menu => {
-				var macgapSubMenu = macgapMenu.submenu.getItem(menu.title);
-				if (!macgapSubMenu) {
-					macgapMenu.submenu.addItem({ label: menu.title, keys: menu.hotKey });
-					macgapSubMenu = macgapMenu.submenu.getItem(menu.title);
-				}
-
-				macgapSubMenu.callback = () => {
-					this.trigger('click', menu.event);
-				};
-				// macgapSubMenu.enabled = true;
-			});
-		});
-	}
-
-	get isVue() {
-		return false;
-	}
-}
-
-/* harmony default export */ exports["a"] = MacgapMenu;
+class MacgapMenu extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */]{constructor(){return console.log('macgap menu init'),super(),MacgapMenu._instance?(console.log('cache'),MacgapMenu._instance):void(console.log('no cache'),MacgapMenu._instance=this)}buildMenu(a){a.forEach(b=>{var c=MacGap.Menu.getItem(b.title);c||(MacGap.Menu.addItem({label:b.title}),c=MacGap.Menu.getItem(b.title)),'TooNote'===b.title&&b.subMenu.push({title:'Reload',event:'devReload',hotKey:'cmd+r'}),b.subMenu.forEach(d=>{var e=c.submenu.getItem(d.title);e||(c.submenu.addItem({label:d.title,keys:d.hotKey}),e=c.submenu.getItem(d.title)),e.callback=()=>{this.trigger('click',d.event)}})})}get isVue(){return!1}}/* harmony default export */ exports["a"] = MacgapMenu;
 
 /***/ },
 /* 28 */
@@ -2492,26 +1021,7 @@ class MacgapMenu extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */] 
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__base__ = __webpack_require__(9);
-
-
-class WebMenu extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */] {
-	constructor() {
-		console.log('web menu init');
-		super();
-		if (WebMenu._instance) {
-			console.log('cache');
-			return WebMenu._instance;
-		}
-		console.log('no cache');
-		WebMenu._instance = this;
-	}
-
-	get isVue() {
-		return true;
-	}
-}
-
-/* harmony default export */ exports["a"] = WebMenu;
+class WebMenu extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */]{constructor(){return console.log('web menu init'),super(),WebMenu._instance?(console.log('cache'),WebMenu._instance):void(console.log('no cache'),WebMenu._instance=this)}get isVue(){return!0}}/* harmony default export */ exports["a"] = WebMenu;
 
 /***/ },
 /* 29 */
@@ -2520,18 +1030,7 @@ class WebMenu extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */] {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_path__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_path__);
-
-
-class Store {
-	constructor() {
-		console.log('Store init.');
-	}
-	_normalizePath(filePath) {
-		return __WEBPACK_IMPORTED_MODULE_0_path___default.a.normalize(__WEBPACK_IMPORTED_MODULE_0_path___default.a.join('./', filePath));
-	}
-}
-
-/* harmony default export */ exports["a"] = Store;
+class Store{constructor(){console.log('Store init.')}_normalizePath(a){return __WEBPACK_IMPORTED_MODULE_0_path___default.a.normalize(__WEBPACK_IMPORTED_MODULE_0_path___default.a.join('./',a))}}/* harmony default export */ exports["a"] = Store;
 
 /***/ },
 /* 30 */
@@ -2539,65 +1038,7 @@ class Store {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__base__ = __webpack_require__(29);
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-
-
-class WebStore extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */] {
-	constructor() {
-		super();
-		console.log('WebStore init.');
-	}
-	createFolder(folderName) {}
-	getFileList(folderName) {}
-	_getPathKey(path) {
-		return 'TooNote-LocalStorage-Key-' + path;
-	}
-	writeFile(fileName, fileContent) {
-		var _this = this;
-
-		return _asyncToGenerator(function* () {
-			return new Promise(function (resolve, reject) {
-				var path = _this._normalizePath(fileName);
-				try {
-					localStorage.setItem(_this._getPathKey(path), fileContent);
-					resolve();
-				} catch (e) {
-					reject(e);
-				}
-			});
-		})();
-	}
-	deleteFile(fileName) {
-		var _this2 = this;
-
-		return _asyncToGenerator(function* () {
-			return new Promise(function (resolve, reject) {
-				var path = _this2._normalizePath(fileName);
-				try {
-					localStorage.removeItem(_this2._getPathKey(path));
-					resolve();
-				} catch (e) {
-					reject(e);
-				}
-			});
-		})();
-	}
-	readFile(fileName) {
-		var _this3 = this;
-
-		return _asyncToGenerator(function* () {
-			return new Promise(function (resolve, reject) {
-				var path = _this3._normalizePath(fileName);
-				var content = localStorage.getItem(_this3._getPathKey(path));
-				if (typeof content !== 'string') content = false;
-				resolve(content);
-			});
-		})();
-	}
-}
-
-/* harmony default export */ exports["a"] = WebStore;
+function _asyncToGenerator(fn){return function(){var gen=fn.apply(this,arguments);return new Promise(function(resolve,reject){function step(key,arg){try{var info=gen[key](arg),value=info.value}catch(error){return void reject(error)}return info.done?void resolve(value):Promise.resolve(value).then(function(value){step('next',value)},function(err){step('throw',err)})}return step('next')})}}class WebStore extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */]{constructor(){super(),console.log('WebStore init.')}createFolder(a){}getFileList(a){}_getPathKey(a){return'TooNote-LocalStorage-Key-'+a}writeFile(a,b){var _this=this;return _asyncToGenerator(function*(){return new Promise(function(c,d){var f=_this._normalizePath(a);try{localStorage.setItem(_this._getPathKey(f),b),c()}catch(g){d(g)}})})()}deleteFile(a){var _this2=this;return _asyncToGenerator(function*(){return new Promise(function(b,c){var d=_this2._normalizePath(a);try{localStorage.removeItem(_this2._getPathKey(d)),b()}catch(f){c(f)}})})()}readFile(a){var _this3=this;return _asyncToGenerator(function*(){return new Promise(function(b,c){var d=_this3._normalizePath(a),f=localStorage.getItem(_this3._getPathKey(d));'string'!=typeof f&&(f=!1),b(f)})})()}}/* harmony default export */ exports["a"] = WebStore;
 
 /***/ },
 /* 31 */
@@ -2608,21 +1049,7 @@ class WebStore extends __WEBPACK_IMPORTED_MODULE_0__base__["a" /* default */] {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__note__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__meta__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__api_menu_index__ = __webpack_require__(6);
-
-
-
-
-
-let self = {};
-let menu = new __WEBPACK_IMPORTED_MODULE_3__api_menu_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__util__["a" /* default */].platform);
-
-self.on = menu.on.bind(menu);
-
-self.off = menu.off.bind(menu);
-
-self.trigger = menu.trigger.bind(menu);
-
-/* harmony default export */ exports["a"] = self;
+let self={},menu=new __WEBPACK_IMPORTED_MODULE_3__api_menu_index__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__util__["a" /* default */].platform);self.on=menu.on.bind(menu),self.off=menu.off.bind(menu),self.trigger=menu.trigger.bind(menu);/* harmony default export */ exports["a"] = self;
 
 /***/ },
 /* 32 */
@@ -2631,48 +1058,7 @@ self.trigger = menu.trigger.bind(menu);
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_eases_cubic_in_out__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_eases_cubic_in_out___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_eases_cubic_in_out__);
-
-
-let scroll = {};
-
-class TooAnimate {
-	constructor(options) {
-		this.start = options.start;
-		this.end = options.end;
-		this.during = options.during;
-		this.onTick = options.onTick;
-		this._value = this.start;
-		this.doAnimate();
-	}
-	doAnimate() {
-		let delta = this.end - this.start;
-		let startTime;
-		let tick = time => {
-			if (!startTime) startTime = time;
-			let progress = __WEBPACK_IMPORTED_MODULE_0_eases_cubic_in_out___default()((time - startTime) / this.during);
-			if (progress > 1) progress = 1;
-			this._value = progress * delta + this.start;
-			this.onTick(this._value);
-			if (progress < 1) {
-				requestAnimationFrame(tick);
-			}
-		};
-		requestAnimationFrame(tick);
-	}
-}
-
-scroll.doScroll = ($target, end, during) => {
-	var tooAnimate = new TooAnimate({
-		start: $target.scrollTop,
-		end: end,
-		during: during,
-		onTick: function (value) {
-			$target.scrollTop = value;
-		}
-	});
-};
-
-/* harmony default export */ exports["a"] = scroll;
+let scroll={};class TooAnimate{constructor(a){this.start=a.start,this.end=a.end,this.during=a.during,this.onTick=a.onTick,this._value=this.start,this.doAnimate()}doAnimate(){let a=this.end-this.start,b,c=d=>{b||(b=d);let e=__WEBPACK_IMPORTED_MODULE_0_eases_cubic_in_out___default()((d-b)/this.during);1<e&&(e=1),this._value=e*a+this.start,this.onTick(this._value),1>e&&requestAnimationFrame(c)};requestAnimationFrame(c)}}scroll.doScroll=(a,b,c)=>{new TooAnimate({start:a.scrollTop,end:b,during:c,onTick:function(d){a.scrollTop=d}})};/* harmony default export */ exports["a"] = scroll;
 
 /***/ },
 /* 33 */
@@ -2730,236 +1116,9 @@ scroll.doScroll = ($target, end, during) => {
 	"Ctrl-K Ctrl-j": "unfoldAll",
 	"Ctrl-K Ctrl-0": "unfoldAll",
 	// "Ctrl-H": "replace",
-}*/
-let shortcut = function (aceEditor) {
-	let editor = aceEditor;
-	let selection = editor.getSelection();
-	let session = editor.getSession();
-	let undo = session.getUndoManager();
-
-	editor.commands.bindKey('Cmd-D', null);
-	editor.commands.bindKey('Ctrl-D', null);
-	editor.commands.bindKey('Ctrl-Z', null);
-	editor.commands.bindKey('Cmd-Z', null);
-	editor.commands.bindKey('Ctrl-Y', null);
-	editor.commands.bindKey('Cmd-Y', null);
-
-	let getCurrentLineText = () => {
-		let row = editor.getSelection().getCursor().row;
-		return session.getLine(row);
-	};
-
-	let replaceCurrentLineText = newText => {
-		let range = editor.getSelectionRange();
-		let position = aceEditor.getSelection().getCursor();
-		let oldColumn = range.start.column;
-		range.setStart({
-			row: position.row,
-			column: 0
-		});
-		range.setEnd({
-			row: position.row,
-			column: 999999999
-		});
-		session.replace(range, newText);
-	};
-
-	// 撤销
-	editor.commands.addCommand({
-		name: 'undo',
-		bindKey: {
-			win: 'Ctrl-z',
-			mac: 'Cmd-z'
-		},
-		exec: function (editor) {
-			if (undo.hasUndo()) {
-				undo.undo(true);
-			}
-		}
-	});
-
-	// 反撤销
-	editor.commands.addCommand({
-		name: 'redo',
-		bindKey: {
-			win: 'Ctrl-y',
-			mac: 'Cmd-y'
-		},
-		exec: function (editor) {
-			if (undo.hasRedo()) {
-				undo.redo(true);
-			}
-		}
-	});
-
-	// 选中整行
-	editor.commands.addCommand({
-		name: 'selectLine',
-		bindKey: {
-			win: 'Ctrl-l',
-			mac: 'Cmd-l'
-		},
-		exec: function (editor) {
-			if (selection.isMultiLine()) {
-				// 如果已经选中一行了，则选下一行
-				selection.selectDown();
-			} else {
-				// 否则，选中当前行
-				selection.selectLine();
-			}
-		}
-	});
-
-	// 选中整行
-	editor.commands.addCommand({
-		name: 'splitInfoLines',
-		bindKey: {
-			win: 'Ctrl-Shift-l',
-			mac: 'Cmd-Shift-l'
-		},
-		exec: function (editor) {
-			selection.splitIntoLines();
-		}
-	});
-
-	// 向下移动
-	editor.commands.addCommand({
-		name: 'moveDown',
-		bindKey: {
-			win: 'Ctrl-Shift-Down',
-			mac: 'Cmd-Ctrl-Down'
-		},
-		exec: function (editor) {
-			let isSelectionEmpty = selection.isEmpty();
-			console.log(isSelectionEmpty);
-			if (isSelectionEmpty) {
-				selection.selectLine();
-			}
-			editor.moveLinesDown();
-			if (isSelectionEmpty) {
-				selection.clearSelection();
-				selection.moveCursorUp();
-			} else {
-				// selection.moveCursorDown()
-			}
-		}
-	});
-
-	// 向上移动
-	editor.commands.addCommand({
-		name: 'moveUp',
-		bindKey: {
-			win: 'Ctrl-Shift-Up',
-			mac: 'Cmd-Ctrl-Up'
-		},
-		exec: function (editor) {
-			let isSelectionEmpty = selection.isEmpty();
-			console.log(isSelectionEmpty);
-			if (isSelectionEmpty) {
-				selection.selectLine();
-			}
-			editor.moveLinesUp();
-			if (isSelectionEmpty) {
-				selection.clearSelection();
-				selection.moveCursorUp();
-			} else {
-				// selection.moveCursorDown()
-			}
-		}
-	});
-
-	// 删除行
-	editor.commands.addCommand({
-		name: 'deleteLines',
-		bindKey: {
-			win: 'Ctrl-Shift-k',
-			mac: 'Ctrl-Shift-k'
-		},
-		exec: function (editor) {
-			editor.removeLines();
-		}
-	});
-
-	// 删除到行尾
-	editor.commands.addCommand({
-		name: 'deleteToEnd',
-		bindKey: {
-			win: 'Ctrl-k Ctrl-k',
-			mac: 'Cmd-k Cmd-k'
-		},
-		exec: function (editor) {
-			editor.removeToLineEnd();
-		}
-	});
-
-	// 删除到行首
-	editor.commands.addCommand({
-		name: 'deleteToStart',
-		bindKey: {
-			win: 'Ctrl-k Ctrl-backspace',
-			mac: 'Cmd-k Cmd-backspace'
-		},
-		exec: function (editor) {
-			editor.removeToLineStart();
-		}
-	});
-
-	// TODO完成切换
-	editor.commands.addCommand({
-		name: 'toggleTodoState',
-		bindKey: {
-			win: 'Ctrl-d',
-			mac: 'Cmd-d'
-		},
-		exec: function (editor) {
-			let currText = getCurrentLineText();
-
-			let todoItemRegExp = /\- \[([x ])\] ?/;
-			let todoItemMatch = currText.match(todoItemRegExp);
-			if (!todoItemMatch || todoItemMatch.length < 2) return;
-
-			let newText;
-			let isDone = todoItemMatch[1] === 'x';
-			if (isDone) {
-				newText = currText.replace('[x]', '[ ]').replace(/ \([\d\-: ]+\)\s*$/, '');
-			} else {
-				let date = new Date();
-				let ts = date.getTime() - date.getTimezoneOffset() * 60 * 1000;
-				let s = new Date(ts).toISOString();
-
-				let now = s.replace(/T/g, ' ').replace(/^\d{2}/, '').replace(/:\d+\.\d+Z$/, ''); // 16-11-24 14:16
-				newText = currText.replace('[ ]', '[x]') + ` (${ now })`;
-			}
-
-			replaceCurrentLineText(newText);
-		}
-	});
-
-	// TODO任务切换
-	editor.commands.addCommand({
-		name: 'toggleIsTodo',
-		bindKey: {
-			win: 'Ctrl-i',
-			mac: 'Cmd-i'
-		},
-		exec: function (editor) {
-			let currText = getCurrentLineText();
-			let newText;
-
-			let todoItemRegExp = /\- \[([x ])\] ?/;
-			let todoItemMatch = currText.match(todoItemRegExp);
-			if (!todoItemMatch || todoItemMatch.length < 2) {
-				newText = '- [ ] ' + currText.replace(/^\- /, '');
-			} else {
-				newText = currText.replace(/^\- \[[x ]\] /, '- ');
-			}
-
-			replaceCurrentLineText(newText);
-		}
-	});
-};
-
-/* harmony default export */ exports["a"] = shortcut;
+}*/let shortcut=function(a){let b=a,c=b.getSelection(),d=b.getSession(),e=d.getUndoManager();b.commands.bindKey('Cmd-D',null),b.commands.bindKey('Ctrl-D',null),b.commands.bindKey('Ctrl-Z',null),b.commands.bindKey('Cmd-Z',null),b.commands.bindKey('Ctrl-Y',null),b.commands.bindKey('Cmd-Y',null);let f=()=>{let h=b.getSelection().getCursor().row;return d.getLine(h)},g=h=>{let i=b.getSelectionRange(),j=a.getSelection().getCursor();i.start.column,i.setStart({row:j.row,column:0}),i.setEnd({row:j.row,column:999999999}),d.replace(i,h)};// 撤销
+b.commands.addCommand({name:'undo',bindKey:{win:'Ctrl-z',mac:'Cmd-z'},exec:function(h){e.hasUndo()&&e.undo(!0)}}),b.commands.addCommand({name:'redo',bindKey:{win:'Ctrl-y',mac:'Cmd-y'},exec:function(h){e.hasRedo()&&e.redo(!0)}}),b.commands.addCommand({name:'selectLine',bindKey:{win:'Ctrl-l',mac:'Cmd-l'},exec:function(h){c.isMultiLine()?c.selectDown():c.selectLine()}}),b.commands.addCommand({name:'splitInfoLines',bindKey:{win:'Ctrl-Shift-l',mac:'Cmd-Shift-l'},exec:function(h){c.splitIntoLines()}}),b.commands.addCommand({name:'moveDown',bindKey:{win:'Ctrl-Shift-Down',mac:'Cmd-Ctrl-Down'},exec:function(h){let i=c.isEmpty();console.log(i),i&&c.selectLine(),h.moveLinesDown(),i&&(c.clearSelection(),c.moveCursorUp())}}),b.commands.addCommand({name:'moveUp',bindKey:{win:'Ctrl-Shift-Up',mac:'Cmd-Ctrl-Up'},exec:function(h){let i=c.isEmpty();console.log(i),i&&c.selectLine(),h.moveLinesUp(),i&&(c.clearSelection(),c.moveCursorUp())}}),b.commands.addCommand({name:'deleteLines',bindKey:{win:'Ctrl-Shift-k',mac:'Ctrl-Shift-k'},exec:function(h){h.removeLines()}}),b.commands.addCommand({name:'deleteToEnd',bindKey:{win:'Ctrl-k Ctrl-k',mac:'Cmd-k Cmd-k'},exec:function(h){h.removeToLineEnd()}}),b.commands.addCommand({name:'deleteToStart',bindKey:{win:'Ctrl-k Ctrl-backspace',mac:'Cmd-k Cmd-backspace'},exec:function(h){h.removeToLineStart()}}),b.commands.addCommand({name:'toggleTodoState',bindKey:{win:'Ctrl-d',mac:'Cmd-d'},exec:function(h){let i=f(),j=/\- \[([x ])\] ?/,k=i.match(j);if(k&&!(2>k.length)){let r,t='x'===k[1];if(t)r=i.replace('[x]','[ ]').replace(/ \([\d\-: ]+\)\s*$/,'');else{let u=new Date,v=u.getTime()-1000*(60*u.getTimezoneOffset()),w=new Date(v).toISOString(),x=w.replace(/T/g,' ').replace(/^\d{2}/,'').replace(/:\d+\.\d+Z$/,'');// 16-11-24 14:16
+r=i.replace('[ ]','[x]')+` (${x})`}g(r)}}}),b.commands.addCommand({name:'toggleIsTodo',bindKey:{win:'Ctrl-i',mac:'Cmd-i'},exec:function(h){let i=f(),j,k=/\- \[([x ])\] ?/,l=i.match(k);j=!l||2>l.length?'- [ ] '+i.replace(/^\- /,''):i.replace(/^\- \[[x ]\] /,'- '),g(j)}})};/* harmony default export */ exports["a"] = shortcut;
 
 /***/ },
 /* 34 */
@@ -2980,402 +1139,22 @@ let shortcut = function (aceEditor) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_scroll__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_renderer__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__modules_git__ = __webpack_require__(14);
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-let gitPath = __WEBPACK_IMPORTED_MODULE_2_path___default.a.join(__webpack_require__(0).remote.app.getPath('userData'), 'git');
-let git = new __WEBPACK_IMPORTED_MODULE_9__modules_git__["a" /* default */]({
-	path: gitPath
-});
-// Vue.use(Vuex);
-
-const store = () => new __WEBPACK_IMPORTED_MODULE_1_vuex___default.a.Store({
-	state: {
-		contextMenuNoteId: '',
-		currentNote: null,
-		currentNotebook: null,
-		notebooks: [],
-		// 同步滚动位置数据
-		scrollMap: [],
-		layout: {
-			sidebar: true,
-			editor: true,
-			preview: true
-		},
-		isSearching: false,
-		// 搜索结果
-		searchResults: [
-			// {id:'1407215592432',title:'富途\\服务器相关'},
-			// {id:'1471501307415',title:'富途\\前端近期'},
-		],
-		versions: {
-			currentNote: null,
-			activeVersionId: '',
-			activeVersionContent: '',
-			list: []
-		},
-		contextMenuVersionId: '',
-		editAction: ''
-	},
-	mutations: {
-		newNote(state, note) {
-			state.currentNotebook.notes.push(note);
-		},
-		switchCurrentNote(state, note) {
-			state.currentNote = note;
-		},
-		switchContextMenuNote(state, noteId) {
-			state.contextMenuNoteId = noteId;
-		},
-		switchCurrentNotebook(state, notebook) {
-			state.currentNotebook = notebook;
-		},
-		changeCurrentNoteContent(state, content) {
-			// console.log('[store mutations]', content);
-			state.currentNote.content = content;
-		},
-		changeCurrentNoteTitle(state, title) {
-			state.currentNote.title = title;
-		},
-		updateNotebooks(state, notebooks) {
-			state.notebooks = notebooks;
-		},
-		changeScrollMap(state, scrollMap) {
-			state.scrollMap = scrollMap;
-		},
-		switchLayout(state, component) {
-			state.layout[component] = !state.layout[component];
-		},
-		switchSearching(state, isSearching) {
-			state.isSearching = isSearching;
-		},
-		updateSearchResults(state, results) {
-			state.isSearching = true;
-			state.searchResults = results;
-		},
-		showHistory(state, data) {
-			console.log(data);
-			state.versions.currentNote = data.note;
-			state.versions.list = data.versions;
-		},
-		switchCurrentVersion(state, data) {
-			state.versions.activeVersionId = data.versionId;
-			state.versions.activeVersionContent = data.content;
-		},
-		hideVersions(state) {
-			state.versions.activeVersionId = '';
-			state.versions.activeVersionContent = '';
-			state.versions.list = [];
-			state.versions.currentNote = null;
-		},
-		switchContextMenuVersion(state, versionId) {
-			state.contextMenuVersionId = versionId;
-		},
-		editAction(state, action) {
-			state.editAction = action;
-		}
-	},
-	getters: {
-		contextMenuNoteId(state) {
-			return state.contextMenuNoteId;
-		},
-		currentNote(state) {
-			return state.currentNote;
-		},
-		allNotes(state) {
-			let ret = [];
-			state.notebooks.forEach(notebook => {
-				ret = ret.concat(notebook.notes);
-			});
-			return ret;
-		},
-		notebooksWithCategories(state) {
-			let ret = state.notebooks.map(notebook => {
-				let ret = {
-					title: notebook.title
-				};
-				ret.categories = {};
-				notebook.notes.forEach(noteItem => {
-					let category = __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getCategoryFromTitle(noteItem.title);
-					let title = __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getTitleWithoutCategory(noteItem.title);
-					if (!ret.categories[category]) ret.categories[category] = [];
-					ret.categories[category].push({
-						title: title,
-						id: noteItem.id
-					});
-				});
-				// console.log(JSON.stringify(ret.categories['富途']));
-				return ret;
-			});
-			return ret;
-		},
-		searchResultsWithCategories(state) {
-			let ret = {};
-			state.searchResults.forEach(noteItem => {
-				let category = __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getCategoryFromTitle(noteItem.title);
-				let title = __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getTitleWithoutCategory(noteItem.title);
-				if (!ret[category]) ret[category] = [];
-				ret[category].push({
-					title: title,
-					id: noteItem.id
-				});
-			});
-			return ret;
-		},
-		notebooks(state) {
-			return state.notebooks;
-		},
-		layout(state) {
-			return state.layout;
-		},
-		isSearching(state) {
-			return state.isSearching;
-		},
-		searchResults(state) {
-			return state.searchResults;
-		},
-		versions(state) {
-			return state.versions;
-		},
-		contextMenuVersionId(state) {
-			return state.contextMenuVersionId;
-		},
-		editAction(state) {
-			return state.editAction;
-		}
-		/*currentNoteContent(state, getters){
-  	return getters.content;
-  }*/
-	},
-	actions: {
-		changeCurrentNoteContent(context, content) {
-			return _asyncToGenerator(function* () {
-				let title = __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getTitleFromContent(content);
-				context.commit('changeCurrentNoteContent', content);
-				context.commit('changeCurrentNoteTitle', title);
-
-				yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].saveNoteContent(context.state.currentNote);
-
-				// 找到目标笔记并修改标题
-				context.state.notebooks.forEach(function (notebook) {
-					notebook.notes.forEach(function (note, index) {
-						if (note.id === context.state.currentNote.id) {
-							note.title = title;
-						}
-					});
-				});
-
-				yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].updateNote(context.state.currentNote.id, title);
-			})();
-		},
-		switchCurrentNoteById(context, noteId) {
-			return _asyncToGenerator(function* () {
-				// console.log('[store switchCurrentNoteById]', noteId);
-				let targetNote = context.getters.allNotes.filter(function (note) {
-					return note.id === noteId;
-				})[0];
-				if (targetNote) {
-					let content = yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getNote(targetNote.id);
-					targetNote = Object.assign({}, targetNote, { content });
-					// console.log('[store] switchCurrentNoteById', targetNote);
-					context.commit('switchCurrentNote', targetNote);
-				}
-			})();
-		},
-		importNotes(context, newNotes) {
-			return _asyncToGenerator(function* () {
-				for (let i = 0; i < newNotes.length; i++) {
-					let newNote = newNotes[i];
-					yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].addNote(context.state.currentNotebook.id, {
-						id: newNote.id,
-						title: newNote.title
-					});
-					yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].addNote(newNote);
-					context.commit('newNote', newNote);
-				}
-			})();
-		},
-		newNote(context) {
-			return _asyncToGenerator(function* () {
-				let newNote = yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].addNote(context.state.currentNotebook.id);
-				yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].addNote(newNote);
-				// let metaData = await meta.data;
-				// eventHub.$emit('metaDidChange', app.metaData);
-
-				// eventHub.$emit('currentNoteWillChange', app.currentNote);
-				context.commit('newNote', newNote);
-				context.commit('switchCurrentNote', newNote);
-				// eventHub.$emit('currentNoteDidChange', app.currentNote);
-			})();
-		},
-		openContextMenuNote(context) {
-			return _asyncToGenerator(function* () {
-				context.dispatch('switchCurrentNoteById', context.state.contextMenuNoteId);
-			})();
-		},
-		deleteContextMenuNote(context) {
-			return _asyncToGenerator(function* () {
-				let targetId = context.state.contextMenuNoteId;
-				if (!targetId) return;
-				// 如果删除的是当前笔记，切换到第一条笔记
-				if (targetId === context.state.currentNote.id) {
-					context.dispatch('switchCurrentNoteById', context.getters.allNotes[0].id);
-				}
-
-				// 找到目标笔记并删除
-				context.state.notebooks.forEach(function (notebook) {
-					notebook.notes.forEach(function (note, index) {
-						if (note.id === targetId) {
-							notebook.notes.splice(index, 1);
-						}
-					});
-				});
-
-				yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].deleteNote(targetId);
-				yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].deleteNote(targetId);
-
-				context.dispatch('switchCurrentNoteById');
-			})();
-		},
-		historyContextMenuNote(context) {
-			return _asyncToGenerator(function* () {
-
-				let targetNote = context.getters.allNotes.filter(function (note) {
-					return note.id === context.state.contextMenuNoteId;
-				})[0];
-				let fileName = `note-${ context.state.contextMenuNoteId }.md`;
-				let logArr = git.log(fileName);
-
-				context.commit('showHistory', {
-					note: targetNote,
-					versions: logArr
-				});
-				yield context.dispatch('switchActiveVersion');
-				/*logArr.forEach((log) => {
-    	let content = git.show(log.id, fileName);
-    	console.log(`${log.date}\n\n${content}`);
-    });*/
-			})();
-		},
-		switchActiveVersion(context, versionId) {
-			return _asyncToGenerator(function* () {
-				if (!versionId) {
-					versionId = context.state.contextMenuVersionId;
-					if (!versionId) {
-						let activeVersion = context.state.versions.list[0];
-						if (!activeVersion) return;
-						versionId = activeVersion.id;
-					}
-				}
-				let fileName = `note-${ context.state.versions.currentNote.id }.md`;
-				let content = git.show(versionId, fileName);
-				context.commit('switchCurrentVersion', { versionId, content });
-			})();
-		},
-		restoreActiveVersion(context) {
-			return _asyncToGenerator(function* () {
-				let versionId = context.state.contextMenuVersionId;
-				if (!versionId) return;
-
-				let fileName = `note-${ context.state.versions.currentNote.id }.md`;
-				let content = git.show(versionId, fileName);
-
-				yield context.dispatch('changeCurrentNoteContent', content);
-			})();
-		},
-		importBackup(context) {
-			return _asyncToGenerator(function* () {
-				let newNotes = yield __WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getNotesFromBackUp();
-				if (!confirm('备份文件含有' + newNotes.length + '条笔记，确认导入？')) return;
-
-				context.dispatch('importNotes', newNotes);
-			})();
-		},
-		export(context, format) {
-			return _asyncToGenerator(function* () {
-				let content = '';
-				switch (format) {
-					case 'md':
-						content = context.state.currentNote.content;
-						break;
-					case 'htmlBody':
-						content = __WEBPACK_IMPORTED_MODULE_8__modules_renderer__["a" /* default */].render(context.state.currentNote.content);
-						break;
-					case 'htmlBodyWithCss':
-						content = __WEBPACK_IMPORTED_MODULE_8__modules_renderer__["a" /* default */].render(context.state.currentNote.content);
-						let cssText = __WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getFileText('/style/htmlbody.css');
-						content = yield __WEBPACK_IMPORTED_MODULE_3_inline_css___default()(`<body class="htmlBody">${ content }</body>`, {
-							url: '/',
-							extraCss: cssText
-						});
-						console.log(content);
-						break;
-					case 'html':
-					case 'pdf':
-						let body = __WEBPACK_IMPORTED_MODULE_8__modules_renderer__["a" /* default */].render(context.state.currentNote.content);
-						// var postcss = require('postcss');
-						// var atImport = require('postcss-import');
-						let css = __WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getFileText('/style/htmlbody.css');
-						// 加载PDF样式
-						if (format === 'pdf') {
-							css += __WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getFileText('/style/pdf.css');
-						}
-						// css += io.getFileText('/node_modules/highlight.js/styles/github-gist.css');
-						css += __WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getFileText('/node_modules/highlight.js/styles/tomorrow.css');
-						/*var outputCss = postcss()
-      	.use(atImport())
-      	.process(css, {
-      		from: __dirname + '/render.css'
-      	})
-      	.css;*/
-
-						content = '<!doctype html><html>\n' + '<head>\n' + '<meta charset="utf-8">\n' + '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' + '<meta name="author" content="TooNote">\n' + '<title>' + context.state.currentNote.title + '</title>\n' + '<style>\n' + css + '</style>\n' + '</head>\n' + '<body class="htmlBody">\n' + body + '</body>\n</html>';
-						break;
-				}
-				__WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].export(format, content);
-			})();
-		},
-		syncScroll(context, row) {
-			return _asyncToGenerator(function* () {
-				let targetPosition = context.state.scrollMap[row];
-				// console.log(row, targetPosition);
-				if (typeof targetPosition === 'undefined') return;
-				__WEBPACK_IMPORTED_MODULE_7__modules_scroll__["a" /* default */].doScroll(document.querySelector('.preview'), targetPosition, 500);
-			})();
-		},
-		exchangeNote(context, ids) {
-			return _asyncToGenerator(function* () {
-
-				// console.log('ids', ids.id1, ids.id2);
-				// 找到目标笔记本和笔记
-				let metaData = yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].exchange(ids.id1, ids.id2);
-
-				context.commit('updateNotebooks', metaData.notebook);
-			})();
-		},
-		search(context, keyword) {
-			return _asyncToGenerator(function* () {
-				let searchTitleResults = yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].searchNote(keyword.toLowerCase());
-
-				context.commit('updateSearchResults', searchTitleResults);
-			})();
-		}
-	}
-});
-
-/* harmony default export */ exports["a"] = store;
+function _asyncToGenerator(fn){return function(){var gen=fn.apply(this,arguments);return new Promise(function(resolve,reject){function step(key,arg){try{var info=gen[key](arg),value=info.value}catch(error){return void reject(error)}return info.done?void resolve(value):Promise.resolve(value).then(function(value){step('next',value)},function(err){step('throw',err)})}return step('next')})}}let gitPath=__WEBPACK_IMPORTED_MODULE_2_path___default.a.join(__webpack_require__(0).remote.app.getPath('userData'),'git'),git=new __WEBPACK_IMPORTED_MODULE_9__modules_git__["a" /* default */]({path:gitPath});// Vue.use(Vuex);
+const store=()=>new __WEBPACK_IMPORTED_MODULE_1_vuex___default.a.Store({state:{contextMenuNoteId:'',currentNote:null,currentNotebook:null,notebooks:[],// 同步滚动位置数据
+scrollMap:[],layout:{sidebar:!0,editor:!0,preview:!0},isSearching:!1,// 搜索结果
+searchResults:[// {id:'1407215592432',title:'富途\\服务器相关'},
+// {id:'1471501307415',title:'富途\\前端近期'},
+],versions:{currentNote:null,activeVersionId:'',activeVersionContent:'',list:[]},contextMenuVersionId:'',editAction:''},mutations:{newNote(a,b){a.currentNotebook.notes.push(b)},switchCurrentNote(a,b){a.currentNote=b},switchContextMenuNote(a,b){a.contextMenuNoteId=b},switchCurrentNotebook(a,b){a.currentNotebook=b},changeCurrentNoteContent(a,b){a.currentNote.content=b},changeCurrentNoteTitle(a,b){a.currentNote.title=b},updateNotebooks(a,b){a.notebooks=b},changeScrollMap(a,b){a.scrollMap=b},switchLayout(a,b){a.layout[b]=!a.layout[b]},switchSearching(a,b){a.isSearching=b},updateSearchResults(a,b){a.isSearching=!0,a.searchResults=b},showHistory(a,b){console.log(b),a.versions.currentNote=b.note,a.versions.list=b.versions},switchCurrentVersion(a,b){a.versions.activeVersionId=b.versionId,a.versions.activeVersionContent=b.content},hideVersions(a){a.versions.activeVersionId='',a.versions.activeVersionContent='',a.versions.list=[],a.versions.currentNote=null},switchContextMenuVersion(a,b){a.contextMenuVersionId=b},editAction(a,b){a.editAction=b}},getters:{contextMenuNoteId(a){return a.contextMenuNoteId},currentNote(a){return a.currentNote},allNotes(a){let b=[];return a.notebooks.forEach(c=>{b=b.concat(c.notes)}),b},notebooksWithCategories(a){let b=a.notebooks.map(c=>{let d={title:c.title};// console.log(JSON.stringify(ret.categories['富途']));
+return d.categories={},c.notes.forEach(e=>{let f=__WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getCategoryFromTitle(e.title),g=__WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getTitleWithoutCategory(e.title);d.categories[f]||(d.categories[f]=[]),d.categories[f].push({title:g,id:e.id})}),d});return b},searchResultsWithCategories(a){let b={};return a.searchResults.forEach(c=>{let d=__WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getCategoryFromTitle(c.title),e=__WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getTitleWithoutCategory(c.title);b[d]||(b[d]=[]),b[d].push({title:e,id:c.id})}),b},notebooks(a){return a.notebooks},layout(a){return a.layout},isSearching(a){return a.isSearching},searchResults(a){return a.searchResults},versions(a){return a.versions},contextMenuVersionId(a){return a.contextMenuVersionId},editAction(a){return a.editAction}/*currentNoteContent(state, getters){
+			return getters.content;
+		}*/},actions:{changeCurrentNoteContent(a,b){return _asyncToGenerator(function*(){let c=__WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getTitleFromContent(b);a.commit('changeCurrentNoteContent',b),a.commit('changeCurrentNoteTitle',c),yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].saveNoteContent(a.state.currentNote),a.state.notebooks.forEach(function(d){d.notes.forEach(function(e,f){e.id===a.state.currentNote.id&&(e.title=c)})}),yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].updateNote(a.state.currentNote.id,c)})()},switchCurrentNoteById(a,b){return _asyncToGenerator(function*(){// console.log('[store switchCurrentNoteById]', noteId);
+let c=a.getters.allNotes.filter(function(d){return d.id===b})[0];if(c){let d=yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].getNote(c.id);c=Object.assign({},c,{content:d}),a.commit('switchCurrentNote',c)}})()},importNotes(a,b){return _asyncToGenerator(function*(){for(let c=0;c<b.length;c++){let d=b[c];yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].addNote(a.state.currentNotebook.id,{id:d.id,title:d.title}),yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].addNote(d),a.commit('newNote',d)}})()},newNote(a){return _asyncToGenerator(function*(){let b=yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].addNote(a.state.currentNotebook.id);yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].addNote(b),a.commit('newNote',b),a.commit('switchCurrentNote',b)})()},openContextMenuNote(a){return _asyncToGenerator(function*(){a.dispatch('switchCurrentNoteById',a.state.contextMenuNoteId)})()},deleteContextMenuNote(a){return _asyncToGenerator(function*(){let b=a.state.contextMenuNoteId;b&&(b===a.state.currentNote.id&&a.dispatch('switchCurrentNoteById',a.getters.allNotes[0].id),a.state.notebooks.forEach(function(g){g.notes.forEach(function(h,j){h.id===b&&g.notes.splice(j,1)})}),yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].deleteNote(b),yield __WEBPACK_IMPORTED_MODULE_5__modules_note__["a" /* default */].deleteNote(b),a.dispatch('switchCurrentNoteById'))})()},historyContextMenuNote(a){return _asyncToGenerator(function*(){let b=a.getters.allNotes.filter(function(e){return e.id===a.state.contextMenuNoteId})[0],c=`note-${a.state.contextMenuNoteId}.md`,d=git.log(c);a.commit('showHistory',{note:b,versions:d}),yield a.dispatch('switchActiveVersion')})()},switchActiveVersion(a,b){return _asyncToGenerator(function*(){if(!b&&(b=a.state.contextMenuVersionId,!b)){let e=a.state.versions.list[0];if(!e)return;b=e.id}let c=`note-${a.state.versions.currentNote.id}.md`,d=git.show(b,c);a.commit('switchCurrentVersion',{versionId:b,content:d})})()},restoreActiveVersion(a){return _asyncToGenerator(function*(){let b=a.state.contextMenuVersionId;if(b){let k=`note-${a.state.versions.currentNote.id}.md`,l=git.show(b,k);yield a.dispatch('changeCurrentNoteContent',l)}})()},importBackup(a){return _asyncToGenerator(function*(){let b=yield __WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getNotesFromBackUp();confirm('\u5907\u4EFD\u6587\u4EF6\u542B\u6709'+b.length+'\u6761\u7B14\u8BB0\uFF0C\u786E\u8BA4\u5BFC\u5165\uFF1F')&&a.dispatch('importNotes',b)})()},export(a,b){return _asyncToGenerator(function*(){let c='';switch(b){case'md':c=a.state.currentNote.content;break;case'htmlBody':c=__WEBPACK_IMPORTED_MODULE_8__modules_renderer__["a" /* default */].render(a.state.currentNote.content);break;case'htmlBodyWithCss':c=__WEBPACK_IMPORTED_MODULE_8__modules_renderer__["a" /* default */].render(a.state.currentNote.content);let d=__WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getFileText('/style/htmlbody.css');c=yield __WEBPACK_IMPORTED_MODULE_3_inline_css___default()(`<body class="htmlBody">${c}</body>`,{url:'/',extraCss:d}),console.log(c);break;case'html':case'pdf':let e=__WEBPACK_IMPORTED_MODULE_8__modules_renderer__["a" /* default */].render(a.state.currentNote.content),f=__WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getFileText('/style/htmlbody.css');// var postcss = require('postcss');
+// var atImport = require('postcss-import');
+// 加载PDF样式
+'pdf'===b&&(f+=__WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getFileText('/style/pdf.css')),f+=__WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].getFileText('/node_modules/highlight.js/styles/tomorrow.css'),c='<!doctype html><html>\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<meta name="author" content="TooNote">\n<title>'+a.state.currentNote.title+'</title>\n<style>\n'+f+'</style>\n</head>\n<body class="htmlBody">\n'+e+'</body>\n</html>';}__WEBPACK_IMPORTED_MODULE_6__modules_io__["a" /* default */].export(b,c)})()},syncScroll(a,b){return _asyncToGenerator(function*(){let c=a.state.scrollMap[b];// console.log(row, targetPosition);
+'undefined'==typeof c||__WEBPACK_IMPORTED_MODULE_7__modules_scroll__["a" /* default */].doScroll(document.querySelector('.preview'),c,500)})()},exchangeNote(a,b){return _asyncToGenerator(function*(){// console.log('ids', ids.id1, ids.id2);
+// 找到目标笔记本和笔记
+let c=yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].exchange(b.id1,b.id2);a.commit('updateNotebooks',c.notebook)})()},search(a,b){return _asyncToGenerator(function*(){let c=yield __WEBPACK_IMPORTED_MODULE_4__modules_meta__["a" /* default */].searchNote(b.toLowerCase());a.commit('updateSearchResults',c)})()}}});/* harmony default export */ exports["a"] = store;
 
 /***/ },
 /* 35 */
