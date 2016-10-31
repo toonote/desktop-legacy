@@ -34,3 +34,7 @@ TooNote是一款基于Markdown的笔记软件。
 
 - [ ] 这是条未完成的todo
 - [x] 已完成 (16-10-01 00:00)
+
+## 支持
+
+任何意见建议欢迎通过[Github Issue](https://github.com/TooBug/TooNote/issues)提出。
