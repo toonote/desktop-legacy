@@ -48,6 +48,8 @@ export default class Git{
 				id: linePart[0],
 				date: new Date(linePart[1]*1000)
 			}
+		}).filter((logItem) => {
+			return logItem.date.getTime() >= Date.now() - 30*24*3600*1000;
 		});
 		return logArray;
 	}
