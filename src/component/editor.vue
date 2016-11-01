@@ -81,6 +81,10 @@ export default {
 		},
 		resize(){
 			_aceEditor.resize();
+			// 动画完之后再resize一次
+			setTimeout(()=>{
+				_aceEditor.resize();
+			},500);
 		}
 	},
 	watch:{
