@@ -48,6 +48,7 @@ export default {
 			let ext = io.getExt(img.name);
 			let imagePath = io.saveImage(img.path, ext);
 			this.insertImg(imagePath);
+			window.ga('send', 'event', 'editor', 'insertImg', 'drag');
 		},
 		onPaste(e){
 			if(!e.clipboardData.items || !e.clipboardData.items.length) return;
@@ -63,6 +64,7 @@ export default {
 			let imagePath = io.saveImageFromClipboard();
 
 			this.insertImg(imagePath);
+			window.ga('send', 'event', 'editor', 'insertImg', 'paste');
 		},
 		insertImg(imagePath){
 
@@ -159,6 +161,7 @@ export default {
 		session.on('changeScrollTop', throttle((scroll) => {
 			let targetRow = aceEditor.getFirstVisibleRow();
 			this.$store.dispatch('syncScroll', targetRow);
+			window.ga('send', 'event', 'editor', 'scroll');
 		}, 500));
 		// if(timing && Date.now() - waitStart < 100) clearTimeout(timing);
 		// timing = setTimeout(function(){

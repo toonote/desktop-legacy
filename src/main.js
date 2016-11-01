@@ -35,18 +35,23 @@ let app = new Vue({
 			return content.split('\n',2)[0].replace(/^[# \xa0]*/g,'');
 		},
 		newNote(){
+			window.ga('send', 'event', 'note', 'new');
 			store.dispatch('newNote');
 		},
 		switchCurrentNote(note){
+			window.ga('send', 'event', 'note', 'switchCurrentNote', 'init');
 			store.commit('switchCurrentNote', note);
 		},
 		openContextMenuNote(){
+			window.ga('send', 'event', 'note', 'switchCurrentNote', 'contextMenu');
 			store.dispatch('openContextMenuNote');
 		},
 		deleteContextMenuNote(){
+			window.ga('send', 'event', 'note', 'delete', 'contextMenu');
 			store.dispatch('deleteContextMenuNote');
 		},
 		historyContextMenuNote(){
+			window.ga('send', 'event', 'history', 'enter', 'contextMenu');
 			store.dispatch('historyContextMenuNote');
 		},
 		switchCurrentNotebook(notebook){
@@ -56,18 +61,23 @@ let app = new Vue({
 			store.commit('updateNotebooks', metaData.notebook);
 		},
 		importBackup(){
+			window.ga('send', 'event', 'note', 'importBackup');
 			store.dispatch('importBackup');
 		},
 		export(format){
+			window.ga('send', 'event', 'note', 'export', format);
 			store.dispatch('export', format);
 		},
 		switchLayout(component){
+			window.ga('send', 'event', 'app', 'layout', component);
 			store.commit('switchLayout', component);
 		},
 		versionOpen(){
+			window.ga('send', 'event', 'history', 'switchActiveVersion');
 			store.dispatch('switchActiveVersion');
 		},
 		versionRestore(){
+			window.ga('send', 'event', 'history', 'restoreActiveVersion');
 			store.dispatch('restoreActiveVersion');
 		},
 		doEdit(action){

@@ -144,8 +144,10 @@ export default {
 	watch: {
 		keyword(){
 			if(this.keyword){
+				window.ga('send', 'event', 'note', 'searchStarted');
 				this.$store.dispatch('search', this.keyword);
 			}else{
+				window.ga('send', 'event', 'note', 'searchEnded');
 				this.$store.commit('switchSearching', false);
 			}
 		}
@@ -164,11 +166,13 @@ export default {
 			return ret;
 		},
 		switchCurrentNote(noteId){
+			window.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
 			this.$store.dispatch('switchCurrentNoteById', noteId);
 			// eventHub.$emit('currentNoteChange', noteId);
 		},
 		showContextMenu(noteId){
 			// console.log('contextmenu');
+			window.ga('send', 'event', 'note', 'showContextMenu');
 			this.$store.commit('switchContextMenuNote', noteId);
 			// this.$nextTick(() => {
 			setTimeout(() => {
@@ -221,6 +225,7 @@ export default {
 			_doExchange();
 		},
 		drop(e){
+			window.ga('send', 'event', 'note', 'sort');
 			this.currentMovingNoteId = 0;
 			// console.log('drop', e);
 		}
