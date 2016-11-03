@@ -8,6 +8,7 @@
 	font-family: "PingFang SC";
 	min-height:100%;
 	width:250px;
+	overflow-y: auto;
 }
 .wrapper{
 	line-height: 24px;
@@ -223,9 +224,9 @@ export default {
 				}, 500);
 			}
 			_doExchange();
+			window.ga('send', 'event', 'note', 'sort');
 		},
 		drop(e){
-			window.ga('send', 'event', 'note', 'sort');
 			this.currentMovingNoteId = 0;
 			// console.log('drop', e);
 		}
