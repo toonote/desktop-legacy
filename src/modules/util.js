@@ -11,5 +11,4 @@ if(typeof MacGap !== 'undefined'){
 }else{
 	util.platform = 'web';
 }
-console.log(util.platform);
 export default util;

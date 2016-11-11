@@ -1,13 +1,16 @@
+var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-let npmModules = Object.keys(require('./package.json').dependencies);
-let externals = {};
-npmModules.forEach((npmModule) => {
+// 将npm中的模块在webpack打包时变成require(moduleName)
+// 而不是将代码打包进去
+var npmModules = Object.keys(require('./package.json').dependencies);
+var externals = {};
+npmModules.forEach(function(npmModule){
 	if(npmModule === 'vue'){
-		externals[npmModule] = `commonjs ${npmModule}/dist/vue.js`;
+		externals[npmModule] = 'commonjs ' + npmModule + '/dist/vue.js';
 		return;
 	}
-	externals[npmModule] = `commonjs ${npmModule}`;
+	externals[npmModule] = 'commonjs ' + npmModule;
 });
 
 module.exports = {
@@ -41,7 +44,10 @@ module.exports = {
 		}]
 	},
 	plugins: [
-        new ExtractTextPlugin('style/bundle.css')
+        new ExtractTextPlugin('style/bundle.css'),
+        new webpack.DefinePlugin({
+        	DEBUG: process.env.NODE_ENV !== 'production'
+        })
     ],
 	externals: externals,
     devtool: process.env.NODE_ENV === 'production'?'':'#source-map'

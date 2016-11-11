@@ -125,6 +125,7 @@ import throttle from 'lodash.throttle';
 import {mapGetters} from 'vuex';
 import Menu from '../api/menu/index';
 import util from '../modules/util';
+import logger from '../modules/logger';
 
 let menu = new Menu(util.platform);
 
@@ -145,10 +146,10 @@ export default {
 	watch: {
 		keyword(){
 			if(this.keyword){
-				window.ga('send', 'event', 'note', 'searchStarted');
+				logger.ga('send', 'event', 'note', 'searchStarted');
 				this.$store.dispatch('search', this.keyword);
 			}else{
-				window.ga('send', 'event', 'note', 'searchEnded');
+				logger.ga('send', 'event', 'note', 'searchEnded');
 				this.$store.commit('switchSearching', false);
 			}
 		}
@@ -167,13 +168,13 @@ export default {
 			return ret;
 		},
 		switchCurrentNote(noteId){
-			window.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
+			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
 			this.$store.dispatch('switchCurrentNoteById', noteId);
 			// eventHub.$emit('currentNoteChange', noteId);
 		},
 		showContextMenu(noteId){
 			// console.log('contextmenu');
-			window.ga('send', 'event', 'note', 'showContextMenu');
+			logger.ga('send', 'event', 'note', 'showContextMenu');
 			this.$store.commit('switchContextMenuNote', noteId);
 			// this.$nextTick(() => {
 			setTimeout(() => {
@@ -224,7 +225,7 @@ export default {
 				}, 500);
 			}
 			_doExchange();
-			window.ga('send', 'event', 'note', 'sort');
+			logger.ga('send', 'event', 'note', 'sort');
 		},
 		drop(e){
 			this.currentMovingNoteId = 0;

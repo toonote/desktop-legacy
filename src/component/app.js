@@ -10,6 +10,9 @@ import versions from './versions.vue';
 // 生成store
 import getStore from '../vuex/store';
 
+// 日志上报
+import logger from '../modules/logger';
+
 // 使用Vuex
 Vue.use(Vuex);
 
@@ -25,27 +28,27 @@ let app = new Vue({
 	methods:{
 		// 新建笔记
 		newNote(){
-			window.ga('send', 'event', 'note', 'new');
+			logger.ga('send', 'event', 'note', 'new');
 			store.dispatch('newNote');
 		},
 		// 切换当前笔记
 		switchCurrentNote(note){
-			window.ga('send', 'event', 'note', 'switchCurrentNote', 'init');
+			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'init');
 			store.commit('switchCurrentNote', note);
 		},
 		// 打开当前右键笔记
 		openContextMenuNote(){
-			window.ga('send', 'event', 'note', 'switchCurrentNote', 'contextMenu');
+			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'contextMenu');
 			store.dispatch('openContextMenuNote');
 		},
 		// 删除当前右键笔记
 		deleteContextMenuNote(){
-			window.ga('send', 'event', 'note', 'delete', 'contextMenu');
+			logger.ga('send', 'event', 'note', 'delete', 'contextMenu');
 			store.dispatch('deleteContextMenuNote');
 		},
 		// 查看当前右键笔记历史版本
 		historyContextMenuNote(){
-			window.ga('send', 'event', 'history', 'enter', 'contextMenu');
+			logger.ga('send', 'event', 'history', 'enter', 'contextMenu');
 			store.dispatch('historyContextMenuNote');
 		},
 		// 切换当前笔记本
@@ -58,27 +61,27 @@ let app = new Vue({
 		},
 		// 导入备份
 		importBackup(){
-			window.ga('send', 'event', 'note', 'importBackup');
+			logger.ga('send', 'event', 'note', 'importBackup');
 			store.dispatch('importBackup');
 		},
 		// 导出指定格式
 		export(format){
-			window.ga('send', 'event', 'note', 'export', format);
+			logger.ga('send', 'event', 'note', 'export', format);
 			store.dispatch('export', format);
 		},
 		// 切换界面布局
 		switchLayout(component){
-			window.ga('send', 'event', 'app', 'layout', component);
+			logger.ga('send', 'event', 'app', 'layout', component);
 			store.commit('switchLayout', component);
 		},
 		// 查看当前右键历史版本
 		versionOpen(){
-			window.ga('send', 'event', 'history', 'switchActiveVersion');
+			logger.ga('send', 'event', 'history', 'switchActiveVersion');
 			store.dispatch('switchActiveVersion');
 		},
 		// 恢复当前右键历史版本
 		versionRestore(){
-			window.ga('send', 'event', 'history', 'restoreActiveVersion');
+			logger.ga('send', 'event', 'history', 'restoreActiveVersion');
 			store.dispatch('restoreActiveVersion');
 		},
 		// 编辑相关操作（撤销/重做）
