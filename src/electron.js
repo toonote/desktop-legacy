@@ -36,21 +36,3 @@ app.on('ready', function() {
 		    .catch((err) => console.log('An error occurred: ', err));
 	}
 });
-
-/*var ipc = require('ipc');
-ipc.on('dialog',function(event,arg) {
-	if(arg === 'folderPath'){
-		var dialog = require('dialog');
-		event.returnValue = dialog.showOpenDialog({
-			properties: ['openDirectory']
-		});
-	}
-});
-
-ipc.on('window',function(event,arg){
-	if(arg === 'close'){
-		console.log('enter close');
-		mainWindow.close();
-		event.returnValue = true;
-	}
-});*/
