@@ -66,6 +66,7 @@
 
 <template>
 <section class="sidebar">
+	<login></login>
 	<section class="searchWrapper">
 		<input type="search" v-model.trim="keyword" placeholder="搜索..." />
 	</section>
@@ -121,6 +122,7 @@
 
 
 <script>
+import login from './login.vue';
 import throttle from 'lodash.throttle';
 import {mapGetters} from 'vuex';
 import Menu from '../api/menu/index';
@@ -244,6 +246,9 @@ export default {
 			keyword:''
 		};
 		return data;
+	},
+	components:{
+		login
 	}
 };
 </script>
