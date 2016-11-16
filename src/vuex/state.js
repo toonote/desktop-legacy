@@ -24,5 +24,7 @@ export default {
 		list:[]
 	},
 	contextMenuVersionId: '',
-	editAction: ''
+	editAction: '',
+	// 登录信息
+	user: {}
 }

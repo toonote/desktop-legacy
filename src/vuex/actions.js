@@ -7,6 +7,7 @@ import io from '../modules/io';
 import scroll from '../modules/scroll';
 import renderer from '../modules/renderer';
 import Git from '../modules/git';
+import login from '../modules/login';
 let gitPath = path.join(require('electron').remote.app.getPath('userData'), 'git');
 let git = new Git({
 	path: gitPath
@@ -201,5 +202,9 @@ export default {
 		let searchTitleResults = await meta.searchNote(keyword.toLowerCase());
 
 		context.commit('updateSearchResults', searchTitleResults);
+	},
+	async doLogin(context){
+		// context.commit('updateDoingLogin', true);
+		await login.doLogin();
 	}
 }

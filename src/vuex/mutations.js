@@ -54,5 +54,9 @@ export default {
 	},
 	editAction(state, action){
 		state.editAction = action;
+	},
+	// 登录
+	updateDoingLogin(state, isDoing){
+		state.user.doingLogin = isDoing;
 	}
 }

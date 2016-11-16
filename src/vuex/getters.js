@@ -67,5 +67,9 @@ export default {
 	},
 	editAction(state){
 		return state.editAction
+	},
+	// 登录信息
+	user(state){
+		return state.user
 	}
 }
