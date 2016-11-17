@@ -205,6 +205,7 @@ export default {
 	},
 	async doLogin(context){
 		// context.commit('updateDoingLogin', true);
-		await login.doLogin();
+		let userData = await login.doLogin();
+		context.commit('updateUserInfo', userData);
 	}
 }

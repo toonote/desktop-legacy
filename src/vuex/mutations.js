@@ -58,5 +58,11 @@ export default {
 	// 登录
 	updateDoingLogin(state, isDoing){
 		state.user.doingLogin = isDoing;
+	},
+	// 更新用户信息
+	updateUserInfo(state, user){
+		state.user.doingLogin = false;
+		state.user.name = user.name;
+		state.user.avatarUrl = user.avatarUrl;
 	}
 }

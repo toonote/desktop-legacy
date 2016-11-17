@@ -38,7 +38,7 @@
 
 <template>
 <section class="login">
-	<img v-if="user.avatarUrl" class="avatar" src="https://avatars.githubusercontent.com/u/1243593?v=3" />
+	<img v-if="user.avatarUrl" class="avatar" :src="user.avatarUrl" />
 	<img v-else class="avatar" src="../images/avatar.png" />
 	<div class="userInfo">
 		<span v-if="user.name">{{user.name}}</span>

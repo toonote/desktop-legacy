@@ -26,5 +26,9 @@ export default {
 	contextMenuVersionId: '',
 	editAction: '',
 	// 登录信息
-	user: {}
+	user: {
+		doingLogin: false,
+		name: '',
+		avatarUrl: ''
+	}
 }

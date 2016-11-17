@@ -30,6 +30,7 @@
     "asi": true
   },
   "dependencies": {
+    "axios": "^0.15.2",
     "brace": "^0.7.0",
     "eases": "^1.0.8",
     "highlight.js": "^9.7.0",
