@@ -72,7 +72,9 @@ export default {
 		};
 		return data;
 	},
-	components:{
+	mounted(){
+		this.$store.dispatch('doLogin', true);
 	}
+
 };
 </script>

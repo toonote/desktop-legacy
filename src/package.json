@@ -33,6 +33,7 @@
     "axios": "^0.15.2",
     "brace": "^0.7.0",
     "eases": "^1.0.8",
+    "electron-machine-id": "^1.0.9",
     "highlight.js": "^9.7.0",
     "inline-css": "^2.2.2",
     "jszip": "^3.1.3",

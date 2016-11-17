@@ -203,9 +203,10 @@ export default {
 
 		context.commit('updateSearchResults', searchTitleResults);
 	},
-	async doLogin(context){
+	async doLogin(context, isAuto){
 		// context.commit('updateDoingLogin', true);
-		let userData = await login.doLogin();
+		let userData = await login.doLogin(isAuto);
+		if(!userData) return;
 		context.commit('updateUserInfo', userData);
 	}
 }
