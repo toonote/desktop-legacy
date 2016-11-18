@@ -8,6 +8,8 @@ import scroll from '../modules/scroll';
 import renderer from '../modules/renderer';
 import Git from '../modules/git';
 import login from '../modules/login';
+import cloud from '../modules/cloud';
+
 let gitPath = path.join(require('electron').remote.app.getPath('userData'), 'git');
 let git = new Git({
 	path: gitPath
@@ -208,5 +210,7 @@ export default {
 		let userData = await login.doLogin(isAuto);
 		if(!userData) return;
 		context.commit('updateUserInfo', userData);
+		// 初始化云服务
+		await cloud.init();
 	}
 }
