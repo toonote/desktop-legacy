@@ -9,34 +9,40 @@ import throttle from 'lodash.throttle';
 let note = {};
 let store = new Store(util.platform);
 
-let gitPath = path.join(require('electron').remote.app.getPath('userData'), 'git');
-let git = new Git({
-	path: gitPath
-});
+// 一些监听
+// 比如延时提交git
+// 退出前提交git
+// 定时同步云服务等
+note.startWatch = function(){
+	let gitPath = path.join(require('electron').remote.app.getPath('userData'), 'git');
+	let git = new Git({
+		path: gitPath
+	});
 
-if(!git.hasInited()) git.init();
+	if(!git.hasInited()) git.init();
 
-let commitTitles = [];
-let doGitCommit = throttle(() => {
-	git.commit(commitTitles.join(' '));
-	commitTitles = [];
-}, 5*60*1000);
-let gitCommit = (msg) => {
-	if(commitTitles.indexOf(msg) === -1){
-		commitTitles.push(msg);
-	}
-	doGitCommit();
+	let commitTitles = [];
+	let doGitCommit = throttle(() => {
+		git.commit(commitTitles.join(' '));
+		commitTitles = [];
+	}, 5*60*1000);
+	let gitCommit = (msg) => {
+		if(commitTitles.indexOf(msg) === -1){
+			commitTitles.push(msg);
+		}
+		doGitCommit();
+	};
+
+	// app退出前提交git
+	// 无效，待查
+	// let app = require('electron').remote.app;
+	window.addEventListener('beforeunload', (e) => {
+		// console.log('ready to quit');
+		// e.preventDefault();
+		git.commit(commitTitles.join(' '));
+		// app.exit();
+	});
 };
-
-// app退出前提交git
-// 无效，待查
-// let app = require('electron').remote.app;
-window.addEventListener('beforeunload', (e) => {
-	// console.log('ready to quit');
-	// e.preventDefault();
-	git.commit(commitTitles.join(' '));
-	// app.exit();
-});
 
 note.getTitleFromContent = function(content){
 	let firstLine = content.split('\n', 2)[0];
@@ -91,5 +97,7 @@ note.init = async function(id){
 	gitCommit('INIT');
 	return await store.writeFile(`./note-${id}.md`,content);
 };
+
+note.startWatch();
 
 export default note;
