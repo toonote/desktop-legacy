@@ -16,6 +16,22 @@ let git = new Git({
 });
 
 export default {
+	async init(context) {
+
+		let metaData = await meta.data;
+		// 初始化欢迎笔记
+		if(!metaData.init){
+			await note.init(metaData.notebook[0].notes[0].id);
+			await meta.init();
+		}
+		context.commit('updateNotebooks', metaData.notebook);
+		context.commit('switchCurrentNotebook', metaData.notebook[0]);
+
+		let noteMeta = Object.assign({}, metaData.notebook[0].notes[0]);
+		noteMeta.content = await note.getNote(noteMeta.id);
+		context.commit('switchCurrentNote', noteMeta);
+
+	},
 	async changeCurrentNoteContent(context, content) {
 		let title = note.getTitleFromContent(content);
 		context.commit('changeCurrentNoteContent', content);

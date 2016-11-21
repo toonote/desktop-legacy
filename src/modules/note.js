@@ -13,8 +13,10 @@ let store = new Store(util.platform);
 // 比如延时提交git
 // 退出前提交git
 // 定时同步云服务等
+let gitPath = path.join(require('electron').remote.app.getPath('userData'), 'git');
+let gitCommit;
+
 note.startWatch = function(){
-	let gitPath = path.join(require('electron').remote.app.getPath('userData'), 'git');
 	let git = new Git({
 		path: gitPath
 	});
@@ -26,7 +28,7 @@ note.startWatch = function(){
 		git.commit(commitTitles.join(' '));
 		commitTitles = [];
 	}, 5*60*1000);
-	let gitCommit = (msg) => {
+	gitCommit = (msg) => {
 		if(commitTitles.indexOf(msg) === -1){
 			commitTitles.push(msg);
 		}
