@@ -9,57 +9,60 @@ import renderer from '../modules/renderer';
 import Git from '../modules/git';
 import login from '../modules/login';
 import cloud from '../modules/cloud';
+import logger from '../modules/logger';
 
-let gitPath = path.join(require('electron').remote.app.getPath('userData'), 'git');
-let git = new Git({
-	path: gitPath
-});
+let git = new Git();
 
 export default {
+	// 初始化
 	async init(context) {
 
 		let metaData = await meta.data;
+
+		logger.debug(metaData);
+
 		// 初始化欢迎笔记
 		if(!metaData.init){
-			await note.init(metaData.notebook[0].notes[0].id);
+			await note.init(metaData.notebooks[0].notes[0].id);
 			await meta.init();
 		}
-		context.commit('updateNotebooks', metaData.notebook);
-		context.commit('switchCurrentNotebook', metaData.notebook[0]);
+		// 更新state中的笔记本和当前笔记本
+		context.commit('updateNotebooks', metaData.notebooks);
+		context.commit('switchCurrentNotebook', metaData.notebooks[0]);
 
-		let noteMeta = Object.assign({}, metaData.notebook[0].notes[0]);
-		noteMeta.content = await note.getNote(noteMeta.id);
+		// 获取第一条笔记内容
+		let noteMeta = await note.fillContent(metaData.notebooks[0].notes[0]);
 		context.commit('switchCurrentNote', noteMeta);
 
 	},
+	// 当前笔记内容变更（发生编辑等动作）
 	async changeCurrentNoteContent(context, content) {
 		let title = note.getTitleFromContent(content);
 		context.commit('changeCurrentNoteContent', content);
 		context.commit('changeCurrentNoteTitle', title);
 
-		await note.saveNoteContent(context.state.currentNote);
-
-		// 找到目标笔记并修改标题
-		context.state.notebooks.forEach((notebook) => {
-			notebook.notes.forEach((note, index) => {
-				if(note.id === context.state.currentNote.id){
-					note.title = title;
-				}
-			});
+		// 找到state中的目标笔记并修改标题
+		context.getters.allNotes.forEach((note) => {
+			if(note.id === context.state.currentNote.id){
+				note.title = title;
+			}
 		});
 
-		await meta.updateNote(context.state.currentNote.id, title);
+		// 保存笔记
+		await note.saveNote(context.state.currentNote);
+		// 保存meta信息
+		await meta.updateNote(context.state.currentNote);
 	},
+	// 切换当前笔记
 	async switchCurrentNoteById(context, noteId) {
-		// console.log('[store switchCurrentNoteById]', noteId);
 		let targetNote = context.getters.allNotes.filter((note)=>note.id === noteId)[0];
 		if(targetNote){
-			let content = await note.getNote(targetNote.id);
-			targetNote = Object.assign({}, targetNote, {content});
-			// console.log('[store] switchCurrentNoteById', targetNote);
-			context.commit('switchCurrentNote', targetNote);
+			let noteMeta = await note.fillContent(targetNote);
+			context.commit('switchCurrentNote', noteMeta);
 		}
 	},
+	// 导入笔记
+	// todo:改造
 	async importNotes(context, newNotes) {
 		for(let i=0; i<newNotes.length; i++){
 			let newNote = newNotes[i];
@@ -67,20 +70,18 @@ export default {
 				id:newNote.id,
 				title:newNote.title
 			});
-			await note.addNote(newNote);
+			await note.saveNote(newNote);
 			context.commit('newNote', newNote);
 		}
 	},
+	// 新建笔记
 	async newNote(context) {
-		let newNote = await meta.addNote(context.state.currentNotebook.id);
-		await note.addNote(newNote);
+		let newNote = note.createNewNote();
+		await note.saveNote(newNote);
+		await meta.addNote(context.state.currentNotebook.id, newNote);
 		// let metaData = await meta.data;
-		// eventHub.$emit('metaDidChange', app.metaData);
-
-		// eventHub.$emit('currentNoteWillChange', app.currentNote);
 		context.commit('newNote', newNote);
 		context.commit('switchCurrentNote', newNote);
-		// eventHub.$emit('currentNoteDidChange', app.currentNote);
 	},
 	async openContextMenuNote(context) {
 		context.dispatch('switchCurrentNoteById', context.state.contextMenuNoteId);
@@ -213,7 +214,7 @@ export default {
 		// 找到目标笔记本和笔记
 		let metaData = await meta.exchange(ids.id1, ids.id2);
 
-		context.commit('updateNotebooks', metaData.notebook);
+		context.commit('updateNotebooks', metaData.notebooks);
 
 	},
 	async search(context, keyword) {
@@ -228,5 +229,9 @@ export default {
 		context.commit('updateUserInfo', userData);
 		// 初始化云服务
 		await cloud.init();
+	},
+	async clearData(context){
+		console.log('clear Data');
+		// await io.clearData();
 	}
 }

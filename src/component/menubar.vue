@@ -67,6 +67,7 @@
 <script>
 import Menu from '../api/menu/index';
 import util from '../modules/util';
+import logger from '../modules/logger';
 // import app from '../component/app';
 let menu = new Menu(util.platform);
 
@@ -149,6 +150,10 @@ export default {
 		// 编辑相关操作（撤销/重做）
 		doEdit(action){
 			this.$store.commit('editAction', action);
+		},
+		// 清除数据
+		clearData(){
+			this.$store.dispatch('clearData');
 		}
 		/******************菜单响应结束*****************/
 	},
@@ -221,7 +226,7 @@ export default {
 		menu.buildMenu(this.menuList);
 
 		// 处理菜单绑定
-		menu.on('click',function(eventType, command){
+		menu.on('click',(eventType, command) => {
 			switch(command){
 				case 'devReload':
 					location.reload(true);
@@ -279,6 +284,8 @@ export default {
 				case 'redo':
 					this.doEdit('redo');
 					break;
+				case 'clearData':
+					this.clearData();
 			}
 
 		});

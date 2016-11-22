@@ -26,13 +26,21 @@ class ElectronMenu extends Menu{
 					label: '关于TooNote',
 					role: 'about'
 				});
+				if(DEBUG){
+					subMenu = subMenu.concat([{
+						label:'Reload',
+						accelerator:'cmd+r',
+						click: (item, focusWindow) => {
+							this.trigger('click', 'devReload');
+						}
+					},{
+						label:'清理数据',
+						click: (item, focusWindow) => {
+							this.trigger('click', 'clearData');
+						}
+					}]);
+				}
 				subMenu = subMenu.concat([{
-					label:'Reload',
-					accelerator:'cmd+r',
-					click: (item, focusWindow) => {
-						this.trigger('click', 'devReload');
-					}
-				},{
 					label: '退出',
 					accelerator:'cmd+q',
 					role: 'quit',

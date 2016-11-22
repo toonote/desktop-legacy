@@ -3,7 +3,7 @@ cd src
 npm run build
 cd ..
 mkdir tmp
-mv src/{api,component,modules,vuex,*.map} tmp
+mv src/{api,component,modules,models,vuex,*.map} tmp
 electron-packager src TooNote \
 	--platform=darwin \
 	--arch=x64 --version=1.3.8 \

@@ -35,7 +35,6 @@ export default {
 		state.searchResults = results;
 	},
 	showHistory (state, data) {
-		console.log(data);
 		state.versions.currentNote = data.note;
 		state.versions.list = data.versions;
 	},
