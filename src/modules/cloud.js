@@ -27,7 +27,7 @@ cloud.uploadAllNotes = async function(){
 	});
 	let allNotes = [];
 	let metaData = await meta.data;
-	metaData.notebook.forEach((notebook) => {
+	metaData.notebooks.forEach((notebook) => {
 		notebook.notes.forEach((note) => {
 			allNotes.push(note);
 		});
@@ -36,13 +36,22 @@ cloud.uploadAllNotes = async function(){
 	for(let i=0; i<allNotes.length; i++){
 		let noteItem = allNotes[i];
 		let data = {};
+		data.id = noteItem.id;
 		data.content = await note.getNoteContent(noteItem.id);
 		data.title = note.getTitleFromContent(data.content);
-		data.fileName = noteItem.id + '.md';
-		data.createdAt = new Date(+noteItem.id).toISOString();
+		data.createdAt = noteItem.createdAt;
 		console.log('[cloud] uploading:' + data.title);
 
 		await noteApi.create(data);
 	}
+};
+
+// 同步单条笔记
+cloud.updateNote = async function(note){
+	let noteApi = new CloudApi({
+		model: 'note'
+	});
+
+	await noteApi.update(note);
 };
 export default cloud;

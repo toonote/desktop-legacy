@@ -6,6 +6,7 @@ import path from  'path';
 import fs from  'fs';
 import throttle from 'lodash.throttle';
 import Note from '../models/Note';
+import cloud from './cloud';
 
 let note = {};
 let store = new Store(util.platform);
@@ -16,6 +17,7 @@ let store = new Store(util.platform);
 // 定时同步云服务等
 let gitPath;
 let gitCommit;
+let sync;
 
 note.startWatch = function(){
 	let git = new Git();
@@ -24,18 +26,32 @@ note.startWatch = function(){
 	if(!git.hasInited()) git.init();
 
 	let commitTitles = {};
-	let doGitCommit = throttle(() => {
+	let reallyDoCommit = () => {
 		let message = '';
 		for(let id in commitTitles){
 			message += commitTitles[id] + ' ';
 		}
 		git.commit(message);
 		commitTitles = {};
-	}, 5*60*1000);
+	};
+	let doGitCommit = throttle(reallyDoCommit, 5*60*1000);
 	gitCommit = (id, msg) => {
 		commitTitles[id] = msg;
 		doGitCommit();
 	};
+
+	let syncNotes = {};
+	let reallyDoSync = async (note) => {
+		for(let id in syncNotes){
+			await cloud.updateNote(syncNotes[id]);
+		}
+		syncNotes = {};
+	};
+	let doSync = throttle(reallyDoSync, 10*1000);
+	sync = async (note) => {
+		syncNotes[note.id] = note;
+		await doSync();
+	}
 
 	// app退出前提交git
 	// 无效，待查
@@ -43,7 +59,8 @@ note.startWatch = function(){
 	window.addEventListener('beforeunload', (e) => {
 		// console.log('ready to quit');
 		// e.preventDefault();
-		git.commit(commitTitles.join(' '));
+		reallyDoCommit();
+		reallyDoSync();
 		// app.exit();
 	});
 };
@@ -83,7 +100,8 @@ note.deleteNote = async function(id){
 note.saveNote = async function(note){
 	fs.writeFileSync(path.join(gitPath, `note-${note.id}.md`), note.content, 'utf8');
 	gitCommit(note.id, note.title);
-	return await store.writeFile(`/note-${note.id}.md`,note.content);
+	await store.writeFile(`/note-${note.id}.md`,note.content);
+	await sync(note);
 };
 
 // 将noteMeta填充进内容，返回一个新的对象
