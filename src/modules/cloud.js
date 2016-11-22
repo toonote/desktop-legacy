@@ -54,4 +54,20 @@ cloud.updateNote = async function(note){
 
 	await noteApi.update(note);
 };
+// 新建单条笔记
+cloud.createNote = async function(note){
+	let noteApi = new CloudApi({
+		model: 'note'
+	});
+
+	await noteApi.create(note);
+};
+// 删除单条笔记
+cloud.delete = async function(id){
+	let noteApi = new CloudApi({
+		model: 'note'
+	});
+
+	await noteApi.delete(id);
+};
 export default cloud;

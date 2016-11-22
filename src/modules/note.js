@@ -94,6 +94,7 @@ note.getNoteContent = async function(id){
 note.deleteNote = async function(id){
 	fs.unlinkSync(path.join(gitPath, `note-${id}.md`));
 	gitCommit(id, `删除${id}`);
+	cloud.deleteNote(id);
 	return await store.deleteFile(`./note-${id}.md`);
 };
 
@@ -113,7 +114,9 @@ note.fillContent = async function(note){
 
 // 新建note
 note.createNewNote = function(){
-	return new Note();
+	let newNote = new Note();
+	cloud.createNote(newNote);
+	return newNote;
 };
 
 note.init = async function(id){
