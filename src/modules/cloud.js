@@ -4,16 +4,14 @@ import meta from './meta';
 import note from './note';
 const store = new Store();
 
-let cloud = {};
-
 // 初始化云服务
-cloud.init = async function(){
+export async function init(){
 	let configStr = await store.readFile('/cloud-config');
 	if(!configStr) configStr = '{}';
 	let config = JSON.parse(configStr);
 	if(!config.inited){
 		console.log('[cloud] uploadAllNotes:ready.');
-		await cloud.uploadAllNotes();
+		await this.uploadAllNotes();
 		console.log('[cloud] uploadAllNotes:finished.');
 		config.inited = true;
 		await store.writeFile('/cloud-config', JSON.stringify(config));
@@ -21,7 +19,7 @@ cloud.init = async function(){
 };
 
 // 上传所有笔记
-cloud.uploadAllNotes = async function(){
+export async function uploadAllNotes(){
 	let noteApi = new CloudApi({
 		model: 'note'
 	});
@@ -47,7 +45,7 @@ cloud.uploadAllNotes = async function(){
 };
 
 // 同步单条笔记
-cloud.updateNote = async function(note){
+export async function updateNote(note){
 	let noteApi = new CloudApi({
 		model: 'note'
 	});
@@ -55,7 +53,7 @@ cloud.updateNote = async function(note){
 	await noteApi.update(note);
 };
 // 新建单条笔记
-cloud.createNote = async function(note){
+export async function createNote(note){
 	let noteApi = new CloudApi({
 		model: 'note'
 	});
@@ -63,11 +61,10 @@ cloud.createNote = async function(note){
 	await noteApi.create(note);
 };
 // 删除单条笔记
-cloud.delete = async function(id){
+export async function deleteNote(id){
 	let noteApi = new CloudApi({
 		model: 'note'
 	});
 
 	await noteApi.delete(id);
 };
-export default cloud;

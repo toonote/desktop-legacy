@@ -6,7 +6,7 @@ import path from  'path';
 import fs from  'fs';
 import throttle from 'lodash.throttle';
 import Note from '../models/Note';
-import cloud from './cloud';
+import * as cloud from './cloud';
 
 let note = {};
 let store = new Store(util.platform);

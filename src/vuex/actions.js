@@ -8,7 +8,7 @@ import scroll from '../modules/scroll';
 import renderer from '../modules/renderer';
 import Git from '../modules/git';
 import login from '../modules/login';
-import cloud from '../modules/cloud';
+import * as cloud from '../modules/cloud';
 import logger from '../modules/logger';
 
 let git = new Git();
