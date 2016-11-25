@@ -28,6 +28,7 @@ export default {
 	// 登录信息
 	user: {
 		doingLogin: false,
+		id: 0,
 		name: '',
 		avatarUrl: ''
 	}

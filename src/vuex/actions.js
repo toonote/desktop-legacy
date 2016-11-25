@@ -1,5 +1,7 @@
 import path from 'path';
 import inlineCss from 'inline-css';
+import throttle from 'lodash.throttle';
+
 
 import meta from '../modules/meta';
 import note from '../modules/note';
@@ -10,8 +12,24 @@ import Git from '../modules/git';
 import login from '../modules/login';
 import * as cloud from '../modules/cloud';
 import logger from '../modules/logger';
+import {getConfig, setConfig} from '../modules/config';
 
 let git = new Git();
+
+// 初始化云服务相关
+let syncNotes = {};
+let reallyDoSync = async (note) => {
+	for(let id in syncNotes){
+		await cloud.updateNote(syncNotes[id]);
+	}
+	syncNotes = {};
+};
+let doSync = throttle(reallyDoSync, 10*1000);
+let cloudSync = async (note) => {
+	syncNotes[note.id] = note;
+	await doSync();
+};
+
 
 export default {
 	// 初始化
@@ -34,9 +52,32 @@ export default {
 		let noteMeta = await note.fillContent(metaData.notebooks[0].notes[0]);
 		context.commit('switchCurrentNote', noteMeta);
 
+		// 初始化云服务
+		await context.dispatch('cloudInit');
+	},
+	// 初始化云服务
+	async cloudInit(context){
+		if(!context.state.user.id) return;
+		let cloudInit = await getConfig('cloudInit');
+		if(!cloudInit){
+			await cloud.uploadAllNotes();
+			await setConfig('cloudInit', true);
+		};
+	},
+	// 登录云
+	async doLogin(context, isAuto){
+		// context.commit('updateDoingLogin', true);
+		let userData = await login.doLogin(isAuto);
+		if(!userData) return;
+		context.commit('updateUserInfo', userData);
+		// 初始化云服务
+		await context.dispatch('cloudInit');
 	},
 	// 当前笔记内容变更（发生编辑等动作）
 	async changeCurrentNoteContent(context, content) {
+
+		if(content === context.state.currentNote.content) return;
+
 		let title = note.getTitleFromContent(content);
 		context.commit('changeCurrentNoteContent', content);
 		context.commit('changeCurrentNoteTitle', title);
@@ -52,6 +93,10 @@ export default {
 		await note.saveNote(context.state.currentNote);
 		// 保存meta信息
 		await meta.updateNote(context.state.currentNote);
+		// 云同步
+		if(context.state.user.id){
+			await cloudSync(context.state.currentNote);
+		}
 	},
 	// 切换当前笔记
 	async switchCurrentNoteById(context, noteId) {
@@ -82,6 +127,9 @@ export default {
 		// let metaData = await meta.data;
 		context.commit('newNote', newNote);
 		context.commit('switchCurrentNote', newNote);
+		if(context.state.user.id){
+			cloud.createNote(newNote);
+		}
 	},
 	async openContextMenuNote(context) {
 		context.dispatch('switchCurrentNoteById', context.state.contextMenuNoteId);
@@ -107,6 +155,11 @@ export default {
 		await note.deleteNote(targetId);
 
 		context.dispatch('switchCurrentNoteById');
+
+		if(context.state.user.id){
+			cloud.deleteNote(targetId);
+		}
+
 	},
 	async historyContextMenuNote(context) {
 
@@ -221,14 +274,6 @@ export default {
 		let searchTitleResults = await meta.searchNote(keyword.toLowerCase());
 
 		context.commit('updateSearchResults', searchTitleResults);
-	},
-	async doLogin(context, isAuto){
-		// context.commit('updateDoingLogin', true);
-		let userData = await login.doLogin(isAuto);
-		if(!userData) return;
-		context.commit('updateUserInfo', userData);
-		// 初始化云服务
-		await cloud.init();
 	},
 	async clearData(context){
 		console.log('clear Data');

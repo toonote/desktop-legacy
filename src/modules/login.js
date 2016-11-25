@@ -1,6 +1,7 @@
 import Store from '../api/store/index';
 import axios from 'axios';
 import {machineIdSync} from 'electron-machine-id';
+import {getConfig, setConfig} from './config';
 const store = new Store();
 const login = {};
 
@@ -11,11 +12,11 @@ if(DEBUG){
 let agent;
 
 login.setToken = async function(token){
-	 await store.writeFile(`/cloud-token`, token);
+	await setConfig('cloudToken', token);
 };
 
 login.getToken = async function(){
-	return await store.readFile('/cloud-token');
+	return await getConfig('cloudToken');
 };
 
 login.doLogin = async function(isAuto){
@@ -71,7 +72,6 @@ login.doLogin = async function(isAuto){
 
 // 使用token初始化用户信息
 login.initUser = async function(token){
-	console.log('ready to get userInfo');
 	if(!token){
 		token = await this.getToken();
 	}

@@ -2,21 +2,8 @@ import Store from '../api/store/index';
 import CloudApi from './cloudapi';
 import meta from './meta';
 import note from './note';
+import {getConfig, setConfig} from './config';
 const store = new Store();
-
-// 初始化云服务
-export async function init(){
-	let configStr = await store.readFile('/cloud-config');
-	if(!configStr) configStr = '{}';
-	let config = JSON.parse(configStr);
-	if(!config.inited){
-		console.log('[cloud] uploadAllNotes:ready.');
-		await this.uploadAllNotes();
-		console.log('[cloud] uploadAllNotes:finished.');
-		config.inited = true;
-		await store.writeFile('/cloud-config', JSON.stringify(config));
-	}
-};
 
 // 上传所有笔记
 export async function uploadAllNotes(){

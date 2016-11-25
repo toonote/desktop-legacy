@@ -1,4 +1,3 @@
-import util from './util';
 import Store from '../api/store/index';
 import Git from './git';
 import io from './io';
@@ -6,10 +5,9 @@ import path from  'path';
 import fs from  'fs';
 import throttle from 'lodash.throttle';
 import Note from '../models/Note';
-import * as cloud from './cloud';
 
 let note = {};
-let store = new Store(util.platform);
+let store = new Store();
 
 // 一些监听
 // 比如延时提交git
@@ -17,7 +15,6 @@ let store = new Store(util.platform);
 // 定时同步云服务等
 let gitPath;
 let gitCommit;
-let sync;
 
 note.startWatch = function(){
 	let git = new Git();
@@ -40,19 +37,6 @@ note.startWatch = function(){
 		doGitCommit();
 	};
 
-	let syncNotes = {};
-	let reallyDoSync = async (note) => {
-		for(let id in syncNotes){
-			await cloud.updateNote(syncNotes[id]);
-		}
-		syncNotes = {};
-	};
-	let doSync = throttle(reallyDoSync, 10*1000);
-	sync = async (note) => {
-		syncNotes[note.id] = note;
-		await doSync();
-	}
-
 	// app退出前提交git
 	// 无效，待查
 	// let app = require('electron').remote.app;
@@ -60,7 +44,7 @@ note.startWatch = function(){
 		// console.log('ready to quit');
 		// e.preventDefault();
 		reallyDoCommit();
-		reallyDoSync();
+		// reallyDoSync();
 		// app.exit();
 	});
 };
@@ -94,7 +78,6 @@ note.getNoteContent = async function(id){
 note.deleteNote = async function(id){
 	fs.unlinkSync(path.join(gitPath, `note-${id}.md`));
 	gitCommit(id, `删除${id}`);
-	cloud.deleteNote(id);
 	return await store.deleteFile(`./note-${id}.md`);
 };
 
@@ -102,7 +85,6 @@ note.saveNote = async function(note){
 	fs.writeFileSync(path.join(gitPath, `note-${note.id}.md`), note.content, 'utf8');
 	gitCommit(note.id, note.title);
 	await store.writeFile(`/note-${note.id}.md`,note.content);
-	await sync(note);
 };
 
 // 将noteMeta填充进内容，返回一个新的对象
@@ -115,7 +97,6 @@ note.fillContent = async function(note){
 // 新建note
 note.createNewNote = function(){
 	let newNote = new Note();
-	cloud.createNote(newNote);
 	return newNote;
 };
 

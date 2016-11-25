@@ -1,8 +1,10 @@
+import logger from '../modules/logger';
 export default {
 	newNote(state, note) {
 		state.currentNotebook.notes.push(note);
 	},
 	switchCurrentNote (state, note) {
+		logger.debug('switchCurrentNote');
 		state.currentNote = note;
 	},
 	switchContextMenuNote (state, noteId) {
@@ -12,7 +14,8 @@ export default {
 		state.currentNotebook = notebook;
 	},
 	changeCurrentNoteContent (state, content) {
-		// console.log('[store mutations]', content);
+		logger.debug('changeCurrentNoteContent');
+		// logger.debug(state.currentNote.content);
 		state.currentNote.content = content;
 	},
 	changeCurrentNoteTitle (state, title) {
@@ -61,6 +64,7 @@ export default {
 	// 更新用户信息
 	updateUserInfo(state, user){
 		state.user.doingLogin = false;
+		state.user.id = user.id;
 		state.user.name = user.name;
 		state.user.avatarUrl = user.avatarUrl;
 	}

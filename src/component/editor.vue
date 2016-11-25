@@ -78,6 +78,7 @@ export default {
 			this.onEditorInput();
 		},
 		onEditorInput(){
+			logger.debug('onEditorInput');
 			_content = _aceEditor.getValue();
 			this.$store.dispatch('changeCurrentNoteContent', _content);
 			// eventHub.$emit('currentNoteContentChange', content);

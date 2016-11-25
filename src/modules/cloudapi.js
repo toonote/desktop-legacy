@@ -1,5 +1,6 @@
 import Store from '../api/store/index';
 import axios from 'axios';
+import {getConfig} from './config';
 const store = new Store();
 
 const API_PATH = '/api/v1';
@@ -35,7 +36,7 @@ class CloudApi{
 		return agent.get(this._modelUrl, data);
 	}
 	async _getToken(){
-		return await store.readFile('/cloud-token');
+		return await getConfig('cloudToken');
 	}
 	async _getAgent(){
 		let token = await this._getToken();
