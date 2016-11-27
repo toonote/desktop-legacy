@@ -35,6 +35,9 @@ export default {
 	// 初始化
 	async init(context) {
 
+		// 初始化版本号检查，准备数据升级
+		await context.dispatch('versionUpgrade');
+
 		let metaData = await meta.data;
 
 		logger.debug(metaData);
@@ -54,6 +57,40 @@ export default {
 
 		// 初始化云服务
 		await context.dispatch('cloudInit');
+	},
+	// 初始化版本号检查，如果有必要的话，做相应的升级准备工作
+	async versionUpgrade(){
+		let dataVersion = await getConfig('dataVersion');
+		// 0.2.0 -> 0.3.0是第一个需要做数据升级的
+		if(!dataVersion) dataVersion = '0.2.0';
+
+		let versions = global['require'](path.join(
+			require('electron').remote.app.getAppPath(),
+			'/docs/upgrade/versions.json'
+		));
+		let dataVersionIndex = versions.indexOf(dataVersion);
+		if(dataVersionIndex === -1){
+			alert('您之前使用过更高版本软件创建过数据，使用过程中可能存在数据不兼容的情况。');
+			return;
+		}else if(dataVersionIndex === versions.length - 1){
+			// 当前版本，不需要升级
+			return;
+		}
+
+		// 准备跑升级脚本
+		alert('您已升级到新版本，即将进行数据更新，请耐心等待。');
+
+		let upgradeList = versions.slice(dataVersionIndex + 1);
+		let upgradeItem;
+		while(upgradeItem = upgradeList.shift()){
+			let scriptPath = path.join(
+				require('electron').remote.app.getAppPath(),
+				`/docs/upgrade/scripts/${upgradeItem}.js`
+			);
+			logger.debug('即将升级到${upgradeItem}');
+			global['require'](scriptPath)();
+			await setConfig('dataVersion', upgradeItem);
+		}
 	},
 	// 初始化云服务
 	async cloudInit(context){
