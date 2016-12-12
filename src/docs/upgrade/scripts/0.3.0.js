@@ -10,13 +10,13 @@ let getPureTitle = function(title){
 	}
 };
 
-module.exports = function(){
+module.exports = function(isDebug){
 
 	console.log('[upgrade]即将升级：0.2.0 -> 0.3.0');
 	console.log('[upgrade]step1: 升级meta数据结构');
 
 	let env = '';
-	if(DEBUG){
+	if(isDebug){
 		env = 'Dev-'
 	}
 	let metaKey = `TooNote-LocalStorage-Key-${env}meta.json`;
@@ -37,13 +37,23 @@ module.exports = function(){
 		notebook.id = uuid.v4();
 
 		notebook.notes.forEach(function(note){
+			var tmpId = note.id;
 			console.log('[upgrade]note:%s', note.title);
 			console.log('[upgrade]增加note.pureTitle');
 			note.pureTitle = getPureTitle(note.title);
 			console.log('[upgrade]增加note.createdAt');
-			note.createdAt = +notebook.id;
-			console.log('[upgrade]notebook.id -> uuid');
+			note.createdAt = +tmpId;
+			console.log('[upgrade]note.id -> uuid');
 			note.id = uuid.v4();
+
+			console.log('[upgrade]准备更新content存储');
+			var content = localStorage.getItem(`TooNote-LocalStorage-Key-note-${tmpId}.md`);
+			console.log('[upgrade]读取content成功');
+			localStorage.setItem(`TooNote-LocalStorage-Key-${env}note-${note.id}.md`, content);
+			console.log('[upgrade]写入新content成功');
+			localStorage.removeItem(`TooNote-LocalStorage-Key-${env}note-${tmpId}.md`);
+			console.log('[upgrade]删除旧content成功');
+
 		});
 
 
@@ -51,6 +61,7 @@ module.exports = function(){
 	console.log('[upgrade]准备写入meta');
 	localStorage.setItem(metaKey, JSON.stringify(meta));
 	console.log('[upgrade]写入meta成功');
+
 	console.log('[upgrade]0.2.0 -> 0.3.0升级成功');
 
 };

@@ -88,7 +88,7 @@ export default {
 				`/docs/upgrade/scripts/${upgradeItem}.js`
 			);
 			logger.debug('即将升级到${upgradeItem}');
-			global['require'](scriptPath)();
+			global['require'](scriptPath)(DEBUG);
 			await setConfig('dataVersion', upgradeItem);
 		}
 	},

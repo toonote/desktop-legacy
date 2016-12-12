@@ -6,7 +6,7 @@ const store = new Store();
 const API_PATH = '/api/v1';
 let URL_BASE = 'https://toonote.113.im';
 if(DEBUG){
-	URL_BASE = 'http://localhost:11118';
+	// URL_BASE = 'http://localhost:11118';
 }
 let agent;
 
@@ -25,7 +25,7 @@ class CloudApi{
 	}
 	async delete(id){
 		let agent = await this._getAgent();
-		return agent.delete(this._modelUrl + '/${id}', data);
+		return agent.delete(this._modelUrl + `/${id}`, data);
 	}
 	async read(id){
 		let agent = await this._getAgent();
@@ -33,7 +33,7 @@ class CloudApi{
 		if(id){
 			url += `/${id}`;
 		}
-		return agent.get(this._modelUrl, data);
+		return agent.get(url);
 	}
 	async _getToken(){
 		return await getConfig('cloudToken');

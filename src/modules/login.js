@@ -7,7 +7,7 @@ const login = {};
 
 let URL_BASE = 'https://toonote.113.im';
 if(DEBUG){
-	URL_BASE = 'http://localhost:11118';
+	// URL_BASE = 'http://localhost:11118';
 }
 let agent;
 
