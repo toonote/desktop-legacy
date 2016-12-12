@@ -53,6 +53,7 @@ export default {
 		},
 		onPaste(e){
 			if(!e.clipboardData.items || !e.clipboardData.items.length) return;
+			// 判断是否有图片
 			let hasImage = false;
 			for(let i = e.clipboardData.items.length;i--;){
 				let item = e.clipboardData.items[i];
@@ -60,12 +61,31 @@ export default {
 					hasImage = true;
 				}
 			}
-			if(!hasImage) return;
 
-			let imagePath = io.saveImageFromClipboard();
+			// 判断是否是表格
+			// 例如从numbers复制出来的会同时有image/png和text
+			let isTable = true;
+			let text = e.clipboardData.getData('text/plain');
+			// 如果没有\n，认为不是表格
+		    if(!/\n/.test(text)){
+		    	isTable = false;
+		    }
+			let rows = text.split('\n').filter(row => row);
+		    // 如果有不含\t的，认为不是表格
+		    if(rows.some(row => !/\t/.test(row))){
+		        isTable = false;
+		    }
 
-			this.insertImg(imagePath);
-			logger.ga('send', 'event', 'editor', 'insertImg', 'paste');
+			// 插入图片
+			if(hasImage && !isTable){
+				let imagePath = io.saveImageFromClipboard();
+
+				this.insertImg(imagePath);
+				logger.ga('send', 'event', 'editor', 'insertImg', 'paste');
+			}else if(isTable){
+				this.insertTable(rows);
+			}
+
 		},
 		insertImg(imagePath){
 
@@ -76,6 +96,63 @@ export default {
 				_aceEditor.insert(`拖拽插入图片出错！`);
 			}
 			this.onEditorInput();
+		},
+		insertTable(rows){
+
+			let getTextWidth = (str) => {
+				let ret = str.length;
+				for(let i=str.length; i--; ){
+					if(str[i].charCodeAt(0) > 127){
+						ret++;
+					}
+				}
+				return ret;
+			};
+
+			let paddingRight = (str, char, length) => {
+				for(var i=length-getTextWidth(str);i--;){
+					str += char;
+				}
+				return str;
+			};
+
+			// 确定每一列的长度
+			let colWidth = [];
+
+			let rowArray = rows.map((row) => {
+				let cols = row.split('\t');
+				for(let i=0;i<cols.length;i++){
+					let thisColWidth = getTextWidth(cols[i]);
+					if(!colWidth[i]) colWidth[i] = 0;
+
+					if(thisColWidth > colWidth[i]){
+						colWidth[i] = thisColWidth;
+					}
+				}
+				return cols;
+			});
+
+			// 添加一个表头下面的行（第2行）
+			rowArray.splice(1, 0, colWidth.map((width)=>paddingRight('', '-', width)));
+
+			let ret = rowArray.map((row) => {
+				let ret = '|';
+
+				ret += row.map((col, index) => {
+					let thisColWidth = colWidth[index];
+					return paddingRight(col, ' ', thisColWidth) + '|';
+				}).join('');
+
+				return ret;
+			}).join('\n');
+
+			let undo = _aceEditor.getSession().getUndoManager();
+
+			setTimeout(()=>{
+				undo.undo();
+				_aceEditor.insert(`${ret}`);
+			});
+
 		},
 		onEditorInput(){
 			logger.debug('onEditorInput');
