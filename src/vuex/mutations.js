@@ -21,6 +21,11 @@ export default {
 	changeCurrentNoteTitle (state, title) {
 		state.currentNote.title = title;
 	},
+	updateNoteVersion (state, note){
+		if(state.currentNote.id === note.id){
+			// state.currentNote.remoteVersion = state.current
+		}
+	},
 	updateNotebooks (state, notebooks) {
 		state.notebooks = notebooks;
 	},

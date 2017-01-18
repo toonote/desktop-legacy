@@ -18,16 +18,19 @@ let git = new Git();
 
 // 初始化云服务相关
 let syncNotes = {};
-let reallyDoSync = async (note) => {
+let reallyDoSync = async (callback) => {
 	for(let id in syncNotes){
 		await cloud.updateNote(syncNotes[id]);
+		callback && callback();
+		// syncNotes[id].remoteVersion = syncNotes[id].localVersion;
+		// console.log(syncNotes[id]);
 	}
 	syncNotes = {};
 };
 let doSync = throttle(reallyDoSync, 10*1000);
-let cloudSync = async (note) => {
+let cloudSync = async (note, callback) => {
 	syncNotes[note.id] = note;
-	await doSync();
+	await doSync(callback);
 };
 
 
@@ -115,6 +118,8 @@ export default {
 
 		if(content === context.state.currentNote.content) return;
 
+		let isCloud = context.state.user.id;
+
 		let title = note.getTitleFromContent(content);
 		context.commit('changeCurrentNoteContent', content);
 		context.commit('changeCurrentNoteTitle', title);
@@ -123,6 +128,14 @@ export default {
 		context.getters.allNotes.forEach((note) => {
 			if(note.id === context.state.currentNote.id){
 				note.title = title;
+				// 如果需要云同步，则处理版本号
+				// 当本地版本号比远程高时，不处理
+				// 当本地版本号与远程相同时，版本号+1
+				if(isCloud){
+					if(note.localVersion === note.serverVersion){
+						note.localVersion++;
+					}
+				}
 			}
 		});
 
@@ -131,8 +144,12 @@ export default {
 		// 保存meta信息
 		await meta.updateNote(context.state.currentNote);
 		// 云同步
-		if(context.state.user.id){
-			await cloudSync(context.state.currentNote);
+		if(isCloud){
+			await cloudSync(context.state.currentNote, (function(currentNote){
+				return () => {
+					context.commit('updateNoteVersion', currentNote);
+				};
+			})(context.state.currentNote));
 		}
 	},
 	// 切换当前笔记

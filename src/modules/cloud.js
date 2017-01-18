@@ -37,7 +37,7 @@ export async function updateNote(note){
 		model: 'note'
 	});
 
-	await noteApi.update(note);
+	await noteApi.update({...note, version: note.localVersion});
 };
 // 新建单条笔记
 export async function createNote(note){
@@ -45,7 +45,7 @@ export async function createNote(note){
 		model: 'note'
 	});
 
-	await noteApi.create(note);
+	await noteApi.create({...note, version: note.localVersion});
 };
 // 删除单条笔记
 export async function deleteNote(id){

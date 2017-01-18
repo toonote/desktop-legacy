@@ -12,7 +12,16 @@ class Meta{
 	get data(){
 		return store.readFile('/meta.json').then((content) => {
 			if(content){
-				return JSON.parse(content);
+				let metaData = JSON.parse(content);
+				metaData.notebooks.forEach((notebook) => {
+					notebook.notes.forEach((noteItem) => {
+						if(!noteItem.localVersion){
+							noteItem.localVersion = 1;
+							noteItem.remoteVersion = 0;
+						}
+					});
+				});
+				return metaData;
 			}else{
 				return this._initData();
 			}
@@ -67,6 +76,8 @@ class Meta{
 			notebook.notes.forEach((noteItem)=>{
 				if(note.id === noteItem.id){
 					noteItem.title = note.title;
+					noteItem.localVersion = note.localVersion;
+					noteItem.remoteVersion = note.remoteVersion;
 					// noteItem.pureTitle = note.
 				}
 			});
