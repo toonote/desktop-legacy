@@ -8,7 +8,7 @@
     "dev": "webpack -w",
     "build": "NODE_ENV=production webpack",
     "run": "electron .",
-    "start": "./node_modules/.bin/npm-run-all -p -r dev run"
+    "start": "npm-run-all -p -r dev run"
   },
   "author": "TooBug",
   "license": "ISC",
@@ -56,6 +56,7 @@
     "electron-devtools-installer": "^2.0.1",
     "extract-text-webpack-plugin": "^2.0.0-beta.5",
     "file-loader": "^0.8.5",
+    "npm-run-all": "^4.0.2",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
     "vue-hot-reload-api": "^2.0.6",
