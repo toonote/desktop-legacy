@@ -60,9 +60,15 @@ export default {
 		context.commit('updateNotebooks', metaData.notebooks);
 		context.commit('switchCurrentNotebook', metaData.notebooks[0]);
 
-		// 获取第一条笔记内容
-		let noteMeta = await note.fillContent(metaData.notebooks[0].notes[0]);
-		context.commit('switchCurrentNote', noteMeta);
+		// 获取上一次打开的笔记ID
+		let lastOpenNoteId = await getConfig('lastOpenNoteId');
+		if(lastOpenNoteId){
+			await context.dispatch('switchCurrentNoteById', lastOpenNoteId);
+		}else{
+			// 获取第一条笔记内容
+			let noteMeta = await note.fillContent(metaData.notebooks[0].notes[0]);
+			context.commit('switchCurrentNote', noteMeta);
+		}
 
 		// 初始化云服务
 		if(CLOUD){
@@ -166,6 +172,8 @@ export default {
 		if(targetNote){
 			let noteMeta = await note.fillContent(targetNote);
 			context.commit('switchCurrentNote', noteMeta);
+			// 记住当前笔记ID，下一次打开时恢复打开状态
+			await setConfig('lastOpenNoteId', targetNote.id);
 		}
 	},
 	// 导入笔记
