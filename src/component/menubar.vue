@@ -132,6 +132,11 @@ export default {
 			logger.ga('send', 'event', 'note', 'export', format);
 			this.$store.dispatch('export', format);
 		},
+		// 复制指定格式
+		copy(format){
+			logger.ga('send', 'event', 'note', 'copy', format);
+			this.$store.dispatch('copy', format);
+		},
 		// 切换界面布局
 		switchLayout(component){
 			logger.ga('send', 'event', 'app', 'layout', component);
@@ -201,7 +206,16 @@ export default {
 			},{
 				title:'Edit',
 				isActive:false,
-				subMenu:[]
+				subMenu:[{
+					title:'复制全文MD',
+					event:'copyFullMd'
+				},{
+					title:'复制全文HTML',
+					event:'copyFullHTML'
+				},{
+					title:'复制全文(微信)',
+					event:'copyFullHTMLForWx'
+				}]
 			},{
 				title:'View',
 				isActive:false,
@@ -286,6 +300,16 @@ export default {
 					break;
 				case 'clearData':
 					this.clearData();
+					break;
+				case 'copyFullMd':
+					this.copy('md');
+					break;
+				case 'copyFullHTML':
+					this.copy('html');
+					break;
+				case 'copyFullHTMLForWx':
+					this.copy('wx');
+					break;
 			}
 
 		});

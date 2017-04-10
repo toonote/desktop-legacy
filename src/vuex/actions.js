@@ -39,6 +39,17 @@ if(!CLOUD){
 	};
 }
 
+// 获取带样式的html
+let getHtmlWithCss = async (md) => {
+	let content = renderer.render(md);
+	let cssText = io.getFileText('/style/htmlbody.css');
+	content = await inlineCss(`<body class="htmlBody">${content}</body>`, {
+		url: '/',
+		extraCss: cssText
+	});
+	return content;
+};
+
 
 export default {
 	// 初始化
@@ -289,12 +300,7 @@ export default {
 				content = renderer.render(context.state.currentNote.content);
 				break;
 			case 'htmlBodyWithCss':
-				content = renderer.render(context.state.currentNote.content);
-				let cssText = io.getFileText('/style/htmlbody.css');
-				content = await inlineCss(`<body class="htmlBody">${content}</body>`, {
-					url: '/',
-					extraCss: cssText
-				});
+				content = await getHtmlWithCss(context.state.currentNote.content);
 				console.log(content);
 				break;
 			case 'html':
@@ -328,6 +334,35 @@ export default {
 						break;
 		}
 		io.export(format, content);
+	},
+	async copy(context, format) {
+		let content = '';
+		let type = '';
+		switch(format){
+			case 'md':
+				type = 'text';
+				content = context.state.currentNote.content;
+				break;
+			case 'html':
+				type = 'html';
+				content = await getHtmlWithCss(context.state.currentNote.content);
+				break;
+			case 'wx':
+				type = 'html';
+				content = await getHtmlWithCss(context.state.currentNote.content);
+				content = content;
+				break;
+		}
+		let clipboard = require('electron').clipboard;
+		if(type === 'text'){
+			clipboard.writeText(content);
+		}else if(type === 'html'){
+			clipboard.write({
+				text: context.state.currentNote.content,
+				html: content
+			});
+		}
+
 	},
 	async syncScroll(context, row) {
 		let targetPosition = context.state.scrollMap[row];
