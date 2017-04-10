@@ -40,9 +40,13 @@ if(!CLOUD){
 }
 
 // 获取带样式的html
-let getHtmlWithCss = async (md) => {
+let getHtmlWithCss = async (md, cssList = []) => {
 	let content = renderer.render(md);
 	let cssText = io.getFileText('/style/htmlbody.css');
+	cssText += io.getFileText('/node_modules/highlight.js/styles/tomorrow.css');
+	cssList.forEach((cssPath) => {
+		cssText += io.getFileText(cssPath);
+	});
 	content = await inlineCss(`<body class="htmlBody">${content}</body>`, {
 		url: '/',
 		extraCss: cssText
@@ -349,8 +353,12 @@ export default {
 				break;
 			case 'wx':
 				type = 'html';
-				content = await getHtmlWithCss(context.state.currentNote.content);
-				content = content;
+				content = await getHtmlWithCss(context.state.currentNote.content, [
+					'/style/wx.css'
+				]);
+				content = content.replace(/<\/span>\n/ig, '</span><br />');
+				content = content.replace(/([^>])$/img, '$1<br />');
+				content = content.replace(/<br \/>\n/ig, '<br />');
 				break;
 		}
 		let clipboard = require('electron').clipboard;

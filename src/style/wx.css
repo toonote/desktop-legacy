@@ -1,0 +1,49 @@
+.htmlBody h1,.htmlBody h2{
+	font-size:20px;
+	line-height: 28px;
+	text-align:center;
+}
+.htmlBody h3{
+	font-size:16px;
+}
+.htmlBody p,
+.htmlBody ul,
+.htmlBody ol{
+	color:#4D4D4C;
+	margin-top:14px;
+	margin-bottom: 14px;
+	font-size: 14px;
+	line-height: 28px;
+	letter-spacing: 2px;
+}
+.htmlBody ul p,
+.htmlBody ol p{
+	font-size: 12px;
+	line-height: 24px;
+}
+.htmlBody pre{
+	padding:10px;
+	font-size:10px;
+	overflow-x:auto;
+	background:#F0F0F0;
+	margin-bottom: 14px;
+	border:0 none;
+}
+.htmlBody pre code{
+	background:#F0F0F0;
+}
+.htmlBody p code{
+	font-size: 10px;
+	/*padding:0 3px;*/
+}
+/*.htmlBody ol,.htmlBody ul{
+	margin-left:0;
+}*/
+.htmlBody ol{
+	list-style-type: decimal-leading-zero;
+	padding-bottom:14px;
+}
+.htmlBody ul{
+	list-style-type: disc;
+	padding-bottom:14px;
+}
