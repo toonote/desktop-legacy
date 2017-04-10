@@ -64,12 +64,13 @@ io.selectFileContent = (filters) => {
 };
 
 // 选择写入路径
-io.selectPathForWrite = (filters) => {
+io.selectPathForWrite = (filters, filename = '未命名') => {
 	var remote = require('electron').remote;
 	var dialog = remote.dialog;
 	var filePath = dialog.showSaveDialog({
 		filters: filters,
-		properties: ['createDirectory']
+		properties: ['createDirectory'],
+		defaultPath: filename
 	});
 	if(!filePath) return;
 
@@ -99,7 +100,7 @@ io.getNotesFromBackUp = async function(){
 }
 
 // 导出为各种格式文件
-io.export = function(format, content){
+io.export = function(format, content, filename, callback = function(){}){
 	var filters = [];
 	if(format === 'md'){
 		filters.push({
@@ -117,7 +118,7 @@ io.export = function(format, content){
 			extensions: ['pdf']
 		});
 	}
-	let filePath = io.selectPathForWrite(filters);
+	let filePath = io.selectPathForWrite(filters, filename);
 	let htmlTmpPath;
 
 	if(!filePath) return;
@@ -125,10 +126,27 @@ io.export = function(format, content){
 	if(format === 'pdf') {
 		let cwd = path.dirname(filePath);
 		// 如果是pdf，先生成一个临时HTML文件
-		htmlTmpPath = path.join(cwd,'ToonotePdfTmp.html');
+		htmlTmpPath = path.join(cwd,'.toonotepdftmp.html');
 		fs.writeFileSync(htmlTmpPath, content, 'utf8');
 		// 生成pdf
-		let spawn = require('child_process').spawn;
+		const {BrowserWindow} = require('electron').remote;
+		let win = new BrowserWindow({
+			width: 768,
+			height: 1024,
+			show: false
+		});
+		win.loadURL('file://' + htmlTmpPath);
+		let contents = win.webContents;
+		contents.on('did-finish-load', () => {
+			contents.printToPDF({}, (error, data) => {
+				if (error) throw error;
+				fs.writeFileSync(filePath, data);
+				win.close();
+				// 删除HTML文件
+				fs.unlinkSync(htmlTmpPath);
+			});
+		});
+		/*let spawn = require('child_process').spawn;
 		let pdfprocess = spawn(path.join(require('electron').remote.app.getAppPath(), 'lib/phantomjs'),[
 			path.join(require('electron').remote.app.getAppPath(), 'lib/html2pdf.js'),
 			encodeURI(htmlTmpPath),
@@ -148,7 +166,7 @@ io.export = function(format, content){
 			fs.unlink(htmlTmpPath, function(){
 				console.log('htm deleted');
 			});
-		});
+		});*/
 	}else{
 		fs.writeFileSync(filePath, content, 'utf8');
 	}

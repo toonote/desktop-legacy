@@ -1,14 +1,25 @@
 .htmlBody{
-	font-size: 10px;
-	line-height: 1.5em;
+	/*font-size: 10px;*/
+	line-height: 1.8em;
 }
 .htmlBody h1{
 	line-height: 28px;
 	text-align:center;
 }
-.htmlBody p,
 .htmlBody ul,
 .htmlBody ol{
-	margin-top:0;
-	margin-bottom: 14px;
+	margin-left:0;
+	/*line-height: 1.5em;*/
+}
+.htmlBody li{
+	line-height: 1.5em;
+	/*margin-bottom: 1em;*/
+}
+.htmlBody p{
+	margin-bottom: 1em;
+}
+.htmlBody pre code{
+	padding:15px 10px;
+	font-size:12px;
+	line-height: 1.2em;
 }

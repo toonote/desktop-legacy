@@ -337,7 +337,7 @@ export default {
 						'<body class="htmlBody">\n' + body + '</body>\n</html>';
 						break;
 		}
-		io.export(format, content);
+		io.export(format, content, context.state.currentNote.title);
 	},
 	async copy(context, format) {
 		let content = '';
