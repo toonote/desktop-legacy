@@ -60,6 +60,7 @@
 /*todo*/
 .htmlBody li.todo{
 	list-style: none;
+	margin-left: -1.4em;
 }
 .htmlBody li.todo.done{
 	color:#aaa;
