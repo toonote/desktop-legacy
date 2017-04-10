@@ -33,6 +33,12 @@ let cloudSync = async (note, callback) => {
 	await doSync(callback);
 };
 
+if(!CLOUD){
+	cloudSync = async () => {
+
+	};
+}
+
 
 export default {
 	// 初始化
@@ -59,7 +65,9 @@ export default {
 		context.commit('switchCurrentNote', noteMeta);
 
 		// 初始化云服务
-		await context.dispatch('cloudInit');
+		if(CLOUD){
+			await context.dispatch('cloudInit');
+		}
 	},
 	// 初始化版本号检查，如果有必要的话，做相应的升级准备工作
 	async versionUpgrade(){
@@ -118,7 +126,7 @@ export default {
 
 		if(content === context.state.currentNote.content) return;
 
-		let isCloud = context.state.user.id;
+		let isCloud = context.state.user.id && CLOUD;
 
 		let title = note.getTitleFromContent(content);
 		context.commit('changeCurrentNoteContent', content);
@@ -181,7 +189,7 @@ export default {
 		// let metaData = await meta.data;
 		context.commit('newNote', newNote);
 		context.commit('switchCurrentNote', newNote);
-		if(context.state.user.id){
+		if(context.state.user.id && CLOUD){
 			cloud.createNote(newNote);
 		}
 	},
@@ -210,7 +218,7 @@ export default {
 
 		context.dispatch('switchCurrentNoteById');
 
-		if(context.state.user.id){
+		if(context.state.user.id && CLOUD){
 			cloud.deleteNote(targetId);
 		}
 

@@ -46,7 +46,8 @@ module.exports = {
 	plugins: [
         new ExtractTextPlugin('style/bundle.css'),
         new webpack.DefinePlugin({
-        	DEBUG: process.env.NODE_ENV !== 'production'
+        	DEBUG: process.env.NODE_ENV !== 'production',
+			CLOUD: !!process.env.CLOUD
         })
     ],
 	externals: externals,

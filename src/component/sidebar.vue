@@ -66,7 +66,7 @@
 
 <template>
 <section class="sidebar">
-	<user></user>
+	<user v-if="isCloud"></user>
 	<section class="searchWrapper">
 		<input type="search" v-model.trim="keyword" placeholder="搜索..." />
 	</section>
@@ -240,6 +240,7 @@ export default {
 	},
 	data(){
 		var data = {
+			isCloud: CLOUD,
 			currentMovingNoteId:0,
 			currentTargetingNoteId:0,
 			isAnimating:false,

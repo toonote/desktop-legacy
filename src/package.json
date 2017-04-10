@@ -8,7 +8,8 @@
     "dev": "webpack -w",
     "build": "NODE_ENV=production webpack",
     "run": "electron .",
-    "start": "npm-run-all -p -r dev run"
+    "start": "npm-run-all -p -r dev run",
+    "cloud": "CLOUD=1 npm-run-all -p -r dev run"
   },
   "author": "TooBug",
   "license": "ISC",
