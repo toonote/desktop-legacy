@@ -24,5 +24,12 @@ export default {
 		list:[]
 	},
 	contextMenuVersionId: '',
-	editAction: ''
+	editAction: '',
+	// 登录信息
+	user: {
+		doingLogin: false,
+		id: 0,
+		name: '',
+		avatarUrl: ''
+	}
 }

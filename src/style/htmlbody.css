@@ -42,7 +42,9 @@
 .htmlBody ul,.htmlBody ol{
 	margin-bottom: 28px;
 	/*padding-left:34px;*/
-	list-style-position: inside;
+	/*list-style-position: inside;*/
+	margin-left: 2em;
+	list-style-position: outside;
 }
 .htmlBody li > p{
 	text-indent: 0;

@@ -67,7 +67,10 @@
 <script>
 import Menu from '../api/menu/index';
 import util from '../modules/util';
+import logger from '../modules/logger';
+// import app from '../component/app';
 let menu = new Menu(util.platform);
+
 export default {
 	methods:{
 		menuClick(title){
@@ -83,7 +86,76 @@ export default {
 		},
 		subMenuClick(event){
 			menu.onClick(event);
+		},
+
+		/******************以下为菜单响应*****************/
+		// 新建笔记
+		newNote(){
+			logger.ga('send', 'event', 'note', 'new');
+			this.$store.dispatch('newNote');
+		},
+		// 切换当前笔记
+		switchCurrentNote(note){
+			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'init');
+			this.$store.commit('switchCurrentNote', note);
+		},
+		// 打开当前右键笔记
+		openContextMenuNote(){
+			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'contextMenu');
+			this.$store.dispatch('openContextMenuNote');
+		},
+		// 删除当前右键笔记
+		deleteContextMenuNote(){
+			logger.ga('send', 'event', 'note', 'delete', 'contextMenu');
+			this.$store.dispatch('deleteContextMenuNote');
+		},
+		// 查看当前右键笔记历史版本
+		historyContextMenuNote(){
+			logger.ga('send', 'event', 'history', 'enter', 'contextMenu');
+			this.$store.dispatch('historyContextMenuNote');
+		},
+		// 切换当前笔记本
+		switchCurrentNotebook(notebook){
+			this.$store.commit('switchCurrentNotebook', notebook);
+		},
+		// 更新meta信息
+		updateMeta(metaData){
+			this.$store.commit('updateNotebooks', metaData.notebook);
+		},
+		// 导入备份
+		importBackup(){
+			logger.ga('send', 'event', 'note', 'importBackup');
+			this.$store.dispatch('importBackup');
+		},
+		// 导出指定格式
+		export(format){
+			logger.ga('send', 'event', 'note', 'export', format);
+			this.$store.dispatch('export', format);
+		},
+		// 切换界面布局
+		switchLayout(component){
+			logger.ga('send', 'event', 'app', 'layout', component);
+			this.$store.commit('switchLayout', component);
+		},
+		// 查看当前右键历史版本
+		versionOpen(){
+			logger.ga('send', 'event', 'history', 'switchActiveVersion');
+			this.$store.dispatch('switchActiveVersion');
+		},
+		// 恢复当前右键历史版本
+		versionRestore(){
+			logger.ga('send', 'event', 'history', 'restoreActiveVersion');
+			this.$store.dispatch('restoreActiveVersion');
+		},
+		// 编辑相关操作（撤销/重做）
+		doEdit(action){
+			this.$store.commit('editAction', action);
+		},
+		// 清除数据
+		clearData(){
+			this.$store.dispatch('clearData');
 		}
+		/******************菜单响应结束*****************/
 	},
 	data(){
 		let data = {
@@ -152,9 +224,71 @@ export default {
 	},
 	mounted(){
 		menu.buildMenu(this.menuList);
-		/*this.$nextTick(()=>{
-			this.$dispatch('toggleMenubar', menu.isVue);
-		});*/
+
+		// 处理菜单绑定
+		menu.on('click',(eventType, command) => {
+			switch(command){
+				case 'devReload':
+					location.reload(true);
+					break;
+				case 'newNote':
+					this.newNote();
+					break;
+				case 'noteOpen':
+					this.openContextMenuNote();
+					break;
+				case 'noteDelete':
+					if(confirm('确定要删除该笔记吗？删除后将无法找回该笔记内容')){
+						this.deleteContextMenuNote();
+					}
+					break;
+				case 'noteHistory':
+					this.historyContextMenuNote();
+					break;
+				case 'importBackup':
+					this.importBackup();
+					break;
+				case 'exportMd':
+					this.export('md');
+					break;
+				case 'exportHtmlBody':
+					this.export('htmlBody');
+					break;
+				case 'exportHtmlBodyWithCss':
+					this.export('htmlBodyWithCss');
+					break;
+				case 'exportHtml':
+					this.export('html');
+					break;
+				case 'exportPdf':
+					this.export('pdf');
+					break;
+				case 'switchLayoutSidebar':
+					this.switchLayout('sidebar');
+					break;
+				case 'switchLayoutEditor':
+					this.switchLayout('editor');
+					break;
+				case 'switchLayoutPreview':
+					this.switchLayout('preview');
+					break;
+				case 'versionOpen':
+					this.versionOpen();
+					break;
+				case 'versionRestore':
+					this.versionRestore();
+					break;
+				case 'undo':
+					this.doEdit('undo');
+					break;
+				case 'redo':
+					this.doEdit('redo');
+					break;
+				case 'clearData':
+					this.clearData();
+			}
+
+		});
 	}
 };
 </script>

@@ -50,7 +50,7 @@ let customerRulesMap = {
 };
 
 for(let token in customerRulesMap){
-	console.log('[preview]',token);
+	// console.log('[preview]',token);
 	let tag = customerRulesMap[token];
 	renderer.renderer.rules[`${token}_open`] = function (tokens, idx) {
 		var line;

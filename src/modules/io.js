@@ -120,6 +120,8 @@ io.export = function(format, content){
 	let filePath = io.selectPathForWrite(filters);
 	let htmlTmpPath;
 
+	if(!filePath) return;
+
 	if(format === 'pdf') {
 		let cwd = path.dirname(filePath);
 		// 如果是pdf，先生成一个临时HTML文件

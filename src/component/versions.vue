@@ -104,7 +104,7 @@
 						v-on:click="switchCurrentVersion(version.id)"
 						v-on:contextmenu="showContextMenu(version.id)"
 					>{{formatDate(version.date)}}</li>
-				</transition-group>
+				</ul>
 			</li>
 		</ul>
 	</section>

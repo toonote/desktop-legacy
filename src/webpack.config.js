@@ -23,14 +23,14 @@ module.exports = {
 	module: {
 		loaders: [{
 			test: /\.vue$/,
-			loader: 'vue'
+			loader: 'vue-loader'
 		},{
 			test: /\.png$/,
-			loader: 'url?limit=100000'
+			loader: 'url-loader?limit=100000'
 		},{
 			test: /\.js$/,
 			exclude: /node_modules/,
-			loader: 'babel',
+			loader: 'babel-loader',
 			query: {
 				// presets: ['es2015','stage-0'],
 				// plugins: ['transform-runtime']
@@ -46,7 +46,8 @@ module.exports = {
 	plugins: [
         new ExtractTextPlugin('style/bundle.css'),
         new webpack.DefinePlugin({
-        	DEBUG: process.env.NODE_ENV !== 'production'
+        	DEBUG: process.env.NODE_ENV !== 'production',
+			CLOUD: !!process.env.CLOUD
         })
     ],
 	externals: externals,

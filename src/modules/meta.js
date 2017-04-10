@@ -1,5 +1,7 @@
 import util from './util';
 import Store from '../api/store/index';
+import Note from '../models/Note';
+import Notebook from '../models/Notebook';
 
 let store = new Store(util.platform);
 
@@ -10,26 +12,36 @@ class Meta{
 	get data(){
 		return store.readFile('/meta.json').then((content) => {
 			if(content){
-				return JSON.parse(content);
+				let metaData = JSON.parse(content);
+				metaData.notebooks.forEach((notebook) => {
+					notebook.notes.forEach((noteItem) => {
+						if(!noteItem.localVersion){
+							noteItem.localVersion = 1;
+							noteItem.remoteVersion = 0;
+						}
+					});
+				});
+				return metaData;
 			}else{
 				return this._initData();
 			}
 		});
 	}
 	async _initData(){
+		let newNotebook = new Notebook({
+			title:'TooNote'
+		});
+		newNotebook.addNote(new Note({
+			title:'欢迎使用TooNote',
+		}).getMeta());
+
 		let data = {
 			init:false,
 			recent:[],
-			notebook:[{
-				id:Date.now()+((Math.random()*10000)>>0),
-				title:'TooNote',
-				notes:[{
-					id:Date.now()+((Math.random()*10000)>>0),
-					title:'欢迎使用TooNote',
-				}]
-			}]
+			notebooks:[newNotebook.getMeta()]
 		};
-		await store.writeFile('/meta.json',JSON.stringify(data));
+
+		await store.writeFile('/meta.json', JSON.stringify(data));
 		return data;
 	}
 	async init(){
@@ -39,23 +51,17 @@ class Meta{
 	}
 	async addNote(notebookId, note){
 		let data = await this.data;
-		var targetNotebook = data.notebook.filter(function(metaNotebook){
+		var targetNotebook = data.notebooks.filter(function(metaNotebook){
 			return metaNotebook.id === notebookId;
 		})[0];
 
-		if(!note){
-			note = {
-				id:Date.now()+((Math.random()*10000)>>0),
-				title:'Unititled Note'
-			};
-		}
-		targetNotebook.notes.push(note);
+		targetNotebook.notes.push(note.getMeta());
 		await store.writeFile('/meta.json', JSON.stringify(data));
 		return note;
 	}
 	async deleteNote(noteId){
 		let data = await this.data;
-		data.notebook.forEach((notebook)=>{
+		data.notebooks.forEach((notebook)=>{
 			notebook.notes.forEach((note, index)=>{
 				if(note.id === noteId){
 					notebook.notes.splice(index, 1);
@@ -64,12 +70,15 @@ class Meta{
 		});
 		await store.writeFile('/meta.json', JSON.stringify(data));
 	}
-	async updateNote(noteId,noteTitle){
+	async updateNote(note){
 		let data = await this.data;
-		data.notebook.forEach((notebook)=>{
-			notebook.notes.forEach((note)=>{
-				if(note.id === noteId){
-					note.title = noteTitle;
+		data.notebooks.forEach((notebook)=>{
+			notebook.notes.forEach((noteItem)=>{
+				if(note.id === noteItem.id){
+					noteItem.title = note.title;
+					noteItem.localVersion = note.localVersion;
+					noteItem.remoteVersion = note.remoteVersion;
+					// noteItem.pureTitle = note.
 				}
 			});
 		});
@@ -79,7 +88,7 @@ class Meta{
 	async findNoteById(noteId){
 		let data = await this.data;
 		let target;
-		data.notebook.forEach((notebook)=>{
+		data.notebooks.forEach((notebook)=>{
 			notebook.notes.forEach((note)=>{
 				if(note.id === noteId){
 					target = note;
@@ -91,7 +100,7 @@ class Meta{
 	async searchNote(keyword){
 		let data = await this.data;
 		let ret = [];
-		data.notebook.forEach((notebook)=>{
+		data.notebooks.forEach((notebook)=>{
 			notebook.notes.forEach((note)=>{
 				if(note.title.toLowerCase().indexOf(keyword) > -1){
 					ret.push(note);
@@ -103,7 +112,7 @@ class Meta{
 	async findNotebookOfNote(noteId){
 		let data = await this.data;
 		let target;
-		data.notebook.forEach((notebook)=>{
+		data.notebooks.forEach((notebook)=>{
 			notebook.notes.forEach((note)=>{
 				if(note.id === noteId){
 					target = notebook;
@@ -119,7 +128,7 @@ class Meta{
 		let note1, note2;
 		let index1, index2;
 
-		data.notebook.forEach((notebook) => {
+		data.notebooks.forEach((notebook) => {
 			notebook.notes.forEach((note, index) => {
 				if(note.id === id1){
 					notebook1 = notebook;

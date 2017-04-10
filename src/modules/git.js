@@ -1,24 +1,37 @@
 import path from 'path';
 import fs from 'fs';
+import logger from './logger';
 
 export default class Git{
 
 	constructor(options){
+		if(!options) options = {};
+		// git二进制程序路径
 		this._git = path.join(require('electron').remote.app.getAppPath(), 'lib/git');
-		this._root = options.path;
+
+		// git仓库根目录
+		let gitFolder = 'git';
+		if(DEBUG) gitFolder = 'devgit';
+		this._root = options.path || path.join(require('electron').remote.app.getPath('userData'), gitFolder);
+
+		// 新建仓库根目录
 		if(!fs.existsSync(this._root)){
 			fs.mkdirSync(this._root);
 		}
 	}
+	// 获取git根目录
+	getPath(){
+		return this._root;
+	}
 	runCommand(command){
 		let execSync = require('child_process').execSync;
 		try{
-			console.log('[Git runCommand] ' + command);
+			logger.debug('[Git runCommand] ' + command);
 			return execSync(`${this._git} ${command}`, {
 				cwd: this._root
 			}).toString();
 		}catch(e){
-			console.log('[Git runCommand Error]', e);
+			logger.error('[Git runCommand Error]', e);
 			return false;
 		}
 	}

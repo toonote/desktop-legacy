@@ -66,6 +66,7 @@
 
 <template>
 <section class="sidebar">
+	<user v-if="isCloud"></user>
 	<section class="searchWrapper">
 		<input type="search" v-model.trim="keyword" placeholder="搜索..." />
 	</section>
@@ -121,6 +122,7 @@
 
 
 <script>
+import user from './user.vue';
 import throttle from 'lodash.throttle';
 import {mapGetters} from 'vuex';
 import Menu from '../api/menu/index';
@@ -238,12 +240,16 @@ export default {
 	},
 	data(){
 		var data = {
+			isCloud: CLOUD,
 			currentMovingNoteId:0,
 			currentTargetingNoteId:0,
 			isAnimating:false,
 			keyword:''
 		};
 		return data;
+	},
+	components:{
+		user
 	}
 };
 </script>
