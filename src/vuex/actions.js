@@ -183,7 +183,11 @@ export default {
 	},
 	// 新建笔记
 	async newNote(context) {
-		let newNote = note.createNewNote();
+		// 获取当前笔记的分类
+		let currentCategory = note.getCategoryFromTitle(context.state.currentNote.title);
+		let newNote = note.createNewNote({
+			content: `# ${currentCategory}\\新文档`
+		});
 		await note.saveNote(newNote);
 		await meta.addNote(context.state.currentNotebook.id, newNote);
 		// let metaData = await meta.data;

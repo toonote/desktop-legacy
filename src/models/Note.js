@@ -3,7 +3,7 @@ import uuid from 'uuid';
 export default class Note{
 	constructor(data = {}){
 		this.id = this._getRandomId();
-		this.content = data.content || '# Untitled Note';
+		this.content = data.content || '# 未分类\\新文档';
 		this.title = data.title || this._getTitleFromContent();
 		this.pureTitle = this._getPureTitle();
 		this.createdAt = Date.now();

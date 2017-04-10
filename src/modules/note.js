@@ -95,8 +95,8 @@ note.fillContent = async function(note){
 };
 
 // 新建note
-note.createNewNote = function(){
-	let newNote = new Note();
+note.createNewNote = function(data){
+	let newNote = new Note(data);
 	return newNote;
 };
 
