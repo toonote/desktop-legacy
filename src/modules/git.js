@@ -1,13 +1,14 @@
 import path from 'path';
 import fs from 'fs';
 import logger from './logger';
+import util from './util';
 
 export default class Git{
 
 	constructor(options){
 		if(!options) options = {};
 		// git二进制程序路径
-		this._git = path.join(require('electron').remote.app.getAppPath(), 'lib/git');
+		this._git = path.join(require('electron').remote.app.getAppPath(), `lib/${util.os}/git`);
 
 		// git仓库根目录
 		let gitFolder = 'git';

@@ -11,4 +11,10 @@ if(typeof MacGap !== 'undefined'){
 }else{
 	util.platform = 'web';
 }
+
+util.os = 'osx';
+if(process.platform === 'win32'){
+	util.os = 'windows';
+}
+
 export default util;
