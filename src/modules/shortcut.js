@@ -158,7 +158,7 @@ let shortcut = function(aceEditor){
 			editor.moveLinesDown();
 			if(isSelectionEmpty){
 				selection.clearSelection();
-				selection.moveCursorUp()
+				selection.moveCursorUp();
 			}else{
 				// selection.moveCursorDown()
 			}
@@ -181,7 +181,7 @@ let shortcut = function(aceEditor){
 			editor.moveLinesUp();
 			if(isSelectionEmpty){
 				selection.clearSelection();
-				selection.moveCursorUp()
+				selection.moveCursorUp();
 			}else{
 				// selection.moveCursorDown()
 			}
@@ -244,7 +244,7 @@ let shortcut = function(aceEditor){
 				newText = currText.replace('[x]','[ ]').replace(/ \([\d\-: ]+\)\s*$/,'');
 			}else{
 				let date = new Date();
-				let ts = date.getTime() - date.getTimezoneOffset()*60*1000;
+				let ts = date.getTime() - date.getTimezoneOffset() * 60 * 1000;
 				let s = new Date(ts).toISOString();
 
 				let now = s.replace(/T/g,' ').replace(/^\d{2}/, '').replace(/:\d+\.\d+Z$/,''); // 16-11-24 14:16

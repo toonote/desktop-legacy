@@ -18,7 +18,7 @@ export async function uploadAllNotes(){
 		});
 	});
 
-	for(let i=0; i<allNotes.length; i++){
+	for(let i = 0; i < allNotes.length; i++){
 		let noteItem = allNotes[i];
 		let data = {};
 		data.id = noteItem.id;
@@ -29,7 +29,7 @@ export async function uploadAllNotes(){
 
 		await noteApi.create(data);
 	}
-};
+}
 
 // 同步单条笔记
 export async function updateNote(note){
@@ -38,7 +38,7 @@ export async function updateNote(note){
 	});
 
 	await noteApi.update({...note, version: note.localVersion});
-};
+}
 // 新建单条笔记
 export async function createNote(note){
 	let noteApi = new CloudApi({
@@ -46,7 +46,7 @@ export async function createNote(note){
 	});
 
 	await noteApi.create({...note, version: note.localVersion});
-};
+}
 // 删除单条笔记
 export async function deleteNote(id){
 	let noteApi = new CloudApi({
@@ -54,4 +54,4 @@ export async function deleteNote(id){
 	});
 
 	await noteApi.delete(id);
-};
+}

@@ -25,7 +25,7 @@ class CloudApi{
 	}
 	async delete(id){
 		let agent = await this._getAgent();
-		return agent.delete(this._modelUrl + `/${id}`, data);
+		return agent.delete(this._modelUrl + `/${id}`);
 	}
 	async read(id){
 		let agent = await this._getAgent();
@@ -43,13 +43,13 @@ class CloudApi{
 		if(!this._agent){
 			this._agent = axios.create({
 				baseURL: URL_BASE,
-				timeout: 10*1000
+				timeout: 10 * 1000
 			});
 		}
 		// 设置token
 		this._agent.defaults.headers.common['X-TooNote-Token'] = token;
 		return this._agent;
 	}
-};
+}
 
 export default CloudApi;

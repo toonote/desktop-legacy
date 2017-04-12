@@ -27,10 +27,6 @@
       }
     }
   },
-  "jshintConfig": {
-    "esversion": 6,
-    "asi": true
-  },
   "dependencies": {
     "axios": "^0.15.2",
     "brace": "^0.10.0",
@@ -55,6 +51,7 @@
     "babel-preset-babili": "0.0.5",
     "css-loader": "^0.23.1",
     "electron-devtools-installer": "^2.0.1",
+    "eslint": "^3.19.0",
     "extract-text-webpack-plugin": "^2.0.0-beta.5",
     "file-loader": "^0.8.5",
     "npm-run-all": "^4.0.2",

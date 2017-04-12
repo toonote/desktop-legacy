@@ -31,7 +31,7 @@ note.startWatch = function(){
 		git.commit(message);
 		commitTitles = {};
 	};
-	let doGitCommit = throttle(reallyDoCommit, 5*60*1000);
+	let doGitCommit = throttle(reallyDoCommit, 5 * 60 * 1000);
 	gitCommit = (id, msg) => {
 		commitTitles[id] = msg;
 		doGitCommit();
@@ -58,7 +58,7 @@ note.getTitleWithoutCategory = function(title){
 	if(titlePart.length === 1){
 		return title;
 	}else{
-		return title.replace(titlePart[0]+'\\','');
+		return title.replace(titlePart[0] + '\\','');
 	}
 };
 

@@ -97,7 +97,7 @@ io.getNotesFromBackUp = async function(){
 		});
 	}
 	return newNotes;
-}
+};
 
 // 导出为各种格式文件
 io.export = function(format, content, filename, callback = function(){}){
@@ -171,7 +171,7 @@ io.export = function(format, content, filename, callback = function(){}){
 		fs.writeFileSync(filePath, content, 'utf8');
 	}
 
-}
+};
 
 /*// 创建备份文件
 function createBackUp(){

@@ -16,14 +16,14 @@ class TooAnimate{
 		let startTime;
 		let tick = (time)=>{
 			if(!startTime) startTime = time;
-			let progress = cubicInOut((time-startTime)/this.during);
+			let progress = cubicInOut((time - startTime) / this.during);
 			if(progress > 1) progress = 1;
-			this._value = progress*delta + this.start;
+			this._value = progress * delta + this.start;
 			this.onTick(this._value);
 			if(progress < 1){
 				requestAnimationFrame(tick);
 			}
-		}
+		};
 		requestAnimationFrame(tick);
 	}
 }
@@ -34,7 +34,7 @@ scroll.doScroll = ($target, end, during) => {
 		end:end,
 		during:during,
 		onTick: function(value){
-			 $target.scrollTop = value;
+			$target.scrollTop = value;
 		}
 	});
 };

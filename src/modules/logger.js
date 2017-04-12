@@ -34,4 +34,4 @@ export default {
 	error(){
 		this._log('error', arguments);
 	}
-}
+};

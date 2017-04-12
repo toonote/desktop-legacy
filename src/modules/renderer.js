@@ -33,11 +33,11 @@ renderer.use(function(md) {
 					// console.log(str, char, text);
 					let isDone = char.toLowerCase() === 'x';
 					// return `<input type="checkbox" ${isDone?"checked":""} />` + text;
-					return `${isDone?'✓':'☐'} ` + text;
+					return `${isDone ? '✓':'☐'} ` + text;
 				});
 			}
 		}
-	}, {alt: []})
+	}, {alt: []});
 });
 
 let index = 0;
@@ -68,23 +68,23 @@ for(let token in customerRulesMap){
 renderer.renderer.rules.list_item_open = function (tokens, idx) {
 	for(let i = idx + 1; i < idx + 3; i++){
 		if(/[✓☐]/.test(tokens[i].content)){
-			return `<li class="todo${/^✓/i.test(tokens[i].content)?' done':' doing'}">`;
+			return `<li class="todo${/^✓/i.test(tokens[i].content) ? ' done':' doing'}">`;
 		}
 	}
 	return '<li>';
-}
+};
 
 renderer.renderer.rules.heading_open = function (tokens, idx) {
 	var line;
 	if (tokens[idx].lines && tokens[idx].level === 0) {
 		line = tokens[idx].lines[0];
-		return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor'+(index++)+'">';
+		return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '"><a name="anchor' + (index++) + '">';
 	}
 	return '<h' + tokens[idx].hLevel + '>';
 };
 
 renderer.renderer.rules.heading_close = function (tokens, idx) {
-	return '</a></h'+ tokens[idx].hLevel + '>';
+	return '</a></h' + tokens[idx].hLevel + '>';
 };
 
 export default renderer;

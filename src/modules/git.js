@@ -51,8 +51,8 @@ export default class Git{
 	checkout(commitOrPath){
 		return this.runCommand(`checkout ${commitOrPath}`);
 	}
-	log(path){
-		let log = this.runCommand(`log --pretty=format:"%H %ct" ${path}`);
+	log(folderPath){
+		let log = this.runCommand(`log --pretty=format:"%H %ct" ${folderPath}`);
 		if(!log){
 			return [];
 		}
@@ -60,10 +60,10 @@ export default class Git{
 			let linePart = line.split(' ');
 			return {
 				id: linePart[0],
-				date: new Date(linePart[1]*1000)
-			}
+				date: new Date(linePart[1] * 1000)
+			};
 		}).filter((logItem) => {
-			return logItem.date.getTime() >= Date.now() - 30*24*3600*1000;
+			return logItem.date.getTime() >= Date.now() - 30 * 24 * 3600 * 1000;
 		});
 		return logArray;
 	}
@@ -71,8 +71,8 @@ export default class Git{
 		this.runCommand('add .');
 		return this.runCommand(`commit -am "${msg}"`);
 	}
-	show(version, path){
-		return this.runCommand(`show ${version}:${path}`)
+	show(version, filePath){
+		return this.runCommand(`show ${version}:${filePath}`);
 	}
 }
 

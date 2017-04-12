@@ -52,7 +52,7 @@ login.doLogin = async function(isAuto){
 			});
 			loginWindow.loadURL(URL_BASE + '/oauth/redirect/github?client=mac');
 		});
-	}
+	};
 	let token = await this.getToken();
 	if(token){
 		try{
@@ -79,7 +79,7 @@ login.initUser = async function(token){
 		if(!agent){
 			agent = axios.create({
 				baseURL: URL_BASE,
-				timeout: 10*1000,
+				timeout: 10 * 1000,
 				headers: {
 					'X-Uuid': machineIdSync({original:true})
 				}
@@ -94,7 +94,7 @@ login.initUser = async function(token){
 			console.dir(err);
 			// await this.setToken('');
 			reject(err);
-		})
+		});
 	});
 };
 

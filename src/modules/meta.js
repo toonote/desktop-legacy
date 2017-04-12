@@ -153,7 +153,7 @@ class Meta{
 		return data;
 
 	}
-};
+}
 
 
 let meta = new Meta();
