@@ -158,7 +158,6 @@ export default {
 			logger.debug('onEditorInput');
 			_content = _aceEditor.getValue();
 			this.$store.dispatch('changeCurrentNoteContent', _content);
-			// eventHub.$emit('currentNoteContentChange', content);
 		},
 		resize(){
 			_aceEditor.resize();
@@ -229,7 +228,7 @@ export default {
 		aceEditor.renderer.setPadding(20);
 		aceEditor.setShowPrintMargin(false);
 		aceEditor.$blockScrolling = Infinity;
-		aceEditor.on('input', this.onEditorInput);
+		// aceEditor.on('input', this.onEditorInput);
 
 		shortcut(aceEditor);
 		/*for(let cmd in shortcut){
