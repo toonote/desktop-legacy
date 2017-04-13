@@ -13,6 +13,8 @@ class ElectronMenu extends Menu{
 		ElectronMenu._instance = this;
 	}
 	_getMenu(menuList){
+		// 标记是否已经添加过退出菜单
+		let exitMenuPosition = '';
 		let buildMenu = (menuItem)=>{
 			let subMenu;
 
@@ -21,10 +23,13 @@ class ElectronMenu extends Menu{
 					return buildMenu(menuItem);
 				});
 			}
-			if(menuItem.title === 'TooNote'){
+			if(menuItem.title === 'TooNote' || menuItem.title === 'Help'){
 				subMenu.unshift({
 					label: '关于TooNote',
-					role: 'about'
+					role: 'about',
+					click: exitMenuPosition === 'File' ? (item, focusWindow) => {
+						this.trigger('click', 'about');
+					} : undefined
 				});
 				if(DEBUG){
 					subMenu = subMenu.concat([{
@@ -40,11 +45,26 @@ class ElectronMenu extends Menu{
 						}
 					}]);
 				}
-				subMenu = subMenu.concat([{
-					label: '退出',
-					accelerator:'cmd+q',
-					role: 'quit',
-				}]);
+				// Mac，退出放到App菜单下
+				if(menuItem.title === 'TooNote'){
+					subMenu = subMenu.concat([{
+						label: '退出',
+						accelerator:'cmd+q',
+						role: 'quit',
+					}]);
+					exitMenuPosition = menuItem.title;
+				}
+			}else if(menuItem.title === 'File'){
+				if(!exitMenuPosition){
+					subMenu = subMenu.concat([{
+						type: 'separator'
+					},{
+						label: '退出',
+						accelerator:'cmd+q',
+						role: 'quit',
+					}]);
+					exitMenuPosition = menuItem.title;
+				}
 			}else if(menuItem.title === 'Edit'){
 				subMenu = [{
 					label: '撤销',
@@ -81,14 +101,14 @@ class ElectronMenu extends Menu{
 				type:menuItem.type,
 				label:menuItem.title,
 				accelerator: menuItem.hotKey,
-				click: menuItem.event?
+				click: menuItem.event ?
 					((event) => {
 						// console.log('[menu electron] bind click', event);
 						return (item, focusWindow) => {
 							// console.log('[menu electron] click', event);
-							this.trigger('click', event)
-						}
-					})(menuItem.event):undefined,
+							this.trigger('click', event);
+						};
+					})(menuItem.event) : undefined,
 				submenu:subMenu
 			};
 			return thisMenu;

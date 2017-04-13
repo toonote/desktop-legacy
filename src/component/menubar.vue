@@ -68,6 +68,7 @@
 import Menu from '../api/menu/index';
 import util from '../modules/util';
 import logger from '../modules/logger';
+import {getConfig} from '../modules/config';
 // import app from '../component/app';
 let menu = new Menu(util.platform);
 
@@ -87,7 +88,90 @@ export default {
 		subMenuClick(event){
 			menu.onClick(event);
 		},
-
+		// 获取菜单列表
+		getMenu(){
+			let appMenu = {
+				title:'TooNote',
+				isActive:false,
+				subMenu:[]
+			};
+			let fileMenu = {
+				title:'File',
+				isActive:false,
+				subMenu:[{
+					title:'新建笔记',
+					event:'newNote',
+					hotKey:'cmd+n'
+				},{
+					title:'保存',
+					event:'saveNote',
+					hotKey:'cmd+s'
+				},{
+					type: 'separator'
+				},{
+					title:'导出MarkDown',
+					event:'exportMd',
+				},{
+					title:'导出HTML Body',
+					event:'exportHtmlBody',
+				},{
+					title:'导出HTML Body（带样式）',
+					event:'exportHtmlBodyWithCss',
+				},{
+					title:'导出完整HTML',
+					event:'exportHtml',
+				},{
+					title:'导出PDF',
+					event:'exportPdf',
+				},{
+					type: 'separator'
+				},{
+					title:'导入备份',
+					event:'importBackup'
+				}]
+			};
+			let editMenu = {
+				title:'Edit',
+				isActive:false,
+				subMenu:[{
+					title:'复制全文MD',
+					event:'copyFullMd'
+				},{
+					title:'复制全文HTML',
+					event:'copyFullHTML'
+				},{
+					title:'复制全文(微信)',
+					event:'copyFullHTMLForWx'
+				}]
+			};
+			let viewMenu = {
+				title:'View',
+				isActive:false,
+				subMenu:[{
+					title:'切换笔记列表',
+					event:'switchLayoutSidebar',
+					hotKey:'cmd+1'
+				},{
+					title:'切换编辑区',
+					event:'switchLayoutEditor',
+					hotKey:'cmd+2'
+				},{
+					title:'切换预览区',
+					event:'switchLayoutPreview',
+					hotKey:'cmd+3'
+				}]
+			};
+			let helpMenu = {
+				title:'Help',
+				isActive:false,
+				subMenu:[]
+			};
+			let menuList = [appMenu,fileMenu,editMenu,viewMenu];
+			if(util.os === 'windows'){
+				menuList = [fileMenu,editMenu,viewMenu,helpMenu];
+			}
+			return menuList;
+		},
 		/******************以下为菜单响应*****************/
 		// 新建笔记
 		newNote(){
@@ -165,74 +249,7 @@ export default {
 	data(){
 		let data = {
 			isShow:menu.isVue,
-			menuList:[{
-				title:'TooNote',
-				isActive:false,
-				subMenu:[]
-			},{
-				title:'File',
-				isActive:false,
-				subMenu:[{
-					title:'新建笔记',
-					event:'newNote',
-					hotKey:'cmd+n'
-				},{
-					title:'保存',
-					event:'saveNote',
-					hotKey:'cmd+s'
-				},{
-					type: 'separator'
-				},{
-					title:'导出MarkDown',
-					event:'exportMd',
-				},{
-					title:'导出HTML Body',
-					event:'exportHtmlBody',
-				},{
-					title:'导出HTML Body（带样式）',
-					event:'exportHtmlBodyWithCss',
-				},{
-					title:'导出完整HTML',
-					event:'exportHtml',
-				},{
-					title:'导出PDF',
-					event:'exportPdf',
-				},{
-					type: 'separator'
-				},{
-					title:'导入备份',
-					event:'importBackup'
-				}]
-			},{
-				title:'Edit',
-				isActive:false,
-				subMenu:[{
-					title:'复制全文MD',
-					event:'copyFullMd'
-				},{
-					title:'复制全文HTML',
-					event:'copyFullHTML'
-				},{
-					title:'复制全文(微信)',
-					event:'copyFullHTMLForWx'
-				}]
-			},{
-				title:'View',
-				isActive:false,
-				subMenu:[{
-					title:'切换笔记列表',
-					event:'switchLayoutSidebar',
-					hotKey:'cmd+1'
-				},{
-					title:'切换编辑区',
-					event:'switchLayoutEditor',
-					hotKey:'cmd+2'
-				},{
-					title:'切换预览区',
-					event:'switchLayoutPreview',
-					hotKey:'cmd+3'
-				}]
-			}]
+			menuList:this.getMenu()
 		};
 		return data;
 	},
@@ -242,6 +259,12 @@ export default {
 		// 处理菜单绑定
 		menu.on('click',(eventType, command) => {
 			switch(command){
+				// 关于 - 仅windows下触发
+				case 'about':
+					getConfig('dataVersion').then((version) => {
+						alert(`TooNote (${version})`);
+					});
+					break;
 				case 'devReload':
 					location.reload(true);
 					break;

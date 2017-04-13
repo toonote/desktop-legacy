@@ -53,6 +53,7 @@
             "builtinGlobals": true,
             "hoist": "all",
             "allow": [
+				"name", //window.name
                 "e",
                 "err",
                 "error",
