@@ -1,7 +1,7 @@
 <style scoped>
 .editor{
 	border-right:1px solid #E0E0E0;
-	font-family: "PingFang SC";
+	font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 	height:100%;
 	flex:1;
 }
@@ -33,6 +33,7 @@ import {mapGetters} from 'vuex';
 import shortcut from '../modules/shortcut';
 import io from '../modules/io';
 import logger from '../modules/logger';
+import util from '../modules/util';
 let _aceEditor;
 let _id,_content;
 export default {
@@ -228,6 +229,10 @@ export default {
 		aceEditor.renderer.setPadding(20);
 		aceEditor.setShowPrintMargin(false);
 		aceEditor.$blockScrolling = Infinity;
+		if(util.os === 'windows'){
+			// 设置字体后会导致宽度变大，挺奇怪的
+			// aceEditor.setOption('fontFamily', '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif');
+		}
 		aceEditor.on('input', this.onEditorInput);
 
 		shortcut(aceEditor);
