@@ -1,42 +1,42 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+Promise.all([
+	import('./component/sidebar.vue'),
+	import('./component/editor.vue'),
+	import('./component/preview.vue'),
+	import('./component/menubar.vue'),
+	import('./component/versions.vue'),
+	// 生成store
+	import('./vuex/store')
+]).then(([sidebar, editor, preview, menubar, versions, getStore]) => {
+	// 使用Vuex
+	Vue.use(Vuex);
 
-import sidebar from './component/sidebar.vue';
-import editor from './component/editor.vue';
-import preview from './component/preview.vue';
-import menubar from './component/menubar.vue';
-import versions from './component/versions.vue';
+	// store
+	let store = getStore.default();
 
-// 生成store
-import getStore from './vuex/store';
+	let app = new Vue({
+		el: '#wrapper',
+		store,
+		computed:{
+			...Vuex.mapGetters(['layout'])
+		},
+		methods:{
+		},
+		data:{
+			withMenubar:false
+		},
+		components: {
+			menubar,
+			sidebar,
+			editor,
+			preview,
+			versions
+		}
+	});
 
-// 使用Vuex
-Vue.use(Vuex);
-
-// store
-let store = getStore();
-
-let app = new Vue({
-	el: '#wrapper',
-	store,
-	computed:{
-		...Vuex.mapGetters(['layout'])
-	},
-	methods:{
-	},
-	data:{
-		withMenubar:false
-	},
-	components: {
-		menubar,
-		sidebar,
-		editor,
-		preview,
-		versions
-	}
+	// 初始化
+	store.dispatch('init');
 });
 
-// 初始化
-store.dispatch('init');
-
-export default app;
+// export default app;

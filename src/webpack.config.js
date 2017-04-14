@@ -22,7 +22,8 @@ module.exports = {
 	target: 'electron',
 	output: {
 		path: __dirname,
-		filename: 'bundle.js'
+		filename: 'bundle.js',
+		chunkFilename: './chunks/[id].js'
 	},
 	module: {
 		rules: [{
