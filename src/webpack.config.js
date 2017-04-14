@@ -21,26 +21,32 @@ module.exports = {
 		filename: 'bundle.js'
 	},
 	module: {
-		loaders: [{
+		rules: [{
 			test: /\.vue$/,
-			loader: 'vue-loader'
+			use:{
+				loader: 'vue-loader'
+			}
 		},{
 			test: /\.png$/,
-			loader: 'url-loader?limit=100000'
+			use:{
+				loader: 'url-loader?limit=100000'
+			}
 		},{
 			test: /\.js$/,
 			exclude: /node_modules/,
-			loader: 'babel-loader',
-			query: {
-				// presets: ['es2015','stage-0'],
-				// plugins: ['transform-runtime']
+			use:{
+				loader: 'babel-loader',
+				options: {
+					// presets: ['es2015','stage-0'],
+					// plugins: ['transform-runtime']
+				}
 			}
 		},{
 			test: /\.css$/,
             // exclude: /\-module\.css$/,
             // loader: ExtractTextPlugin.extract('style-loader','css-loader?root=' + path.normalize(__dirname + '/htdocs').replace(/\\/g,'/'))
             // loader: ExtractTextPlugin.extract('style-loader','css-loader')
-			loader: ExtractTextPlugin.extract({ fallback: 'style-loader', loader: 'css-loader' })
+			use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' })
 		}]
 	},
 	plugins: [
