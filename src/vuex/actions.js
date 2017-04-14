@@ -27,7 +27,7 @@ let reallyDoSync = async (callback) => {
 	}
 	syncNotes = {};
 };
-let doSync = throttle(reallyDoSync, 10*1000);
+let doSync = throttle(reallyDoSync, 10 * 1000);
 let cloudSync = async (note, callback) => {
 	syncNotes[note.id] = note;
 	await doSync(callback);
@@ -131,7 +131,7 @@ export default {
 		if(!cloudInit){
 			await cloud.uploadAllNotes();
 			await setConfig('cloudInit', true);
-		};
+		}
 	},
 	// 登录云
 	async doLogin(context, isAuto){
@@ -194,12 +194,13 @@ export default {
 	// 导入笔记
 	// todo:改造
 	async importNotes(context, newNotes) {
-		for(let i=0; i<newNotes.length; i++){
-			let newNote = newNotes[i];
-			await meta.addNote(context.state.currentNotebook.id, {
-				id:newNote.id,
-				title:newNote.title
+		for(let i = 0; i < newNotes.length; i++){
+			let newNote = note.createNewNote({
+				id: newNotes[i].id,
+				title: newNotes[i].title,
+				content: newNotes[i].content
 			});
+			await meta.addNote(context.state.currentNotebook.id, newNote);
 			await note.saveNote(newNote);
 			context.commit('newNote', newNote);
 		}
@@ -290,35 +291,35 @@ export default {
 	},
 	async importBackup(context) {
 		let newNotes = await io.getNotesFromBackUp();
-		if(!confirm('备份文件含有'+newNotes.length+'条笔记，确认导入？')) return;
+		if(!confirm('备份文件含有' + newNotes.length + '条笔记，确认导入？')) return;
 
 		context.dispatch('importNotes', newNotes);
 	},
 	async export(context, format) {
 		let content = '';
 		switch(format){
-			case 'md':
-				content = context.state.currentNote.content;
-				break;
-			case 'htmlBody':
-				content = renderer.render(context.state.currentNote.content);
-				break;
-			case 'htmlBodyWithCss':
-				content = await getHtmlWithCss(context.state.currentNote.content);
-				console.log(content);
-				break;
-			case 'html':
-			case 'pdf':
-				let body = renderer.render(context.state.currentNote.content);
+		case 'md':
+			content = context.state.currentNote.content;
+			break;
+		case 'htmlBody':
+			content = renderer.render(context.state.currentNote.content);
+			break;
+		case 'htmlBodyWithCss':
+			content = await getHtmlWithCss(context.state.currentNote.content);
+			console.log(content);
+			break;
+		case 'html':
+		case 'pdf':
+			let body = renderer.render(context.state.currentNote.content);
 				// var postcss = require('postcss');
 				// var atImport = require('postcss-import');
-				let css = io.getFileText('/style/htmlbody.css');
+			let css = io.getFileText('/style/htmlbody.css');
 				// 加载PDF样式
-				if(format === 'pdf'){
-					css += io.getFileText('/style/pdf.css');
-				}
+			if(format === 'pdf'){
+				css += io.getFileText('/style/pdf.css');
+			}
 				// css += io.getFileText('/node_modules/highlight.js/styles/github-gist.css');
-				css += io.getFileText('/node_modules/highlight.js/styles/tomorrow.css');
+			css += io.getFileText('/node_modules/highlight.js/styles/tomorrow.css');
 				/*var outputCss = postcss()
 					.use(atImport())
 					.process(css, {
@@ -326,7 +327,7 @@ export default {
 					})
 					.css;*/
 
-				content = '<!doctype html><html>\n' +
+			content = '<!doctype html><html>\n' +
 						'<head>\n' +
 						'<meta charset="utf-8">\n' +
 						'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
@@ -335,7 +336,7 @@ export default {
 						'<style>\n' + css + '</style>\n' +
 						'</head>\n' +
 						'<body class="htmlBody">\n' + body + '</body>\n</html>';
-						break;
+			break;
 		}
 		io.export(format, content, context.state.currentNote.title);
 	},
@@ -343,23 +344,23 @@ export default {
 		let content = '';
 		let type = '';
 		switch(format){
-			case 'md':
-				type = 'text';
-				content = context.state.currentNote.content;
-				break;
-			case 'html':
-				type = 'html';
-				content = await getHtmlWithCss(context.state.currentNote.content);
-				break;
-			case 'wx':
-				type = 'html';
-				content = await getHtmlWithCss(context.state.currentNote.content, [
-					'/style/wx.css'
-				]);
-				content = content.replace(/<\/span>\n/ig, '</span><br />');
-				content = content.replace(/([^>])$/img, '$1<br />');
-				content = content.replace(/<br \/>\n/ig, '<br />');
-				break;
+		case 'md':
+			type = 'text';
+			content = context.state.currentNote.content;
+			break;
+		case 'html':
+			type = 'html';
+			content = await getHtmlWithCss(context.state.currentNote.content);
+			break;
+		case 'wx':
+			type = 'html';
+			content = await getHtmlWithCss(context.state.currentNote.content, [
+				'/style/wx.css'
+			]);
+			content = content.replace(/<\/span>\n/ig, '</span><br />');
+			content = content.replace(/([^>])$/img, '$1<br />');
+			content = content.replace(/<br \/>\n/ig, '<br />');
+			break;
 		}
 		let clipboard = require('electron').clipboard;
 		if(type === 'text'){
@@ -396,4 +397,4 @@ export default {
 		console.log('clear Data');
 		// await io.clearData();
 	}
-}
+};
