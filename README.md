@@ -23,7 +23,10 @@ npm start
 ## 打包
 
 ```sh
+# for max osx
 npm run build:osx
+# for windows (both x86 & x64)
+npm run build:win
 ```
 
 ## 备注
