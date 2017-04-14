@@ -123,7 +123,7 @@
 
 <script>
 import user from './user.vue';
-import throttle from 'lodash.throttle';
+import {throttle} from 'lodash';
 import {mapGetters} from 'vuex';
 import Menu from '../api/menu/index';
 import util from '../modules/util';

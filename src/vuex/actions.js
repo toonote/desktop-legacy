@@ -1,6 +1,6 @@
 import path from 'path';
 import inlineCss from 'inline-css';
-import throttle from 'lodash.throttle';
+import {throttle} from 'lodash';
 
 
 import meta from '../modules/meta';
@@ -192,7 +192,6 @@ export default {
 		}
 	},
 	// 导入笔记
-	// todo:改造
 	async importNotes(context, newNotes) {
 		for(let i = 0; i < newNotes.length; i++){
 			let newNote = note.createNewNote({

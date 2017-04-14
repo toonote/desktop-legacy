@@ -10,7 +10,7 @@
     "run": "electron .",
     "start": "npm-run-all -p -r dev run",
     "cloud": "CLOUD=1 npm-run-all -p -r dev run",
-    "build:osx": "npm run prod && ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ electron-packager . --overwrite --icon=../assets/logo.icns --out=.. --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/windows\" --ignore=\"\\.map$\""
+    "build:osx": "npm run prod && ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ electron-packager . --overwrite --icon=../assets/logo.icns --out=.. --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/windows\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\""
   },
   "author": "TooBug",
   "repository": {
@@ -39,7 +39,7 @@
     "electron-machine-id": "^1.0.9",
     "highlight.js": "^9.7.0",
     "inline-css": "^2.2.2",
-    "lodash.throttle": "^4.1.1",
+    "lodash": "^3.10.1",
     "remarkable": "^1.6.1",
     "uuid": "^2.0.3",
     "vue": "^2.0.1",

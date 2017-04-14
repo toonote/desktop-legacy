@@ -3,7 +3,7 @@ import Git from './git';
 import io from './io';
 import path from  'path';
 import fs from  'fs';
-import throttle from 'lodash.throttle';
+import {throttle} from 'lodash';
 import Note from '../models/Note';
 
 let note = {};

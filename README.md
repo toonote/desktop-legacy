@@ -15,16 +15,18 @@ Electron + Vue 2 + Vuex 2
 开发时在源码目录下执行
 
 ```sh
-npm run dev
-```
-
-然后执行
-
-```sh
-electron .
+npm start
 ```
 
 即可。
+
+## 打包
+
+```sh
+npm run build:osx
+```
+
+## 备注
 
 由于
 
@@ -33,5 +35,3 @@ electron .
 3. 对基于vuex的应用代码架构不是很熟悉
 
 所以代码比较乱，未做专门的整理，将就看
-
-

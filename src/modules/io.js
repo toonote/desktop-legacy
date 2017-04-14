@@ -1,4 +1,4 @@
-import Zip from 'jszip';
+import Zip from '../lib/npm_modules/jszip-3.1.3.js';
 let io = {};
 let fs = require('fs');
 let path = require('path');

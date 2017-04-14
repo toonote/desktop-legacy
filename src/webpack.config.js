@@ -36,20 +36,20 @@ module.exports = {
 				// plugins: ['transform-runtime']
 			}
 		},{
-            test: /\.css$/,
+			test: /\.css$/,
             // exclude: /\-module\.css$/,
             // loader: ExtractTextPlugin.extract('style-loader','css-loader?root=' + path.normalize(__dirname + '/htdocs').replace(/\\/g,'/'))
             // loader: ExtractTextPlugin.extract('style-loader','css-loader')
-            loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader' })
+			loader: ExtractTextPlugin.extract({ fallback: 'style-loader', loader: 'css-loader' })
 		}]
 	},
 	plugins: [
-        new ExtractTextPlugin('style/bundle.css'),
-        new webpack.DefinePlugin({
-        	DEBUG: process.env.NODE_ENV !== 'production',
+		new ExtractTextPlugin('style/bundle.css'),
+		new webpack.DefinePlugin({
+			DEBUG: process.env.NODE_ENV !== 'production',
 			CLOUD: !!process.env.CLOUD
-        })
-    ],
+		})
+	],
 	externals: externals,
-    devtool: process.env.NODE_ENV === 'production'?'':'#source-map'
+	devtool: process.env.NODE_ENV === 'production' ? '' : '#source-map'
 };
