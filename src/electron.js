@@ -17,7 +17,7 @@ app.on('ready', function() {
 		height: 800,
 		'use-content-size':true,
 		resizable:true,
-		icon: __dirname + '/images/logo_window.png'
+		icon: __dirname + '/images/logo@64.png'
 	});
 	mainWindow.loadURL('file://' + __dirname + '/main.html');
 	mainWindow.on('closed', function() {

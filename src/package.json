@@ -11,9 +11,8 @@
     "run": "electron .",
     "start": "npm-run-all -p -r dev run",
     "cloud": "CLOUD=1 npm-run-all -p -r dev run",
-	"build:package": "electron-packager . --overwrite --arch=all --deref-symlinks=false --icon=../assets/logo.icns --out=../dist --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/windows\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\"",
-    "build:osx": "npm run prod&& ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ npm run build:package",
-    "build:win": "npm run prod-win&& set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/&& set DEBUG=electron-packager&& npm run build:package"
+    "build:osx": "npm run prod&& ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ electron-packager . --overwrite --arch=all --icon=../assets/logo.icns --out=../dist --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/windows\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\"",
+    "build:win": "npm run prod-win&& set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/&& electron-packager . --overwrite --arch=all --icon=../assets/logo.ico --out=../dist --win32metadata.CompanyName=\"TooNote\" --win32metadata.ProductName=\"TooNote\" --win32metadata.FileDescription=\"TooNote\" --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/windows\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\""
   },
   "author": "TooBug",
   "repository": {
