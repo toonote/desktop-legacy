@@ -7,7 +7,11 @@ var npmModules = Object.keys(require('./package.json').dependencies);
 var externals = {};
 npmModules.forEach(function(npmModule){
 	if(npmModule === 'vue'){
-		externals[npmModule] = 'commonjs ' + npmModule + '/dist/vue.js';
+		var file = 'vue.js';
+		if(process.env.NODE_ENV === 'production'){
+			file = 'vue.min.js';
+		}
+		externals[npmModule] = 'commonjs ' + npmModule + '/dist/' + file;
 		return;
 	}
 	externals[npmModule] = 'commonjs ' + npmModule;
