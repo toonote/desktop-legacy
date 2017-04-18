@@ -1,6 +1,6 @@
 var webpack = require('webpack');
+var path = require('path');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-
 // 将npm中的模块在webpack打包时变成require(moduleName)
 // 而不是将代码打包进去
 var npmModules = Object.keys(require('./package.json').dependencies);
@@ -60,6 +60,17 @@ module.exports = {
 			CLOUD: !!process.env.CLOUD
 		})
 	],
-	externals: externals,
+	externals: [
+		externals,
+		function(context, request, callback){
+			if(/ace\//.test(request)){
+				return callback(null, 'commonjs2 ' + request);
+			}
+			if(/npm_modules\//.test(request)){
+				return callback(null, 'commonjs2 ./' + path.relative('..', request));
+			}
+			callback();
+		}
+	],
 	devtool: process.env.NODE_ENV === 'production' ? '' : '#source-map'
 };
