@@ -21,10 +21,18 @@ export default {
 	changeCurrentNoteTitle (state, title) {
 		state.currentNote.title = title;
 	},
-	updateNoteVersion (state, note){
-		if(state.currentNote.id === note.id){
-			// state.currentNote.remoteVersion = state.current
+	updateNoteVersion (state, data){
+		if(state.currentNote.id === data.id){
+			logger.debug('mutation, data.version:', data.version);
+			state.currentNote.remoteVersion = data.version;
+			state.currentNote.localVersion = data.version;
 		}
+		state.notebooks.forEach((notebook) => {
+			notebook.notes.filter((noteItem) => noteItem.id === data.id).forEach((noteItem) => {
+				noteItem.remoteVersion = data.version;
+				noteItem.localVersion = data.version;
+			});
+		});
 	},
 	updateNotebooks (state, notebooks) {
 		state.notebooks = notebooks;
@@ -73,4 +81,4 @@ export default {
 		state.user.name = user.name;
 		state.user.avatarUrl = user.avatarUrl;
 	}
-}
+};

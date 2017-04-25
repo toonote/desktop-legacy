@@ -48,28 +48,28 @@ export default {
 		return ret;
 	},
 	notebooks(state){
-		return state.notebooks
+		return state.notebooks;
 	},
 	layout(state){
-		return state.layout
+		return state.layout;
 	},
 	isSearching(state){
-		return state.isSearching
+		return state.isSearching;
 	},
 	searchResults(state){
-		return state.searchResults
+		return state.searchResults;
 	},
 	versions(state){
-		return state.versions
+		return state.versions;
 	},
 	contextMenuVersionId(state){
-		return state.contextMenuVersionId
+		return state.contextMenuVersionId;
 	},
 	editAction(state){
-		return state.editAction
+		return state.editAction;
 	},
 	// 登录信息
 	user(state){
-		return state.user
+		return state.user;
 	}
-}
+};

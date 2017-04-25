@@ -15,7 +15,7 @@ export default class Note{
 			title: this.title,
 			pureTitle: this.pureTitle,
 			createdAt: this.createdAt
-		}
+		};
 	}
 	_getRandomId(){
 		return uuid.v4();
@@ -25,7 +25,7 @@ export default class Note{
 		if(titlePart.length === 1){
 			return this.title;
 		}else{
-			return this.title.replace(titlePart[0]+'\\','');
+			return this.title.replace(titlePart[0] + '\\','');
 		}
 	}
 	_getTitleFromContent(){
@@ -33,7 +33,7 @@ export default class Note{
 	}
 	_getRandomFileName(postfix){
 		if(!postfix) postfix = '.md';
-		return Date.now() + '' + ((Math.random()*10000)>>0) + postfix;
+		return Date.now() + '' + ((Math.random() * 10000) >> 0) + postfix;
 	}
 	// 静态方法
 	static getTitleFromContent(content){

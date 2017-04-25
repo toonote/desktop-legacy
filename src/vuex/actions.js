@@ -153,6 +153,9 @@ export default {
 		context.commit('changeCurrentNoteContent', content);
 		context.commit('changeCurrentNoteTitle', title);
 
+		// 目标version
+		let targetVersion;
+
 		// 找到state中的目标笔记并修改标题
 		context.getters.allNotes.forEach((note) => {
 			if(note.id === context.state.currentNote.id){
@@ -161,9 +164,12 @@ export default {
 				// 当本地版本号比远程高时，不处理
 				// 当本地版本号与远程相同时，版本号+1
 				if(isCloud){
-					if(note.localVersion === note.serverVersion){
-						note.localVersion++;
+					if(note.localVersion === note.remoteVersion){
+						targetVersion = note.localVersion + 1;
+					}else{
+						targetVersion = note.localVersion;
 					}
+					logger.debug(`targetVersion:${targetVersion}, local:${note.localVersion}, remote:${note.remoteVersion}`);
 				}
 			}
 		});
@@ -176,7 +182,14 @@ export default {
 		if(isCloud){
 			await cloudSync(context.state.currentNote, (function(currentNote){
 				return () => {
-					context.commit('updateNoteVersion', currentNote);
+					context.commit('updateNoteVersion', {
+						id: currentNote.id,
+						version: targetVersion
+					});
+					currentNote.localVersion = targetVersion;
+					currentNote.remoteVersion = targetVersion;
+					// 保存meta信息
+					meta.updateNote(currentNote);
 				};
 			})(context.state.currentNote));
 		}

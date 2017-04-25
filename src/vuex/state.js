@@ -32,4 +32,4 @@ export default {
 		name: '',
 		avatarUrl: ''
 	}
-}
+};

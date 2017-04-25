@@ -17,6 +17,8 @@ class Meta{
 					notebook.notes.forEach((noteItem) => {
 						if(!noteItem.localVersion){
 							noteItem.localVersion = 1;
+						}
+						if(!noteItem.remoteVersion){
 							noteItem.remoteVersion = 0;
 						}
 					});
