@@ -21,7 +21,7 @@ export default {
 	changeCurrentNoteTitle (state, title) {
 		state.currentNote.title = title;
 	},
-	updateNoteVersion (state, data){
+	updateCurrentNoteVersion (state, data){
 		if(state.currentNote.id === data.id){
 			logger.debug('mutation, data.version:', data.version);
 			state.currentNote.remoteVersion = data.version;
@@ -31,6 +31,24 @@ export default {
 			notebook.notes.filter((noteItem) => noteItem.id === data.id).forEach((noteItem) => {
 				noteItem.remoteVersion = data.version;
 				noteItem.localVersion = data.version;
+			});
+		});
+	},
+	updateNote (state, note) {
+		if(state.currentNote.id === note.id){
+			state.currentNote.title = note.title;
+			state.currentNote.content = note.content;
+			state.currentNote.localVersion = note.localVersion;
+			state.currentNote.remoteVersion = note.remoteVersion;
+			state.currentNote.updatedAt = note.updatedAt;
+		}
+		state.notebooks.forEach((notebook) => {
+			notebook.notes.filter((noteItem) => noteItem.id === note.id).forEach((noteItem) => {
+				noteItem.title = note.title;
+				noteItem.content = note.content;
+				noteItem.localVersion = note.localVersion;
+				noteItem.remoteVersion = note.remoteVersion;
+				noteItem.updatedAt = note.updatedAt;
 			});
 		});
 	},

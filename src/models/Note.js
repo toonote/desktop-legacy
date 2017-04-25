@@ -2,11 +2,14 @@ import uuid from 'uuid';
 
 export default class Note{
 	constructor(data = {}){
-		this.id = this._getRandomId();
+		this.id = data.id || this._getRandomId();
 		this.content = data.content || '# 未分类\\新文档';
 		this.title = data.title || this._getTitleFromContent();
 		this.pureTitle = this._getPureTitle();
-		this.createdAt = Date.now();
+		this.localVersion = data.version || data.localVersion || 1;
+		this.remoteVersion = data.version || data.remoteVersion || 0;
+		this.createdAt = data.createdAt && new Date(data.createdAt).getTime() || Date.now();
+		this.updatedAt = data.updatedAt && new Date(data.updatedAt).getTime() || Date.now();
 	}
 	// 获取Note的meta信息
 	getMeta(){

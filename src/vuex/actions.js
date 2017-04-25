@@ -128,10 +128,10 @@ export default {
 	async cloudInit(context){
 		if(!context.state.user.id) return;
 		let cloudInit = await getConfig('cloudInit');
-		if(!cloudInit){
-			await cloud.uploadAllNotes();
-			await setConfig('cloudInit', true);
-		}
+		// if(!cloudInit){
+		await cloud.syncAllNotes(context);
+		await setConfig('cloudInit', true);
+		// }
 	},
 	// 登录云
 	async doLogin(context, isAuto){
@@ -182,7 +182,7 @@ export default {
 		if(isCloud){
 			await cloudSync(context.state.currentNote, (function(currentNote){
 				return () => {
-					context.commit('updateNoteVersion', {
+					context.commit('updateCurrentNoteVersion', {
 						id: currentNote.id,
 						version: targetVersion
 					});

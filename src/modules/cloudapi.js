@@ -17,15 +17,15 @@ class CloudApi{
 	}
 	async create(data){
 		let agent = await this._getAgent();
-		return agent.post(this._modelUrl, data);
+		return agent.post(this._modelUrl, data).then(this._getResponseData);
 	}
 	async update(data){
 		let agent = await this._getAgent();
-		return agent.put(this._modelUrl + `/${data.id}`, data);
+		return agent.put(this._modelUrl + `/${data.id}`, data).then(this._getResponseData);
 	}
 	async delete(id){
 		let agent = await this._getAgent();
-		return agent.delete(this._modelUrl + `/${id}`);
+		return agent.delete(this._modelUrl + `/${id}`).then(this._getResponseData);
 	}
 	async read(id){
 		let agent = await this._getAgent();
@@ -33,7 +33,7 @@ class CloudApi{
 		if(id){
 			url += `/${id}`;
 		}
-		return agent.get(url);
+		return agent.get(url).then(this._getResponseData);
 	}
 	async _getToken(){
 		return await getConfig('cloudToken');
@@ -49,6 +49,15 @@ class CloudApi{
 		// 设置token
 		this._agent.defaults.headers.common['X-TooNote-Token'] = token;
 		return this._agent;
+	}
+	_getResponseData(response){
+		if(response.status === 200){
+			return response.data;
+		}else{
+			let err = new Error(response.statusText);
+			err.code = response.status;
+			throw new Error(err);
+		}
 	}
 }
 
