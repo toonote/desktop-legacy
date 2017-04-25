@@ -48,34 +48,10 @@
         "no-self-assign": ["error"],
         // 不允许抛非Error实例
         "no-throw-literal": ["warn"],
-        // 不允许重名变量
-        "no-shadow": ["warn", {
-            "builtinGlobals": true,
-            "hoist": "all",
-            "allow": [
-				"name", //window.name
-                "e",
-                "err",
-                "error",
-                "key",
-                "value",
-                "data",
-                "i",
-                "j",
-                "k",
-                "$",
-                "jQuery"
-            ]
-         }],
-        // jsdoc
-        "require-jsdoc": ["warn", {
-            "require": {
-                "FunctionDeclaration": true,
-                "MethodDefinition": true,
-                "ClassDeclaration": true,
-                "ArrowFunctionExpression": false
-            }
-        }],
+		// 允许空case
+		"no-case-declarations": "off",
+		// 允许在表达式中赋值
+		"no-cond-assign": "off",
         // 定义未使用的变量
         "no-unused-vars": ["warn", {
             "vars": "all",
