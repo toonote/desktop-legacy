@@ -18,9 +18,12 @@ let git = new Git();
 
 // 初始化云服务相关
 let syncNotes = {};
-let reallyDoSync = async (callback) => {
+let reallyDoSync = async (context, callback) => {
 	for(let id in syncNotes){
 		await cloud.updateNote(syncNotes[id]);
+		await cloud.syncAllNotes(context, {
+			noUpdate: true
+		});
 		callback && callback();
 		// syncNotes[id].remoteVersion = syncNotes[id].localVersion;
 		// console.log(syncNotes[id]);
@@ -28,9 +31,9 @@ let reallyDoSync = async (callback) => {
 	syncNotes = {};
 };
 let doSync = throttle(reallyDoSync, 10 * 1000);
-let cloudSync = async (note, callback) => {
+let cloudSync = async (context, note, callback) => {
 	syncNotes[note.id] = note;
-	await doSync(callback);
+	await doSync(context, callback);
 };
 
 if(!CLOUD){
@@ -132,6 +135,11 @@ export default {
 		await cloud.syncAllNotes(context);
 		await setConfig('cloudInit', true);
 		// }
+		setInterval(() => {
+			cloud.syncAllNotes(context, {
+				noUpdate: true
+			});
+		}, 60 * 1000);
 	},
 	// 登录云
 	async doLogin(context, isAuto){
@@ -180,7 +188,7 @@ export default {
 		await meta.updateNote(context.state.currentNote);
 		// 云同步
 		if(isCloud){
-			await cloudSync(context.state.currentNote, (function(currentNote){
+			await cloudSync(context, context.state.currentNote, (function(currentNote){
 				return () => {
 					context.commit('updateCurrentNoteVersion', {
 						id: currentNote.id,

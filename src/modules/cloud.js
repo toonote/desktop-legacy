@@ -7,7 +7,7 @@ import {getConfig, setConfig} from './config';
 const store = new Store();
 
 // 同步所有笔记
-export async function syncAllNotes(context){
+export async function syncAllNotes(context, options = {}){
 	let noteApi = new CloudApi({
 		model: 'note'
 	});
@@ -43,21 +43,30 @@ export async function syncAllNotes(context){
 			context.commit('newNote', newNote);
 			logger.debug('下载成功');
 		}else{
+			let localVersion = localMap[noteId].localVersion;
+			let remoteVersion = remoteMap[noteId].version;
 			// 如果本地存在，比较版本号
-			logger.debug(`id:${noteId}, title:${remoteMap[noteId].title}，本地版本号${localMap[noteId].localVersion}，远程版本号${remoteMap[noteId].version}`);
-			if(localMap[noteId].localVersion >= remoteMap[noteId].version){
+			logger.debug(`id:${noteId}, title:${remoteMap[noteId].title}，本地版本号${localVersion}，远程版本号${remoteVersion}`);
+			if(localVersion > remoteVersion){
 				// 如果本地比较新，更新远程
-				noteApi.update({...localMap[noteId], version: localMap[noteId].localVersion});
+				await noteApi.update({...localMap[noteId], version: localMap[noteId].localVersion});
 				logger.debug('上传成功');
-			}else{
+			}else if(localVersion < remoteVersion){
 				// 如果本地比较旧，更新本地
-				let newNote = note.createNewNote(noteApi.read(noteId));
+				let newNote = note.createNewNote(await noteApi.read(noteId));
 				// 保存笔记
 				await note.saveNote(newNote);
 				// 保存meta信息
 				await meta.updateNote(newNote);
 				context.commit('updateNote', newNote);
+				logger.debug('newNote:', newNote);
 				logger.debug('下载成功');
+			}else{
+				if(!options.noUpdate){
+					// 如果版本号相同，此时应该有个备份机制，万一覆盖了有后悔药
+					await noteApi.update({...localMap[noteId], version: localMap[noteId].localVersion});
+					logger.debug('上传成功');
+				}
 			}
 		}
 
