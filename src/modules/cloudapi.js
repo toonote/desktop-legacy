@@ -27,13 +27,18 @@ class CloudApi{
 		let agent = await this._getAgent();
 		return agent.delete(this._modelUrl + `/${id}`).then(this._getResponseData);
 	}
-	async read(id){
+	async read(id, options = {}){
 		let agent = await this._getAgent();
 		let url = this._modelUrl;
 		if(id){
 			url += `/${id}`;
 		}
-		return agent.get(url).then(this._getResponseData);
+		return agent.get(url, {
+			params:{
+				limit: options.limit || 10,
+				page: options.page || 1
+			}
+		}).then(this._getResponseData);
 	}
 	async _getToken(){
 		return await getConfig('cloudToken');

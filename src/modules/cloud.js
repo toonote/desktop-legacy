@@ -23,7 +23,18 @@ export async function syncAllNotes(context, options = {}){
 	});
 	logger.debug(`local note count: ${allNotes.length}`);
 
-	let remoteNotes = await noteApi.read();
+	// balili压缩有bug，用let会导致作用域不对
+	var remoteNotes = [];
+	let limit = 100;
+	let page = 1;
+	for(;;page++){
+		let remotePageNotes = await noteApi.read(0, {
+			page,
+			limit
+		});
+		remoteNotes = remoteNotes.concat(remotePageNotes);
+		if(remotePageNotes.length < limit) break;
+	}
 
 	logger.debug(`remote note count: ${remoteNotes.length}`);
 
