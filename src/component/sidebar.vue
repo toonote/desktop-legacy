@@ -76,20 +76,22 @@
 			<li
 				class="icon folder"
 				v-for="(notes,category) in notebook.categories"
+				v-on:click="switchFold(category)"
 			>{{category}}
 				<transition-group
 					name="note-list"
 					tag="ul"
 					droppable="true"
+					v-show="!isFold(category)"
 					v-on:drop="drop"
 					>
 					<li
 						draggable="true"
 						class="icon note"
 						v-bind:key="note.id"
-						v-bind:class="{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}"
+						v-bind:class="{active:isActive(note.id)}"
 						v-for="note in notes"
-						v-on:click="switchCurrentNote(note.id)"
+						v-on:click.stop="switchCurrentNote(note.id)"
 						v-on:contextmenu.stop="showContextMenu(note.id)"
 						v-on:dragstart="dragStart($event, note.id)"
 						v-on:dragover.prevent="dragOver($event, note.id)"
@@ -108,7 +110,7 @@
 				<ul>
 					<li
 						class="icon note"
-						v-bind:class="{active:(currentNote && note.id === currentNote.id) || note.id === contextMenuNoteId}"
+						v-bind:class="{active:isActive(note.id)}"
 						v-for="note in notes"
 						v-on:click="switchCurrentNote(note.id)"
 						v-on:contextmenu="showContextMenu(note.id)"
@@ -168,6 +170,16 @@ export default {
 				ret = true;
 			}
 			return ret;
+		},
+		isFold(category){
+			return this.foldMap[category];
+		},
+		switchFold(category){
+			this.foldMap = {
+				...this.foldMap,
+				[category]: !this.foldMap[category]
+			};
+			console.log(this.foldMap);
 		},
 		switchCurrentNote(noteId){
 			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
@@ -244,7 +256,8 @@ export default {
 			currentMovingNoteId:0,
 			currentTargetingNoteId:0,
 			isAnimating:false,
-			keyword:''
+			keyword:'',
+			foldMap:{}
 		};
 		return data;
 	},
