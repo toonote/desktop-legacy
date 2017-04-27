@@ -60,7 +60,11 @@ export async function syncAllNotes(context, options = {}){
 			logger.debug(`id:${noteId}, title:${remoteMap[noteId].title}，本地版本号${localVersion}，远程版本号${remoteVersion}`);
 			if(localVersion > remoteVersion){
 				// 如果本地比较新，更新远程
-				await noteApi.update({...localMap[noteId], version: localMap[noteId].localVersion});
+				await noteApi.update({
+					...localMap[noteId],
+					content: await note.getNoteContent(noteId),
+					version: localMap[noteId].localVersion
+				});
 				logger.debug('上传成功');
 			}else if(localVersion < remoteVersion){
 				// 如果本地比较旧，更新本地
