@@ -2,7 +2,7 @@
 
 ## 官网
 
-<https://toonote.113.im>
+<https://xiaotu.io>
 
 ## 介绍
 
