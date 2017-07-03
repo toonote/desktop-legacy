@@ -4,7 +4,7 @@
   "description": "Markdown based note app.",
   "main": "electron.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "webpack && ava tests",
     "dev": "webpack -w",
     "prod": "NODE_ENV=production webpack",
     "prod-win": "set NODE_ENV=production&& webpack",
@@ -47,6 +47,7 @@
     "vuex": "^2.0.0"
   },
   "devDependencies": {
+    "ava": "^0.20.0",
     "babel-core": "^6.4.0",
     "babel-loader": "^6.2.5",
     "babel-plugin-add-module-exports": "^0.2.1",
@@ -60,6 +61,7 @@
     "extract-text-webpack-plugin": "^2.0.0-beta.5",
     "file-loader": "^0.8.5",
     "npm-run-all": "^4.0.2",
+    "spectron": "^3.7.2",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
     "vue-hot-reload-api": "^2.0.6",
