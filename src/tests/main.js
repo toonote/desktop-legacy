@@ -17,9 +17,13 @@ test.afterEach(t => {
 
 test(async t => {
 	let client = t.context.app.client.waitUntilWindowLoaded();
-	let isMinimized = await client.browserWindow.isMinimized();
-	t.false(isMinimized);
-
+	let browserWindow = client.browserWindow;
+	t.false(await browserWindow.isMinimized());
+	t.true(await browserWindow.isDevToolsOpened());
+	t.true(await browserWindow.isVisible());
+	let bounds = await browserWindow.getBounds();
+	t.true(bounds.width > 0);
+	t.true(bounds.height > 0);
 	return client;
 	/*return
 		t.context.app.client.waitUntilWindowLoaded()
