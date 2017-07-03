@@ -179,7 +179,6 @@ export default {
 				...this.foldMap,
 				[category]: !this.foldMap[category]
 			};
-			console.log(this.foldMap);
 		},
 		switchCurrentNote(noteId){
 			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'click');

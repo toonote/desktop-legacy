@@ -16,8 +16,8 @@
   },
   "author": "TooBug",
   "repository": {
-	"type" : "git",
-	"url" : "https://github.com/TooBug/TooNote.git"
+    "type": "git",
+    "url": "https://github.com/TooBug/TooNote.git"
   },
   "license": "ISC",
   "babel": {
@@ -66,6 +66,6 @@
     "vue-html-loader": "^1.2.3",
     "vue-loader": "^9.7.0",
     "vue-style-loader": "^1.0.0",
-    "webpack": "^2.2.0"
+    "webpack": "^3.0.0"
   }
 }

@@ -58,7 +58,8 @@ module.exports = {
 		new webpack.DefinePlugin({
 			DEBUG: process.env.NODE_ENV !== 'production',
 			CLOUD: !!process.env.CLOUD
-		})
+		}),
+		new webpack.optimize.ModuleConcatenationPlugin()
 	],
 	externals: [
 		externals,
