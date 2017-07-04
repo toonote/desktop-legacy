@@ -7,8 +7,9 @@ node_js:
   - '8'
 
 before_script:
-  - "xvfb-run -a"
-  - sleep 3 # give xvfb some time to start
+  # - "export DISPLAY=:99.0"
+  # - "sh -e /etc/init.d/xvfb start"
+  # - sleep 3 # give xvfb some time to start
   - cd src
 
 script:
