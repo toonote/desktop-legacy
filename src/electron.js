@@ -25,10 +25,9 @@ app.on('ready', function() {
 	});
 
 	// 开发环境打开调试工具
-	if(!/app$/.test(__dirname)){
+	if(!/app$/.test(__dirname) && +process.env.NO_DEBUG === 1){
 		mainWindow.openDevTools();
 		let devInstaller = require('electron-devtools-installer');
-		console.log(devInstaller);
 		// import installExtension, { REACT_DEVELOPER_TOOLS } from ;
 
 		devInstaller.default(devInstaller.VUEJS_DEVTOOLS)
