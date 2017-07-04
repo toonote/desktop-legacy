@@ -92,9 +92,13 @@ export default {
 
 			if(imagePath){
 				imagePath = encodeURI(imagePath);
+				if(util.os === 'windows'){
+					// 把\替换回来
+					imagePath = imagePath.replace(/%5C/g,'\\');
+				}
 				_aceEditor.insert(`\n\n![${name}](${imagePath})\n\n`);
 			}else{
-				_aceEditor.insert(`拖拽插入图片出错！`);
+				_aceEditor.insert(`插入图片出错！`);
 			}
 			this.onEditorInput();
 		},
