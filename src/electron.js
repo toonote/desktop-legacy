@@ -25,7 +25,7 @@ app.on('ready', function() {
 	});
 
 	// 开发环境打开调试工具
-	if(!/app$/.test(__dirname) && +process.env.NO_DEBUG === 1){
+	if(!/app$/.test(__dirname) && +process.env.NO_DEBUG !== 1){
 		mainWindow.openDevTools();
 		let devInstaller = require('electron-devtools-installer');
 		// import installExtension, { REACT_DEVELOPER_TOOLS } from ;
