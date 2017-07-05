@@ -22,21 +22,31 @@ let app = new Vue({
 	el: '#wrapper',
 	store,
 	computed:{
-		...Vuex.mapGetters(['layout'])
+		layout(){
+			this._tnEvent('layout');
+			return this.$store.getters.layout;
+		}
 	},
 	methods:{
+		_tnEvent: function(type, data){
+			if(!data) data = {};
+			this.tnEvent = {...data, type, _:Math.random()};
+			this.$nextTick(() => {
+				this.tnEvent = {};
+			});
+		},
 		saveImage: function(filepath, ext){
 			if(filepath === '@clipboard'){
-				this.imageUrl = io.saveImageFromClipboard();
+				this._tnEvent('imageUrl', {url:io.saveImageFromClipboard()});
 			}else{
-				this.imageUrl = io.saveImage(filepath, ext);
+				this._tnEvent('imageUrl', {url:io.saveImage(filepath, ext)});
 			}
 			console.log(this.imageUrl);
 		}
 	},
 	data:{
 		withMenubar:false,
-		imageUrl: ''
+		tnEvent: {}
 	},
 	components: {
 		menubar,
@@ -44,7 +54,12 @@ let app = new Vue({
 		editor,
 		preview,
 		versions
-	}
+	},
+	/*watch: {
+		layout(){
+			this._tnEvent('layout');
+		}
+	}*/
 });
 
 // 初始化

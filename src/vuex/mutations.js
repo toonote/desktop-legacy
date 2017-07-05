@@ -59,7 +59,10 @@ export default {
 		state.scrollMap = scrollMap;
 	},
 	switchLayout (state, component) {
-		state.layout[component] = !state.layout[component];
+		state.layout = {
+			...state.layout,
+			[component]: !state.layout[component]
+		};
 	},
 	switchSearching (state, isSearching) {
 		state.isSearching = isSearching;
