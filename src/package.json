@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "axios": "^0.15.2",
-    "brace": "^0.10.0",
     "eases": "^1.0.8",
     "electron-machine-id": "^1.0.9",
     "highlight.js": "^9.7.0",
@@ -43,7 +42,7 @@
     "lodash": "^3.10.1",
     "remarkable": "^1.6.1",
     "uuid": "^2.0.3",
-    "vue": "^2.0.1",
+    "vue": "^2.3.4",
     "vuex": "^2.0.0"
   },
   "devDependencies": {
@@ -63,11 +62,13 @@
     "npm-run-all": "^4.0.2",
     "spectron": "^3.7.2",
     "style-loader": "^0.13.1",
+    "tn-md-editor": "git+https://github.com/TooNote/MdEditor.git",
     "url-loader": "^0.5.7",
     "vue-hot-reload-api": "^2.0.6",
     "vue-html-loader": "^1.2.3",
-    "vue-loader": "^9.7.0",
+    "vue-loader": "^13.0.0",
     "vue-style-loader": "^1.0.0",
+    "vue-template-compiler": "^2.3.4",
     "webpack": "^3.0.0"
   }
 }

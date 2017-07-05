@@ -4,6 +4,10 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 // 将npm中的模块在webpack打包时变成require(moduleName)
 // 而不是将代码打包进去
 var npmModules = Object.keys(require('./package.json').dependencies);
+npmModules = npmModules.concat([
+	'brace'
+]);
+
 var externals = {};
 npmModules.forEach(function(npmModule){
 	if(npmModule === 'vue'){
