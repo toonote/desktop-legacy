@@ -22,6 +22,13 @@ let app = new Vue({
 	el: '#wrapper',
 	store,
 	computed:{
+		editAction(){
+			this._tnEvent('editAction', {
+				action: this.$store.getters.editAction
+			});
+			console.log('tnEvent editAction: %s', this.$store.getters.editAction);
+			return this.$store.getters.editAction;
+		},
 		layout(){
 			this._tnEvent('layout');
 			return this.$store.getters.layout;
