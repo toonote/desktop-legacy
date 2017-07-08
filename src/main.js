@@ -35,13 +35,17 @@ let app = new Vue({
 				this.tnEvent = {};
 			});
 		},
+		// 编辑器粘贴或者拖拽图片
 		saveImage: function(filepath, ext){
 			if(filepath === '@clipboard'){
 				this._tnEvent('imageUrl', {url:io.saveImageFromClipboard()});
 			}else{
 				this._tnEvent('imageUrl', {url:io.saveImage(filepath, ext)});
 			}
-			console.log(this.imageUrl);
+		},
+		// 编辑器内容改变
+		contentChange: function(content){
+			this.$store.dispatch('changeCurrentNoteContent', content);
 		}
 	},
 	data:{

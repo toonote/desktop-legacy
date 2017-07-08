@@ -16,6 +16,7 @@
 		<transition name="slide-flex">
 			<editor
 				v-show="layout.editor"
+				v-on:content-change="contentChange"
 				v-on:save-image="saveImage"
 				v-bind:tn-event="tnEvent"
 			></editor>
