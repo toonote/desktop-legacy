@@ -5,7 +5,7 @@ import {getConfig, setConfig} from './config';
 const store = new Store();
 const login = {};
 
-let URL_BASE = 'https://toonote.113.im';
+let URL_BASE = 'https://api.xiaotu.io';
 if(DEBUG){
 	// URL_BASE = 'http://localhost:11118';
 }

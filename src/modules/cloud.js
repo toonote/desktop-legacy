@@ -11,7 +11,7 @@ const getModel = async function(modelName){
 	if(!_modelCache[modelName]){
 		let model = new RestfulModel({
 			model: modelName,
-			baseUrl: 'https://xiaotu.io/api/v1/',
+			baseUrl: 'https://api.xiaotu.io/api/v1/',
 			headers: {
 				'X-TooNote-Token': await getConfig('cloudToken')
 			},
@@ -23,7 +23,7 @@ const getModel = async function(modelName){
 
 // 同步所有笔记
 export async function syncAllNotes(context, options = {}){
-	let noteApi = getModel('note');
+	let noteApi = await getModel('note');
 	let allNotes = [];
 	var localMap = {};
 	var remoteMap = {};
@@ -118,19 +118,19 @@ export async function syncAllNotes(context, options = {}){
 
 // 同步单条笔记
 export async function updateNote(note){
-	let noteApi = getModel('note');
+	let noteApi = await getModel('note');
 
 	await noteApi.update({...note, version: note.localVersion});
 }
 // 新建单条笔记
 export async function createNote(note){
-	let noteApi = getModel('note');
+	let noteApi = await getModel('note');
 
 	await noteApi.create({...note, version: note.localVersion});
 }
 // 删除单条笔记
 export async function deleteNote(id){
-	let noteApi = getModel('note');
+	let noteApi = await getModel('note');
 
 	await noteApi.delete(id);
 }
