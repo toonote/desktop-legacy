@@ -22,6 +22,13 @@ let app = new Vue({
 	el: '#wrapper',
 	store,
 	computed:{
+		content(){
+			if(!this.$store.getters.currentNote){
+				return '';
+			}else{
+				return this.$store.getters.currentNote.content;
+			}
+		},
 		editAction(){
 			this._tnEvent('editAction', {
 				action: this.$store.getters.editAction
