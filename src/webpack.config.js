@@ -24,6 +24,7 @@ npmModules.forEach(function(npmModule){
 module.exports = {
 	entry: ['./main.js'],
 	target: 'electron',
+	node: false,
 	output: {
 		path: __dirname,
 		filename: 'bundle.js'
@@ -60,10 +61,10 @@ module.exports = {
 	plugins: [
 		new ExtractTextPlugin('style/bundle.css'),
 		new webpack.DefinePlugin({
-			DEBUG: process.env.NODE_ENV !== 'production',
-			CLOUD: !!process.env.CLOUD
+			DEBUG: process.env.NODE_ENV !== 'production'
 		}),
-		new webpack.optimize.ModuleConcatenationPlugin()
+		// 有bug，先屏蔽
+		// new webpack.optimize.ModuleConcatenationPlugin()
 	],
 	externals: [
 		externals,

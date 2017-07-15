@@ -36,12 +36,6 @@ let cloudSync = async (context, note, callback) => {
 	await doSync(context, callback);
 };
 
-if(!CLOUD){
-	cloudSync = async () => {
-
-	};
-}
-
 // 获取带样式的html
 let getHtmlWithCss = async (md, cssList = []) => {
 	let content = renderer.render(md);
@@ -89,9 +83,7 @@ export default {
 		}
 
 		// 初始化云服务
-		if(CLOUD){
-			await context.dispatch('cloudInit');
-		}
+		await context.dispatch('cloudInit');
 	},
 	// 初始化版本号检查，如果有必要的话，做相应的升级准备工作
 	async versionUpgrade(){
@@ -155,7 +147,7 @@ export default {
 
 		if(content === context.state.currentNote.content) return;
 
-		let isCloud = context.state.user.id && CLOUD;
+		let isCloud = context.state.user.id;
 
 		let title = note.getTitleFromContent(content);
 		context.commit('changeCurrentNoteContent', content);
@@ -237,7 +229,7 @@ export default {
 		// let metaData = await meta.data;
 		context.commit('newNote', newNote);
 		context.commit('switchCurrentNote', newNote);
-		if(context.state.user.id && CLOUD){
+		if(context.state.user.id){
 			cloud.createNote(newNote);
 		}
 	},
@@ -266,7 +258,7 @@ export default {
 
 		context.dispatch('switchCurrentNoteById');
 
-		if(context.state.user.id && CLOUD){
+		if(context.state.user.id){
 			cloud.deleteNote(targetId);
 		}
 
