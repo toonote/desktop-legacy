@@ -1,0 +1,50 @@
+*{
+	padding:0;
+	margin:0;
+}
+html,body,#wrapper{
+	height: 100%;
+}
+body{
+	font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+}
+a:link{
+	color: #999;
+	text-decoration: none;
+}
+a:hover{
+	color: #333;
+}
+
+/*登录页面头部开始*/
+.header{
+	height:315px;
+	background:url(../images/login-header.png) no-repeat;
+	background-size:cover;
+}
+.header .description{
+	padding-top: 280px;
+    text-align: center;
+    color: #333;
+    font-size: 18px;
+}
+/*登录页面头部结束*/
+/*登录页面小程序码开始*/
+.qrCode{
+	margin-top:30px;
+	height:200px;
+	text-align:center;
+}
+.qrCode img{
+	max-height:100%;
+}
+/*登录页面小程序码结束*/
+/*登录页面底部开始*/
+.footer{
+	position: absolute;
+	bottom:20px;
+	width:100%;
+	text-align: center;
+	font-size:14px;
+}
+/*登录页面询问结束*/

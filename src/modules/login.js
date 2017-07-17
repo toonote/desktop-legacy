@@ -31,7 +31,6 @@ login.doLogin = async function(isAuto){
 			let webContents = loginWindow.webContents;
 			// 加载空白页，显示loading
 			// loginWindow.loadURL('about:blank');
-			console.log(__dirname);
 			loginWindow.loadURL(`file://${__dirname}/login.html`);
 			// webContents.executeJavaScript('document.write("正在登录...")');
 			// 打开调试工具
