@@ -33,12 +33,13 @@
     }
   },
   "dependencies": {
-    "axios": "^0.15.2",
+	"axios": "^0.16.2",
+	"brace": "^0.10.0",
     "eases": "^1.0.8",
     "electron-machine-id": "^1.0.9",
     "highlight.js": "^9.7.0",
     "inline-css": "^2.2.2",
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.4",
     "remarkable": "^1.6.1",
     "uuid": "^2.0.3",
     "vue": "^2.3.4",
