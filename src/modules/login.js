@@ -1,11 +1,11 @@
-import Store from '../api/store/index';
+// import Store from '../api/store/index';
 import axios from 'axios';
 import {machineIdSync} from 'electron-machine-id';
 import {getConfig, setConfig} from './config';
-const store = new Store();
+// const store = new Store();
 const login = {};
 
-let URL_BASE = 'https://toonote.113.im';
+let URL_BASE = 'https://api.xiaotu.io';
 if(DEBUG){
 	// URL_BASE = 'http://localhost:11118';
 }
@@ -30,11 +30,12 @@ login.doLogin = async function(isAuto){
 			});
 			let webContents = loginWindow.webContents;
 			// 加载空白页，显示loading
-			loginWindow.loadURL('about:blank');
-			webContents.executeJavaScript('document.write("正在登录...")');
+			// loginWindow.loadURL('about:blank');
+			loginWindow.loadURL(`file://${__dirname}/login.html`);
+			// webContents.executeJavaScript('document.write("正在登录...")');
 			// 打开调试工具
 			if(DEBUG){
-				// loginWindow.openDevTools();
+				loginWindow.openDevTools();
 			}
 
 			// 加载完成后处理登录逻辑
@@ -50,7 +51,7 @@ login.doLogin = async function(isAuto){
 					this.initUser(token).then(resolve).catch(reject);
 				});
 			});
-			loginWindow.loadURL(URL_BASE + '/oauth/redirect/github?client=mac');
+			// loginWindow.loadURL(URL_BASE + '/oauth/redirect/github?client=mac');
 		});
 	};
 	let token = await this.getToken();

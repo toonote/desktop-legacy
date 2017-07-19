@@ -1,16 +1,29 @@
 import logger from './logger';
-import Store from '../api/store/index';
-import CloudApi from './cloudapi';
+import RestfulModel from 'tn-restful-model';
 import meta from './meta';
 import note from './note';
 import {getConfig, setConfig} from './config';
-const store = new Store();
+// import Store from '../api/store/index';
+// const store = new Store();
+
+let _modelCache = {};
+const getModel = async function(modelName){
+	if(!_modelCache[modelName]){
+		let model = new RestfulModel({
+			model: modelName,
+			baseUrl: 'https://api.xiaotu.io/api/v1/',
+			headers: {
+				'X-TooNote-Token': await getConfig('cloudToken')
+			},
+		});
+		_modelCache[modelName] = model;
+	}
+	return _modelCache[modelName];
+};
 
 // 同步所有笔记
 export async function syncAllNotes(context, options = {}){
-	let noteApi = new CloudApi({
-		model: 'note'
-	});
+	let noteApi = await getModel('note');
 	let allNotes = [];
 	var localMap = {};
 	var remoteMap = {};
@@ -105,25 +118,19 @@ export async function syncAllNotes(context, options = {}){
 
 // 同步单条笔记
 export async function updateNote(note){
-	let noteApi = new CloudApi({
-		model: 'note'
-	});
+	let noteApi = await getModel('note');
 
 	await noteApi.update({...note, version: note.localVersion});
 }
 // 新建单条笔记
 export async function createNote(note){
-	let noteApi = new CloudApi({
-		model: 'note'
-	});
+	let noteApi = await getModel('note');
 
 	await noteApi.create({...note, version: note.localVersion});
 }
 // 删除单条笔记
 export async function deleteNote(id){
-	let noteApi = new CloudApi({
-		model: 'note'
-	});
+	let noteApi = await getModel('note');
 
 	await noteApi.delete(id);
 }

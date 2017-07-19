@@ -262,7 +262,7 @@ export default {
 				// 关于 - 仅windows下触发
 				case 'about':
 					getConfig('dataVersion').then((version) => {
-						alert(`TooNote (${version})\nhttps://toonote.113.im`);
+						alert(`TooNote (${version})\nhttps://xiaotu.io`);
 					});
 					break;
 				case 'devReload':

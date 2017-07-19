@@ -14,7 +14,14 @@
 			<sidebar v-show="layout.sidebar"></sidebar>
 		</transition>
 		<transition name="slide-flex">
-			<editor v-show="layout.editor"></editor>
+			<editor
+				v-show="layout.editor"
+				v-on:content-change="contentChange"
+				v-on:save-image="saveImage"
+				v-on:line-scroll="lineScroll"
+				v-bind:content="content"
+				v-bind:tn-event="tnEvent"
+			></editor>
 		</transition>
 		<transition name="slide-flex">
 			<preview v-show="layout.preview"></preview>

@@ -4,6 +4,10 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 // 将npm中的模块在webpack打包时变成require(moduleName)
 // 而不是将代码打包进去
 var npmModules = Object.keys(require('./package.json').dependencies);
+npmModules = npmModules.concat([
+	'brace'
+]);
+
 var externals = {};
 npmModules.forEach(function(npmModule){
 	if(npmModule === 'vue'){
@@ -20,6 +24,7 @@ npmModules.forEach(function(npmModule){
 module.exports = {
 	entry: ['./main.js'],
 	target: 'electron',
+	node: false,
 	output: {
 		path: __dirname,
 		filename: 'bundle.js'
@@ -56,10 +61,10 @@ module.exports = {
 	plugins: [
 		new ExtractTextPlugin('style/bundle.css'),
 		new webpack.DefinePlugin({
-			DEBUG: process.env.NODE_ENV !== 'production',
-			CLOUD: !!process.env.CLOUD
+			DEBUG: process.env.NODE_ENV !== 'production'
 		}),
-		new webpack.optimize.ModuleConcatenationPlugin()
+		// 有bug，先屏蔽
+		// new webpack.optimize.ModuleConcatenationPlugin()
 	],
 	externals: [
 		externals,

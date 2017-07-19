@@ -4,13 +4,12 @@
   "description": "Markdown based note app.",
   "main": "electron.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NO_DEBUG=1 webpack && ava --verbose tests",
     "dev": "webpack -w",
     "prod": "NODE_ENV=production webpack",
     "prod-win": "set NODE_ENV=production&& webpack",
     "run": "electron .",
-    "start": "npm-run-all -p -r dev run",
-    "cloud": "CLOUD=1 npm-run-all -p -r dev run",
+    "start": "webpack&&npm-run-all -p -r dev run",
     "build:osx": "npm run prod&& ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ electron-packager . --overwrite --arch=all --icon=../assets/logo.icns --out=../dist --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/windows\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\"",
     "build:win": "npm run prod-win&& set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/&& electron-packager . --overwrite --arch=all --icon=../assets/logo.ico --out=../dist --win32metadata.CompanyName=\"TooNote\" --win32metadata.ProductName=\"TooNote\" --win32metadata.FileDescription=\"TooNote\" --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/osx\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\""
   },
@@ -35,7 +34,6 @@
   },
   "dependencies": {
     "axios": "^0.15.2",
-    "brace": "^0.10.0",
     "eases": "^1.0.8",
     "electron-machine-id": "^1.0.9",
     "highlight.js": "^9.7.0",
@@ -43,14 +41,14 @@
     "lodash": "^3.10.1",
     "remarkable": "^1.6.1",
     "uuid": "^2.0.3",
-    "vue": "^2.0.1",
+    "vue": "^2.3.4",
     "vuex": "^2.0.0"
   },
   "devDependencies": {
+    "ava": "^0.20.0",
     "babel-core": "^6.4.0",
     "babel-loader": "^6.2.5",
     "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.16.0",
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "babel-preset-babili": "0.0.5",
     "css-loader": "^0.23.1",
@@ -60,12 +58,16 @@
     "extract-text-webpack-plugin": "^2.0.0-beta.5",
     "file-loader": "^0.8.5",
     "npm-run-all": "^4.0.2",
+    "spectron": "^3.7.2",
     "style-loader": "^0.13.1",
+    "tn-md-editor": "git+https://github.com/TooNote/MdEditor.git",
+    "tn-restful-model": "git+https://github.com/TooNote/RestfulModel.git",
     "url-loader": "^0.5.7",
     "vue-hot-reload-api": "^2.0.6",
     "vue-html-loader": "^1.2.3",
-    "vue-loader": "^9.7.0",
+    "vue-loader": "^13.0.0",
     "vue-style-loader": "^1.0.0",
+    "vue-template-compiler": "^2.3.4",
     "webpack": "^3.0.0"
   }
 }

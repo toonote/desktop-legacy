@@ -14,8 +14,7 @@
 		}
 	},
 	"globals": {
-		"DEBUG": true,
-		"CLOUD": true
+		"DEBUG": true
 	},
 	"rules": {
 		"no-alert": "off",

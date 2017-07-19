@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>TooNote - 登录</title>
+	<link href="./style/login.css" rel="stylesheet" />
+</head>
+<body>
+<div id="wrapper">
+	<div class="header">
+		<p class="description">微信扫描小程序码登录</p>
+	</div>
+	<div class="qrCode">
+		<img id="loginQrCode" />
+	</div>
+	<div class="footer">
+		<p>
+			<a href="https://api.xiaotu.io/oauth/redirect/github?client=mac">使用Github登录</a>
+			<a href="https://github.com/TooNote/TooNote/issues/new" class="externalLink">无法登录？</a>
+		</p>
+	</div>
+</div>
+<script>
+	(async function(){
+		const axios = require('axios');
+		const BASE_URL = 'https://api.xiaotu.io';
+
+		// step 1，获取场景值
+		let response = await axios.get(`${BASE_URL}/user/getLoginScene?_=${Date.now()}`);
+		if(+response.status !== 200){
+			alert('服务器错误，暂时无法登录，请稍后再试');
+			return;
+		}
+		let scene = response.data.scene;
+
+		// step 2，显示二维码
+		document.querySelector('#loginQrCode').src = `${BASE_URL}/user/weappLogin?scene=${scene}`;
+
+		// step3，定时刷新
+		let getResult = async function(){
+			let response = await axios.get(`${BASE_URL}/user/getLoginStatus?scene=${scene}&_=${Date.now()}`);
+			if(+response.status !== 200){
+				alert('服务器错误，暂时无法登录，请稍后再试');
+				return;
+			}
+			if(response.data.isLogin){
+				console.log('登录成功！');
+				location.href = `${BASE_URL}/oauth/weappToken?scene=${scene}&client=mac`;
+			}else{
+				setTimeout(getResult, 2000);
+			}
+		};
+
+		getResult();
+
+		console.log(response);
+	})();
+	Array.prototype.forEach.call(document.querySelectorAll('.externalLink'), function(link){
+		if(link.tagName.toUpperCase() !== 'A') return;
+
+		link.addEventListener('click', function(e){
+			e.preventDefault();
+			let shell = require('electron').shell;
+			shell.openExternal(link.href);
+		});
+	});
+
+</script>
+</body>
+</html>
