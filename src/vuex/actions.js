@@ -220,7 +220,10 @@ export default {
 	// 新建笔记
 	async newNote(context) {
 		// 获取当前笔记的分类
-		let currentCategory = note.getCategoryFromTitle(context.state.currentNote.title);
+		let currentCategory = '未分类';
+		if(context.state.currentNote && context.state.currentNote.title){
+			currentCategory = note.getCategoryFromTitle(context.state.currentNote.title);
+		}
 		let newNote = note.createNewNote({
 			content: `# ${currentCategory}\\新文档`
 		});
