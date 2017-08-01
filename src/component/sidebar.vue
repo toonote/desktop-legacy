@@ -212,16 +212,12 @@ export default {
 			},30);
 		},
 		dragStart(e, noteId){
-			this.currentMovingNoteId = noteId;
-			// e.dataTransfer.dropEffect = 'move';
-			// e.dataTransfer.effectAllowed = 'move';
-			// console.log('start', noteId);
+			// this.currentMovingNoteId = noteId;
 		},
 		dragOver(e, noteId){
+			return;
 			if(this.isAnimating) return;
 			if(this.currentMovingNoteId === noteId) return;
-
-			// console.log('over', noteId);
 
 			this.currentTargetingNoteId = noteId;
 
@@ -241,6 +237,7 @@ export default {
 			logger.ga('send', 'event', 'note', 'sort');
 		},
 		drop(e){
+			return;
 			this.currentMovingNoteId = 0;
 			// console.log('drop', e);
 		}

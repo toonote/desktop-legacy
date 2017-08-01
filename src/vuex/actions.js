@@ -239,7 +239,9 @@ export default {
 		await note.saveNote(newNote);
 		await meta.addNote(context.state.currentNotebook.id, newNote);
 		// let metaData = await meta.data;
+		// 烂代码……明明dispatch中有commit，但是没有作用
 		context.commit('newNote', newNote);
+		await context.dispatch('switchCurrentNoteById', newNote.id);
 		context.commit('switchCurrentNote', newNote);
 		if(context.state.user.id){
 			cloud.createNote(newNote);
@@ -409,7 +411,7 @@ export default {
 		scroll.doScroll(document.querySelector('.preview'), targetPosition, 500);
 	},
 	async exchangeNote(context, ids) {
-
+		return;
 		// console.log('ids', ids.id1, ids.id2);
 		// 找到目标笔记本和笔记
 		let metaData = await meta.exchange(ids.id1, ids.id2);

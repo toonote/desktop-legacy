@@ -14,6 +14,7 @@ class Meta{
 			if(content){
 				let metaData = JSON.parse(content);
 				metaData.notebooks.forEach((notebook) => {
+					this._sortNotebook(notebook);
 					notebook.notes.forEach((noteItem) => {
 						if(!noteItem.localVersion){
 							noteItem.localVersion = 1;
@@ -58,6 +59,7 @@ class Meta{
 		})[0];
 
 		targetNotebook.notes.push(note.getMeta());
+		this._sortNotebook(targetNotebook);
 		await store.writeFile('/meta.json', JSON.stringify(data));
 		return note;
 	}
@@ -67,6 +69,7 @@ class Meta{
 			notebook.notes.forEach((note, index)=>{
 				if(note.id === noteId){
 					notebook.notes.splice(index, 1);
+					this._sortNotebook(notebook);
 				}
 			});
 		});
@@ -81,6 +84,7 @@ class Meta{
 					noteItem.localVersion = note.localVersion;
 					noteItem.remoteVersion = note.remoteVersion;
 					// noteItem.pureTitle = note.
+					this._sortNotebook(notebook);
 				}
 			});
 		});
@@ -123,7 +127,7 @@ class Meta{
 		});
 		return target;
 	}
-	async exchange(id1, id2){
+	/* async exchange(id1, id2){
 		let data = await this.data;
 
 		let notebook1, notebook2;
@@ -154,6 +158,11 @@ class Meta{
 		await store.writeFile('/meta.json', JSON.stringify(data));
 		return data;
 
+	} */
+	_sortNotebook(notebook){
+		notebook.notes.sort((noteItem1, noteItem2) => {
+			return noteItem1.createdAt < noteItem2.createdAt;
+		});
 	}
 }
 
