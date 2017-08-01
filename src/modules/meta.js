@@ -34,7 +34,7 @@ class Meta{
 			title:'TooNote'
 		});
 		newNotebook.addNote(new Note({
-			title:'欢迎使用TooNote',
+			title:'快速入门\\欢迎使用TooNote',
 		}).getMeta());
 
 		let data = {
