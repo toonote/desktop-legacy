@@ -14,7 +14,8 @@
 		}
 	},
 	"globals": {
-		"DEBUG": true
+		"DEBUG": true,
+		"TEST": true
 	},
 	"rules": {
 		"no-alert": "off",

@@ -105,7 +105,9 @@ export default {
 		}
 
 		// 准备跑升级脚本
-		alert('您已升级到新版本，即将进行数据更新，请耐心等待。');
+		if(!TEST){
+			alert('您已升级到新版本，即将进行数据更新，请耐心等待。');
+		}
 
 		let upgradeList = versions.slice(dataVersionIndex + 1);
 		let upgradeItem;
@@ -115,7 +117,13 @@ export default {
 				`/docs/upgrade/scripts/${upgradeItem}.js`
 			);
 			logger.debug('即将升级到${upgradeItem}');
-			global['require'](scriptPath)(DEBUG);
+			let env = '';
+			if(DEBUG){
+				env = 'dev';
+			}else if(TEST){
+				env = 'test';
+			}
+			global['require'](scriptPath)(env);
 			await setConfig('dataVersion', upgradeItem);
 		}
 	},

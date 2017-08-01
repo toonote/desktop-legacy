@@ -10,6 +10,8 @@ class Store{
 		let Env = '';
 		if(DEBUG){
 			Env = 'Dev-';
+		}else if(TEST){
+			Env = 'Test-';
 		}
 		return 'TooNote-LocalStorage-Key-' + Env + path;
 	}

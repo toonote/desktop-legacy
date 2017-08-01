@@ -61,7 +61,9 @@ module.exports = {
 	plugins: [
 		new ExtractTextPlugin('style/bundle.css'),
 		new webpack.DefinePlugin({
-			DEBUG: process.env.NODE_ENV !== 'production'
+			DEBUG: process.env.NODE_ENV !== 'production' &&
+				process.env.NODE_ENV !== 'test',
+			TEST: process.env.NODE_ENV === 'test'
 		}),
 		// 有bug，先屏蔽
 		// new webpack.optimize.ModuleConcatenationPlugin()

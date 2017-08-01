@@ -13,6 +13,7 @@ export default class Git{
 		// git仓库根目录
 		let gitFolder = 'git';
 		if(DEBUG) gitFolder = 'devgit';
+		if(TEST) gitFolder = 'testgit';
 		this._root = options.path || path.join(require('electron').remote.app.getPath('userData'), gitFolder);
 
 		// 新建仓库根目录

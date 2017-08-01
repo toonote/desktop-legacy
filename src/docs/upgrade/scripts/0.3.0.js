@@ -6,20 +6,22 @@ let getPureTitle = function(title){
 	if(titlePart.length === 1){
 		return title;
 	}else{
-		return title.replace(titlePart[0]+'\\','');
+		return title.replace(titlePart[0] + '\\','');
 	}
 };
 
-module.exports = function(isDebug){
+module.exports = function(env){
 
 	console.log('[upgrade]即将升级：0.2.0 -> 0.3.0');
 	console.log('[upgrade]step1: 升级meta数据结构');
 
-	let env = '';
-	if(isDebug){
-		env = 'Dev-'
+	let envPrefix = '';
+	if(env === 'dev'){
+		envPrefix = 'Dev-';
+	}else if(env === 'test'){
+		envPrefix = 'Test-';
 	}
-	let metaKey = `TooNote-LocalStorage-Key-${env}meta.json`;
+	let metaKey = `TooNote-LocalStorage-Key-${envPrefix}meta.json`;
 	console.log('[upgrade]env:%s', env);
 	console.log('[upgrade]准备读取meta');
 	let metaStr = localStorage.getItem(metaKey);
