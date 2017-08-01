@@ -23,6 +23,7 @@ let app = new Vue({
 	store,
 	computed:{
 		content(){
+			console.log(this.$store.getters.currentNote);
 			if(!this.$store.getters.currentNote){
 				return '';
 			}else{

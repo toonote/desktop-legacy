@@ -205,6 +205,7 @@ export default {
 	// 切换当前笔记
 	async switchCurrentNoteById(context, noteId) {
 		let targetNote = context.getters.allNotes.filter((note)=>note.id === noteId)[0];
+		console.log(targetNote);
 		if(targetNote){
 			let noteMeta = await note.fillContent(targetNote);
 			context.commit('switchCurrentNote', noteMeta);
@@ -250,6 +251,7 @@ export default {
 	async deleteContextMenuNote(context) {
 		let targetId = context.state.contextMenuNoteId;
 		if(!targetId) return;
+
 		// 如果删除的是当前笔记，切换到第一条笔记
 		if(targetId === context.state.currentNote.id){
 			context.dispatch('switchCurrentNoteById', context.getters.allNotes[0].id);
@@ -267,10 +269,14 @@ export default {
 		await meta.deleteNote(targetId);
 		await note.deleteNote(targetId);
 
-		context.dispatch('switchCurrentNoteById');
+		// context.dispatch('switchCurrentNoteById');
 
 		if(context.state.user.id){
 			cloud.deleteNote(targetId);
+		}
+
+		if(!context.getters.allNotes.length){
+			await context.dispatch('newNote');
 		}
 
 	},
