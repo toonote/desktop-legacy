@@ -250,10 +250,9 @@ export default {
 	async openContextMenuNote(context) {
 		context.dispatch('switchCurrentNoteById', context.state.contextMenuNoteId);
 	},
-	async deleteContextMenuNote(context) {
-		let targetId = context.state.contextMenuNoteId;
-		if(!targetId) return;
+	async deleteNote(context, targetId) {
 
+		console.log('deleteNote', targetId);
 		// 如果删除的是当前笔记，切换到第一条笔记
 		if(targetId === context.state.currentNote.id){
 			context.dispatch('switchCurrentNoteById', context.getters.allNotes[0].id);
@@ -281,6 +280,12 @@ export default {
 			await context.dispatch('newNote');
 		}
 
+	},
+	async deleteContextMenuNote(context) {
+		let targetId = context.state.contextMenuNoteId;
+		if(!targetId) return;
+
+		await context.dispatch('deleteNote', targetId);
 	},
 	async historyContextMenuNote(context) {
 
@@ -414,9 +419,9 @@ export default {
 		return;
 		// console.log('ids', ids.id1, ids.id2);
 		// 找到目标笔记本和笔记
-		let metaData = await meta.exchange(ids.id1, ids.id2);
+		/* let metaData = await meta.exchange(ids.id1, ids.id2);
 
-		context.commit('updateNotebooks', metaData.notebooks);
+		context.commit('updateNotebooks', metaData.notebooks); */
 
 	},
 	async search(context, keyword) {

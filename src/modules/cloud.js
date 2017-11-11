@@ -2,7 +2,7 @@ import logger from './logger';
 import RestfulModel from 'tn-restful-model';
 import meta from './meta';
 import note from './note';
-import {getConfig, setConfig} from './config';
+import {getConfig} from './config';
 // import Store from '../api/store/index';
 // const store = new Store();
 
@@ -110,8 +110,14 @@ export async function syncAllNotes(context, options = {}){
 			data.title = note.getTitleFromContent(data.content);
 			data.createdAt = noteItem.createdAt;
 
-			await noteApi.create(data);
-			logger.debug(`id:${noteItem.id}, title:${noteItem.title}，上传成功`);
+			let result = await noteApi.create(data);
+			// 远程已删除
+			if(typeof result.code !== 'undefined' && result.code === -1000){
+				logger.debug(`id:${noteItem.id}, title:${noteItem.title}，远程已删除，将删除本地`);
+				context.dispatch('deleteNote', noteItem.id);
+			}else{
+				logger.debug(`id:${noteItem.id}, title:${noteItem.title}，上传成功`);
+			}
 		}
 	}
 }
