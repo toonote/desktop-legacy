@@ -239,6 +239,9 @@ export default {
 		// 编辑相关操作（撤销/重做）
 		doEdit(action){
 			this.$store.commit('editAction', action);
+			this.$nextTick(() => {
+				this.$store.commit('editAction', '');
+			});
 		},
 		// 清除数据
 		clearData(){

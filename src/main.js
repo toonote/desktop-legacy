@@ -31,10 +31,6 @@ let app = new Vue({
 			}
 		},
 		editAction(){
-			this._tnEvent('editAction', {
-				action: this.$store.getters.editAction
-			});
-			console.log('tnEvent editAction: %s', this.$store.getters.editAction);
 			return this.$store.getters.editAction;
 		},
 		layout(){
@@ -78,11 +74,14 @@ let app = new Vue({
 		preview,
 		versions
 	},
-	/*watch: {
-		layout(){
-			this._tnEvent('layout');
+	watch: {
+		editAction(){
+			this._tnEvent('editAction', {
+				action: this.$store.getters.editAction
+			});
+			console.log('tnEvent editActions: %s', this.$store.getters.editAction);
 		}
-	}*/
+	}
 });
 
 // 初始化
