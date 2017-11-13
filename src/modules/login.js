@@ -60,6 +60,9 @@ login.doLogin = async function(isAuto){
 			return await this.initUser(token);
 		}catch(e){
 			if(isAuto){
+				if(e.response && e.response.status === 403){
+					login.doLogin();
+				}
 				return;
 			}
 			return doOauth();
@@ -91,9 +94,6 @@ login.initUser = async function(token){
 		agent.get('/user/info').then((data) => {
 			resolve(data.data);
 		}).catch((err) => {
-			console.log('haha', err);
-			console.dir(err);
-			// await this.setToken('');
 			reject(err);
 		});
 	});
