@@ -1,6 +1,6 @@
 // import Store from '../api/store/index';
 import axios from 'axios';
-import {machineIdSync} from 'electron-machine-id';
+import {machineIdSync} from 'node-machine-id';
 import {getConfig, setConfig} from './config';
 // const store = new Store();
 const login = {};
