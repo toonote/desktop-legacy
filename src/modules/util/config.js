@@ -12,7 +12,7 @@ const getConfigResults = function(){
 /**
  * 获取配置项
  * @param {string} key 配置项
- * @returns {string} 配置项的值
+ * @returns {*} 配置项的值
  */
 export function getConfig(key){
 	const configResults = getConfigResults();
@@ -29,7 +29,7 @@ export function getConfig(key){
 export function setConfig(key, value){
 	realm.updateResult(SCHEMA, {
 		key,
-		value
+		value: JSON.stringify(value)
 	});
 }
 
@@ -42,7 +42,7 @@ export function setConfigBulk(obj){
 	for(let key in obj){
 		arr.push({
 			key,
-			value: obj[key]
+			value: JSON.stringify(obj[key])
 		});
 	}
 	realm.updateResult(SCHEMA, arr);
