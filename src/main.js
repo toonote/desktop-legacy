@@ -1,28 +1,29 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+// import Vuex from 'vuex';
 
-import sidebar from './component/sidebar.vue';
+// import sidebar from './component/sidebar.vue';
 import editor from 'tn-md-editor';
-import preview from './component/preview.vue';
-import menubar from './component/menubar.vue';
-import versions from './component/versions.vue';
+// import preview from './component/preview.vue';
+// import menubar from './component/menubar.vue';
+// import versions from './component/versions.vue';
+import NotebookSelect from './component/NotebookSelect.vue';
 
 // 生成store
-import getStore from './vuex/store';
+// import getStore from './vuex/store';
 
 import io from './modules/io.js';
 
 // 使用Vuex
-Vue.use(Vuex);
+// Vue.use(Vuex);
 
 // store
-let store = getStore();
+// let store = getStore();
 
 let app = new Vue({
 	el: '#wrapper',
-	store,
+	// store,
 	computed:{
-		content(){
+		/* content(){
 			console.log(this.$store.getters.currentNote);
 			if(!this.$store.getters.currentNote){
 				return '';
@@ -36,7 +37,7 @@ let app = new Vue({
 		layout(){
 			this._tnEvent('layout');
 			return this.$store.getters.layout;
-		}
+		} */
 	},
 	methods:{
 		_tnEvent: function(type, data){
@@ -68,11 +69,12 @@ let app = new Vue({
 		tnEvent: {}
 	},
 	components: {
-		menubar,
-		sidebar,
+		// menubar,
+		// sidebar,
 		editor,
-		preview,
-		versions
+		// preview,
+		// versions,
+		NotebookSelect
 	},
 	watch: {
 		editAction(){
@@ -85,6 +87,6 @@ let app = new Vue({
 });
 
 // 初始化
-store.dispatch('init');
+// store.dispatch('init');
 
 export default app;

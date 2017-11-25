@@ -6,6 +6,7 @@ import ConfigSchema from './schema/Config';
 import NotebookSchema from './schema/Notebook';
 import CategorySchema from './schema/Category';
 import NoteSchema from './schema/Note';
+import idGen from '../../util/idGen';
 const SCHEMA_VERSION = 1;
 
 let filename = 'toonote.realm';
@@ -19,6 +20,23 @@ const DB_PATH = path.join(require('electron').remote.app.getPath('userData'), fi
 
 let realm;
 
+function initData(){
+	// 新建第一个笔记本
+	const notebookList = getResults('Notebook');
+	if(!notebookList.length){
+		let now = new Date();
+		updateResult('Notebook', {
+			id: idGen(),
+			title: '默认笔记',
+			order: 1,
+			createdAt: now,
+			updatedAt: now,
+			categories: [],
+			notes: []
+		});
+	}
+}
+
 /**
  * 初始化realm数据库
  */
@@ -29,6 +47,8 @@ export async function init(){
 		path: DB_PATH
 	}).then((realmInstance) => {
 		realm = realmInstance;
+		// 初始化数据
+		initData();
 	});
 }
 

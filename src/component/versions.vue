@@ -1,14 +1,4 @@
 <style scoped>
-.mask{
-	position: absolute;
-	left:0;
-	top:0;
-	/*windows下如果小于6，下方的滚动条会显示出来*/
-	z-index: 6;
-	width:100%;
-	height:100%;
-	background:rgba(128,128,128,.4);
-}
 .versions{
 	position: absolute;
 	z-index: 2;
