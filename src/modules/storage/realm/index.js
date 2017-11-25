@@ -22,6 +22,7 @@ const DB_PATH = path.join(require('electron').remote.app.getPath('userData'), fi
 let realm;
 
 function initData(){
+	console.time('initData');
 	// 新建第一个笔记本
 	const notebookList = getResults('Notebook');
 	if(!notebookList.length){
@@ -62,17 +63,20 @@ function initData(){
 
 		updateResult('Notebook', notebook);
 	}
+	console.timeEnd('initData');
 }
 
 /**
  * 初始化realm数据库
  */
 export function init(){
+	console.time('openRealm');
 	realm = new Realm({
 		schema: [ConfigSchema, NotebookSchema, CategorySchema, NoteSchema],
 		schemaVersion: SCHEMA_VERSION,
 		path: DB_PATH
 	});
+	console.timeEnd('openRealm');
 	// 初始化数据
 	initData();
 }

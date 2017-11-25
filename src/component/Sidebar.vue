@@ -67,24 +67,23 @@
 <template>
 <section class="sidebar">
 	<user></user>
-	<!-- <section class="searchWrapper">
+	<section class="searchWrapper">
 		<input type="search" v-model.trim="keyword" placeholder="搜索..." />
-	</section> -->
-	<!-- <section class="wrapper" v-show="!isSearching"> -->
-	<section class="wrapper">
-		<h2>{{currentNotebook.title}}</h2>
+	</section>
+	<section class="wrapper" v-show="!keyword">
+		<h2>{{currentNotebook.data.title}}</h2>
 		<ul>
 			<li
 				class="icon folder"
-				v-for="category in currentNotebook.categories"
+				v-for="category in currentNotebook.data.categories"
 				:key="category.id"
-				@click="switchFold(category)"
+				@click="switchFold(category.id)"
 			>{{category.title}}
 				<transition-group
 					name="note-list"
 					tag="ul"
 					droppable="true"
-					v-show="!isFold(category)"
+					v-show="!isFold(category.id)"
 					v-on:drop="drop"
 					>
 					<li
@@ -130,7 +129,7 @@ import {uiData} from '../modules/controller';
 import User from './User.vue';
 import {throttle} from 'lodash';
 // import Menu from '../api/menu/index';
-// import util from '../modules/util';
+import env from '../modules/util/env';
 import logger from '../modules/logger';
 
 // let menu = new Menu(util.platform);
@@ -173,14 +172,13 @@ export default {
 			}
 			return ret;
 		},
-		isFold(category){
-			// return this.foldMap[category];
-			return false;
+		isFold(categoryId){
+			return this.foldMap[categoryId];
 		},
-		switchFold(category){
+		switchFold(categoryId){
 			this.foldMap = {
 				...this.foldMap,
-				[category]: !this.foldMap[category]
+				[categoryId]: !this.foldMap[categoryId]
 			};
 		},
 		switchCurrentNote(noteId){
@@ -258,7 +256,11 @@ export default {
 			foldMap:{}
 		};
 		return data; */
-		return uiData;
+		return {
+			currentNotebook: uiData.currentNotebook,
+			keyword: '',
+			foldMap: {}
+		};
 	},
 	components:{
 		User

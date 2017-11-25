@@ -50,11 +50,11 @@
 </style>
 
 <template>
-<section class="notebookSelect" v-on:click.stop v-if="!currentNotebook.id">
+<section class="notebookSelect" v-on:click.stop v-if="!currentNotebook.data.id">
 	<ul>
 		<li
 			class="nootbook"
-			v-for="notebook in notebookList"
+			v-for="notebook in notebookList.data"
 			:key="notebook.id"
 			@click="switchCurrentNotebook(notebook.id)"
 		>{{notebook.title}}</li>

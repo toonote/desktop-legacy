@@ -10,7 +10,7 @@ const mapNotebook = function(source, isDeep = false){
 		source = [source];
 	}
 	let ret = source.map((notebook) => {
-		console.log(notebook);
+		// console.log(notebook);
 		const cacheKey = 'NOTEBOOK' + notebook.id;
 		if(cache[cacheKey]) return cache[cacheKey];
 
@@ -45,7 +45,7 @@ const mapCategory = function(source, isDeep = false){
 		source = [source];
 	}
 	let ret = source.map((category) => {
-		console.log(category);
+		// console.log(category);
 		const cacheKey = 'CATEGORY' + category.id;
 		if(cache[cacheKey]) return cache[cacheKey];
 		let ret = {
@@ -83,7 +83,7 @@ const mapNote = function(source, isDeep = false){
 		source = [source];
 	}
 	let ret = source.map((note) => {
-		console.log(note);
+		// console.log(note);
 		const cacheKey = 'NOTE' + note.id;
 		if(cache[cacheKey]) return cache[cacheKey];
 		let ret = {
@@ -119,11 +119,11 @@ const mapNote = function(source, isDeep = false){
 	}
 };
 export function update(source, dest){
-	dest.notebookList = mapNotebook(source.Notebook);
+	dest.notebookList.data = mapNotebook(source.Notebook);
 	return dest;
 }
 
 export function switchCurrentNotebook(source, dest, notebookId){
 	const targetNoteobookResult = source.Notebook.filtered(`id="${notebookId}"`);
-	dest.currentNotebook = mapNotebook(targetNoteobookResult[0], true);
+	dest.currentNotebook.data = mapNotebook(targetNoteobookResult[0], true);
 }

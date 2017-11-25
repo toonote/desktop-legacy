@@ -8,10 +8,15 @@ let updateRenderData = throttle(renderData.update, 16, {
 });
 
 export const uiData = {
-	notebookList: [],
-	currentNotebook: {}
+	notebookList: {
+		data: []
+	},
+	currentNotebook: {
+		data: {}
+	}
 };
 
+console.time('initRenderData');
 init();
 results = {
 	Notebook: getResults('Notebook'),
@@ -24,7 +29,10 @@ for(let schema in results){
 		updateRenderData(results, uiData);
 	});
 }
+console.timeEnd('initRenderData');
 
 export function switchCurrentNotebook(notebookId){
+	console.time('switchCurrentNotebookData');
 	renderData.switchCurrentNotebook(results, uiData, notebookId);
+	console.timeEnd('switchCurrentNotebookData');
 }
