@@ -66,18 +66,20 @@
 
 <template>
 <section class="sidebar">
-	<user></user>
-	<section class="searchWrapper">
+	<!-- <user></user> -->
+	<!-- <section class="searchWrapper">
 		<input type="search" v-model.trim="keyword" placeholder="搜索..." />
-	</section>
-	<section class="wrapper" v-show="!isSearching" v-for="notebook in notebooksWithCategories">
-		<h2>{{notebook.title}}</h2>
+	</section> -->
+	<!-- <section class="wrapper" v-show="!isSearching"> -->
+	<section class="wrapper">
+		<h2>{{currentNotebook.title}}</h2>
 		<ul>
 			<li
 				class="icon folder"
-				v-for="(notes,category) in notebook.categories"
-				v-on:click="switchFold(category)"
-			>{{category}}
+				v-for="category in currentNotebook.categories"
+				:key="category.id"
+				@click="switchFold(category)"
+			>{{category.title}}
 				<transition-group
 					name="note-list"
 					tag="ul"
@@ -88,19 +90,19 @@
 					<li
 						draggable="true"
 						class="icon note"
-						v-bind:key="note.id"
-						v-bind:class="{active:isActive(note.id)}"
-						v-for="note in notes"
-						v-on:click.stop="switchCurrentNote(note.id)"
-						v-on:contextmenu.stop="showContextMenu(note.id)"
-						v-on:dragstart="dragStart($event, note.id)"
-						v-on:dragover.prevent="dragOver($event, note.id)"
+						v-for="note in category.notes"
+						:key="note.id"
+						:class="{active:isActive(note.id)}"
+						@:click.stop="switchCurrentNote(note.id)"
+						@:contextmenu.stop="showContextMenu(note.id)"
+						@:dragstart="dragStart($event, note.id)"
+						@:dragover.prevent="dragOver($event, note.id)"
 					>{{note.title}}</li>
 				</transition-group>
 			</li>
 		</ul>
 	</section>
-	<section class="wrapper" v-show="isSearching">
+	<!-- <section class="wrapper" v-show="isSearching">
 		<div class="notFound" v-show="!searchResults.length">搜的什么鬼 一篇都没有</div>
 		<ul v-show="searchResults.length">
 			<li
@@ -118,26 +120,26 @@
 				</ul>
 			</li>
 		</ul>
-	</section>
+	</section> -->
 </section>
 </template>
 
 
 <script>
-import user from './user.vue';
+import {uiData} from '../modules/controller';
+// import user from './user.vue';
 import {throttle} from 'lodash';
-import {mapGetters} from 'vuex';
-import Menu from '../api/menu/index';
-import util from '../modules/util';
+// import Menu from '../api/menu/index';
+// import util from '../modules/util';
 import logger from '../modules/logger';
 
-let menu = new Menu(util.platform);
+// let menu = new Menu(util.platform);
 
 let _doExchange;
 
 export default {
 	computed: {
-		...mapGetters([
+		/* ...mapGetters([
 			'notebooks',
 			'currentNote',
 			'contextMenuNoteId',
@@ -145,10 +147,10 @@ export default {
 			'isSearching',
 			'searchResults',
 			'searchResultsWithCategories'
-		])
+		]) */
 	},
 	watch: {
-		keyword(){
+		/* keyword(){
 			if(this.keyword){
 				logger.ga('send', 'event', 'note', 'searchStarted');
 				this.$store.dispatch('search', this.keyword);
@@ -156,7 +158,7 @@ export default {
 				logger.ga('send', 'event', 'note', 'searchEnded');
 				this.$store.commit('switchSearching', false);
 			}
-		}
+		} */
 	},
 	methods: {
 		isActive(noteId){
@@ -172,7 +174,8 @@ export default {
 			return ret;
 		},
 		isFold(category){
-			return this.foldMap[category];
+			// return this.foldMap[category];
+			return false;
 		},
 		switchFold(category){
 			this.foldMap = {
@@ -247,17 +250,18 @@ export default {
 		}*/
 	},
 	data(){
-		var data = {
+		/* var data = {
 			currentMovingNoteId:0,
 			currentTargetingNoteId:0,
 			isAnimating:false,
 			keyword:'',
 			foldMap:{}
 		};
-		return data;
+		return data; */
+		return uiData;
 	},
 	components:{
-		user
+		// user
 	}
 };
 </script>

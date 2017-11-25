@@ -50,7 +50,7 @@
 </style>
 
 <template>
-<section class="notebookSelect" v-on:click.stop>
+<section class="notebookSelect" v-on:click.stop v-if="!currentNotebook.id">
 	<ul>
 		<li
 			class="nootbook"
@@ -64,7 +64,7 @@
 
 
 <script>
-import {uiData} from '../modules/controller';
+import {uiData, switchCurrentNotebook} from '../modules/controller';
 
 export default {
 	data(){
@@ -76,7 +76,7 @@ export default {
 	},
 	methods: {
 		switchCurrentNotebook(notebookId){
-
+			switchCurrentNotebook(notebookId);
 		}
 	}
 };

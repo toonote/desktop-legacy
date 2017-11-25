@@ -1,8 +1,8 @@
 import Vue from 'vue';
 // import Vuex from 'vuex';
 
-// import sidebar from './component/sidebar.vue';
-import editor from 'tn-md-editor';
+import Sidebar from './component/Sidebar.vue';
+import Editor from 'tn-md-editor';
 // import preview from './component/preview.vue';
 // import menubar from './component/menubar.vue';
 // import versions from './component/versions.vue';
@@ -11,7 +11,7 @@ import NotebookSelect from './component/NotebookSelect.vue';
 // 生成store
 // import getStore from './vuex/store';
 
-import io from './modules/io.js';
+// import io from './modules/io.js';
 
 // 使用Vuex
 // Vue.use(Vuex);
@@ -70,8 +70,8 @@ let app = new Vue({
 	},
 	components: {
 		// menubar,
-		// sidebar,
-		editor,
+		Sidebar,
+		Editor,
 		// preview,
 		// versions,
 		NotebookSelect

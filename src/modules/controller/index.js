@@ -1,11 +1,16 @@
 import {init, getResults} from '../storage/realm';
-import {update} from './renderData';
+import * as renderData from './renderData';
 import {throttle} from 'lodash';
 
 let results;
-let updateRenderData = throttle(update, 16, {
+let updateRenderData = throttle(renderData.update, 16, {
 	leading: false
 });
+
+export const uiData = {
+	notebookList: [],
+	currentNotebook: {}
+};
 
 init().then(() => {
 	results = {
@@ -21,6 +26,7 @@ init().then(() => {
 	}
 });
 
-export const uiData = {
-	notebookList: []
-};
+
+export function switchCurrentNotebook(notebookId){
+	renderData.switchCurrentNotebook(results, uiData, notebookId);
+}

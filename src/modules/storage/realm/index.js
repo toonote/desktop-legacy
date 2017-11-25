@@ -7,6 +7,7 @@ import NotebookSchema from './schema/Notebook';
 import CategorySchema from './schema/Category';
 import NoteSchema from './schema/Note';
 import idGen from '../../util/idGen';
+import io from '../../util/io';
 const SCHEMA_VERSION = 1;
 
 let filename = 'toonote.realm';
@@ -24,16 +25,42 @@ function initData(){
 	// 新建第一个笔记本
 	const notebookList = getResults('Notebook');
 	if(!notebookList.length){
-		let now = new Date();
-		updateResult('Notebook', {
+		const now = new Date();
+		const note = {
+			id: idGen(),
+			title: '快速入门',
+			content: io.getFileText('docs/welcome.md'),
+			order: 1,
+			createdAt: now,
+			updatedAt: now,
+			localVersion: 1,
+			remoteVersion: 0,
+		};
+
+		const category = {
+			id: idGen(),
+			title: '默认分类',
+			order: 1,
+			createdAt: now,
+			updatedAt: now,
+			notes: [note],
+		};
+
+		const notebook = {
 			id: idGen(),
 			title: '默认笔记',
 			order: 1,
 			createdAt: now,
 			updatedAt: now,
-			categories: [],
-			notes: []
-		});
+			categories: [category],
+			notes: [note]
+		};
+
+		note.category = category;
+		note.notebook = notebook;
+		category.notebook = notebook;
+
+		updateResult('Notebook', notebook);
 	}
 }
 

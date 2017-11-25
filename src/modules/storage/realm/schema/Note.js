@@ -6,6 +6,7 @@ export default {
 	properties: {
 		id: 'string',
 		title: 'string',
+		content: 'string',
 		order: 'int',
 		createdAt: 'date',
 		updatedAt: 'date',
