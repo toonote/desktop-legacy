@@ -1,11 +1,10 @@
 // import {machineIdSync} from 'node-machine-id';
 import {getConfig} from './config';
 import axios from 'axios';
-const machineId = getConfig('machineId');
 
 export function getAgent(baseUrl, options = {}, headers = {}){
 	options.headers = headers;
-	options.headers['X-Uuid'] = machineId;
+	options.headers['X-Uuid'] = getConfig('machineId');
 	const agent = axios.create(Object.assign({}, {
 		baseURL: baseUrl,
 		timeout: 10 * 1000

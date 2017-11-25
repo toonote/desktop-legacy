@@ -66,7 +66,7 @@
 
 <template>
 <section class="sidebar">
-	<!-- <user></user> -->
+	<user></user>
 	<!-- <section class="searchWrapper">
 		<input type="search" v-model.trim="keyword" placeholder="搜索..." />
 	</section> -->
@@ -127,7 +127,7 @@
 
 <script>
 import {uiData} from '../modules/controller';
-// import user from './user.vue';
+import User from './User.vue';
 import {throttle} from 'lodash';
 // import Menu from '../api/menu/index';
 // import util from '../modules/util';
@@ -261,7 +261,7 @@ export default {
 		return uiData;
 	},
 	components:{
-		// user
+		User
 	}
 };
 </script>

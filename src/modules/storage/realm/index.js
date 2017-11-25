@@ -67,16 +67,14 @@ function initData(){
 /**
  * 初始化realm数据库
  */
-export async function init(){
-	await Realm.open({
+export function init(){
+	realm = new Realm({
 		schema: [ConfigSchema, NotebookSchema, CategorySchema, NoteSchema],
 		schemaVersion: SCHEMA_VERSION,
 		path: DB_PATH
-	}).then((realmInstance) => {
-		realm = realmInstance;
-		// 初始化数据
-		initData();
 	});
+	// 初始化数据
+	initData();
 }
 
 /**

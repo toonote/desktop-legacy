@@ -4,7 +4,7 @@ import {getConfig, setConfig} from '../util/config';
 import {getAgent} from '../util/http';
 
 const URL_BASE = 'https://api.xiaotu.io';
-const agent = getAgent(URL_BASE);
+let agent;
 
 // 用户信息
 export let userData = {};
@@ -69,6 +69,9 @@ export async function init(){
 
 // 使用token初始化用户信息
 export async function initUserByToken(token){
+	if(!agent){
+		agent = getAgent(URL_BASE);
+	}
 	return agent.get('/user/info').then((data) => {
 		userData = data.data;
 		return data.data;

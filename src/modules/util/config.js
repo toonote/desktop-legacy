@@ -1,4 +1,4 @@
-import realm from '../storage/realm';
+import * as realm from '../storage/realm';
 const SCHEMA = 'Config';
 let configResults;
 

@@ -38,42 +38,37 @@
 
 <template>
 <section class="login">
-	<img v-if="user.avatarUrl" class="avatar" :src="user.avatarUrl" />
+	<img v-if="userData.avatarUrl" class="avatar" :src="userData.avatarUrl" />
 	<img v-else class="avatar" src="../images/avatar.png" />
 	<div class="userInfo">
-		<span v-if="user.name">{{user.name}}</span>
+		<span v-if="userData.name">{{userData.name}}</span>
 		<a v-else v-on:click="doLogin" href="#">点击登录</a>
 	</div>
 	<div class="labelWrapper">
-		<div v-for="label in user.labels" class="label">{{label}}</div>
+		<div v-for="label in userData.labels" :key="label" class="label">{{label}}</div>
 	</div>
 </section>
 </template>
 
 
 <script>
-import {mapGetters} from 'vuex';
+import * as user from '../modules/cloud/user';
 
 export default {
 	computed: {
-		...mapGetters([
-			'user'
-		])
 	},
 	watch: {
 	},
 	methods: {
 		doLogin(){
-			this.$store.dispatch('doLogin');
+			user.login();
 		}
 	},
 	data(){
-		var data = {
-		};
-		return data;
+		return user;
 	},
 	mounted(){
-		this.$store.dispatch('doLogin', true);
+		user.init();
 	}
 
 };

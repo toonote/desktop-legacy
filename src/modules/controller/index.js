@@ -12,20 +12,18 @@ export const uiData = {
 	currentNotebook: {}
 };
 
-init().then(() => {
-	results = {
-		Notebook: getResults('Notebook'),
-		Category: getResults('Category'),
-		Note: getResults('Note'),
-	};
-	for(let schema in results){
-		results[schema].addListener((puppies, changes) => {
-			console.log('changed', puppies, changes);
-			updateRenderData(results, uiData);
-		});
-	}
-});
-
+init();
+results = {
+	Notebook: getResults('Notebook'),
+	Category: getResults('Category'),
+	Note: getResults('Note'),
+};
+for(let schema in results){
+	results[schema].addListener((puppies, changes) => {
+		console.log('changed', puppies, changes);
+		updateRenderData(results, uiData);
+	});
+}
 
 export function switchCurrentNotebook(notebookId){
 	renderData.switchCurrentNotebook(results, uiData, notebookId);
