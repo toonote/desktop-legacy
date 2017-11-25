@@ -2,7 +2,7 @@
 
 export default {
 	name: 'Task',
-	primaryKey: 'key',
+	primaryKey: 'id',
 	properties: {
 		id: 'string',
 		type: 'string',
