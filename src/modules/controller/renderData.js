@@ -144,3 +144,7 @@ export function switchCurrentNote(source, dest, noteId){
 	const targetNoteoResult = source.Note.filtered(`id="${noteId}"`);
 	dest.currentNote.data = mapNoteWithContent(targetNoteoResult[0]);
 }
+
+export function updateCurrentNote(dest, data){
+	dest.currentNote.data = Object.assign(dest.currentNote.data, data);
+}

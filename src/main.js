@@ -8,7 +8,7 @@ import Preview from './component/Preview.vue';
 // import versions from './component/versions.vue';
 import NotebookSelect from './component/NotebookSelect.vue';
 
-import {uiData} from './modules/controller';
+import {uiData, updateCurrentNote} from './modules/controller';
 // 生成store
 // import getStore from './vuex/store';
 
@@ -58,6 +58,7 @@ let app = new Vue({
 		},
 		// 编辑器内容改变
 		contentChange: function(content){
+			updateCurrentNote({content});
 			// this.$store.dispatch('changeCurrentNoteContent', content);
 		},
 		// 编辑器滚动

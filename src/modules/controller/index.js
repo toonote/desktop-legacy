@@ -1,4 +1,4 @@
-import {init, getResults} from '../storage/realm';
+import {init, getResults, updateResult} from '../storage/realm';
 import * as renderData from './renderData';
 import {throttle} from 'lodash';
 
@@ -45,3 +45,21 @@ export function switchCurrentNote(noteId){
 	renderData.switchCurrentNote(results, uiData, noteId);
 	console.timeEnd('switchCurrentNoteData');
 }
+
+export const updateCurrentNote = throttle((data) => {
+	let hasChanged = false;
+	for(let key in data){
+		if(data[key] !== uiData.currentNote.data[key]){
+			hasChanged = true;
+		}
+	}
+	console.log(hasChanged);
+	if(!hasChanged) return;
+	console.time('updateNote');
+	updateResult('Note', {
+		...data,
+		id: uiData.currentNote.data.id,
+	});
+	renderData.updateCurrentNote(uiData, data);
+	console.timeEnd('updateNote');
+}, 500);
