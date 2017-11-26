@@ -163,7 +163,7 @@ export default {
 		isActive(noteId){
 			let ret = false;
 			// 当前笔记
-			if(this.currentNote && noteId === this.currentNote.id){
+			if(this.currentNote.data && noteId === this.currentNote.data.id){
 				ret = true;
 			}
 			// 当前右键笔记
@@ -182,6 +182,7 @@ export default {
 			};
 		},
 		switchCurrentNote(noteId){
+			if(noteId === this.currentNote.data.id) return;
 			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
 			console.log('switchCurrentNote');
 			switchCurrentNote(noteId);
