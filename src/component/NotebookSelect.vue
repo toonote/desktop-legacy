@@ -1,6 +1,7 @@
 <style scoped>
 .notebookSelect{
 	position: absolute;
+	z-index: 99;
 	left: 0;
 	top: 0;
 	width: 100%;

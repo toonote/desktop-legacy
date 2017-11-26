@@ -8,6 +8,7 @@ import Editor from 'tn-md-editor';
 // import versions from './component/versions.vue';
 import NotebookSelect from './component/NotebookSelect.vue';
 
+import {uiData} from './modules/controller';
 // 生成store
 // import getStore from './vuex/store';
 
@@ -23,15 +24,15 @@ let app = new Vue({
 	el: '#wrapper',
 	// store,
 	computed:{
-		/* content(){
-			console.log(this.$store.getters.currentNote);
-			if(!this.$store.getters.currentNote){
+		content(){
+			console.log(this.currentNote.data);
+			if(!this.currentNote.data){
 				return '';
 			}else{
-				return this.$store.getters.currentNote.content;
+				return this.currentNote.data.content;
 			}
 		},
-		editAction(){
+		/* editAction(){
 			return this.$store.getters.editAction;
 		},
 		layout(){
@@ -57,16 +58,18 @@ let app = new Vue({
 		},
 		// 编辑器内容改变
 		contentChange: function(content){
-			this.$store.dispatch('changeCurrentNoteContent', content);
+			// this.$store.dispatch('changeCurrentNoteContent', content);
 		},
 		// 编辑器滚动
 		lineScroll: function(row){
 			this.$store.dispatch('syncScroll', row);
 		}
 	},
-	data:{
-		withMenubar:false,
-		tnEvent: {}
+	data(){
+		return {
+			currentNote: uiData.currentNote,
+			tnEvent: {}
+		};
 	},
 	components: {
 		// menubar,
