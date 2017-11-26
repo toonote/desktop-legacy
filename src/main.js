@@ -3,7 +3,7 @@ import Vue from 'vue';
 
 import Sidebar from './component/Sidebar.vue';
 import Editor from 'tn-md-editor';
-// import preview from './component/preview.vue';
+import Preview from './component/Preview.vue';
 // import menubar from './component/menubar.vue';
 // import versions from './component/versions.vue';
 import NotebookSelect from './component/NotebookSelect.vue';
@@ -75,7 +75,7 @@ let app = new Vue({
 		// menubar,
 		Sidebar,
 		Editor,
-		// preview,
+		Preview,
 		// versions,
 		NotebookSelect
 	},

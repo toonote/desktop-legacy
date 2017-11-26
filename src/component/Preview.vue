@@ -21,20 +21,17 @@
 <script>
 // import 'highlight.js/styles/github-gist.css';
 import 'highlight.js/styles/tomorrow.css';
-import {mapGetters} from 'vuex';
 import renderer from '../modules/renderer';
+import {uiData} from '../modules/controller';
+
 export default {
 	computed:{
 		html(){
-			if(!this.currentNote || !this.currentNote.content){
+			if(!this.currentNote.data || !this.currentNote.data.content){
 				return ''
 			}
-			return renderer.render(this.currentNote.content)
+			return renderer.render(this.currentNote.data.content)
 		},
-		/*currentNote(){
-			return this.$store.getters.currentNote
-		},*/
-		...mapGetters(['currentNote'])
 	},
 	methods: {
 		handleContent(e) {
@@ -80,7 +77,7 @@ export default {
 				}
 				// console.log(scrollMap[8]);
 
-				this.$store.commit('changeScrollMap', scrollMap);
+				// this.$store.commit('changeScrollMap', scrollMap);
 				// console.log(scrollMap);
 				// console.log('html changed');
 			});
@@ -88,6 +85,7 @@ export default {
 	},
 	data(){
 		var data = {
+			currentNote: uiData.currentNote
 			// content:'',
 			// html:''
 		};
