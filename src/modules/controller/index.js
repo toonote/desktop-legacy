@@ -13,6 +13,9 @@ export const uiData = {
 	},
 	currentNotebook: {
 		data: {}
+	},
+	currentNote:{
+		data: {}
 	}
 };
 
@@ -35,4 +38,10 @@ export function switchCurrentNotebook(notebookId){
 	console.time('switchCurrentNotebookData');
 	renderData.switchCurrentNotebook(results, uiData, notebookId);
 	console.timeEnd('switchCurrentNotebookData');
+}
+
+export function switchCurrentNote(noteId){
+	console.time('switchCurrentNoteData');
+	renderData.switchCurrentNote(results, uiData, noteId);
+	console.timeEnd('switchCurrentNoteData');
 }

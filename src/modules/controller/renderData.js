@@ -1,6 +1,6 @@
 // 以Schema + ID为key缓存普通对象
 // 有这个对象后可以实现不同对象之间的循环引用
-const cache = {};
+let cache = {};
 
 // 将realm Results转换成普通数组和对象
 const mapNotebook = function(source, isDeep = false){
@@ -118,7 +118,19 @@ const mapNote = function(source, isDeep = false){
 		return ret[0];
 	}
 };
+
+
+// 将realm Results转换成普通数组和对象
+const mapNoteWithContent = function(source){
+	const ret = mapNote(source);
+	return {
+		...ret,
+		content: source.content
+	};
+};
+
 export function update(source, dest){
+	cache = {};
 	dest.notebookList.data = mapNotebook(source.Notebook);
 	return dest;
 }
@@ -126,4 +138,9 @@ export function update(source, dest){
 export function switchCurrentNotebook(source, dest, notebookId){
 	const targetNoteobookResult = source.Notebook.filtered(`id="${notebookId}"`);
 	dest.currentNotebook.data = mapNotebook(targetNoteobookResult[0], true);
+}
+
+export function switchCurrentNote(source, dest, noteId){
+	const targetNoteoResult = source.Note.filtered(`id="${noteId}"`);
+	dest.currentNote.data = mapNoteWithContent(targetNoteoResult[0]);
 }

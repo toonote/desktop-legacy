@@ -92,10 +92,10 @@
 						v-for="note in category.notes"
 						:key="note.id"
 						:class="{active:isActive(note.id)}"
-						@:click.stop="switchCurrentNote(note.id)"
-						@:contextmenu.stop="showContextMenu(note.id)"
-						@:dragstart="dragStart($event, note.id)"
-						@:dragover.prevent="dragOver($event, note.id)"
+						@click.stop="switchCurrentNote(note.id)"
+						@contextmenu.stop="showContextMenu(note.id)"
+						@dragstart="dragStart($event, note.id)"
+						@dragover.prevent="dragOver($event, note.id)"
 					>{{note.title}}</li>
 				</transition-group>
 			</li>
@@ -125,7 +125,7 @@
 
 
 <script>
-import {uiData} from '../modules/controller';
+import {uiData, switchCurrentNote} from '../modules/controller';
 import User from './User.vue';
 import {throttle} from 'lodash';
 // import Menu from '../api/menu/index';
@@ -183,7 +183,9 @@ export default {
 		},
 		switchCurrentNote(noteId){
 			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
-			this.$store.dispatch('switchCurrentNoteById', noteId);
+			console.log('switchCurrentNote');
+			switchCurrentNote(noteId);
+			// this.$store.dispatch('switchCurrentNoteById', noteId);
 			// eventHub.$emit('currentNoteChange', noteId);
 		},
 		showContextMenu(noteId){
@@ -258,6 +260,7 @@ export default {
 		return data; */
 		return {
 			currentNotebook: uiData.currentNotebook,
+			currentNote: uiData.currentNote,
 			keyword: '',
 			foldMap: {}
 		};
