@@ -127,12 +127,12 @@
 <script>
 import {uiData, switchCurrentNote} from '../modules/controller';
 import User from './User.vue';
+import Menu from '../modules/menu/electron';
 import {throttle} from 'lodash';
-// import Menu from '../api/menu/index';
-import env from '../modules/util/env';
+// import env from '../modules/util/env';
 import logger from '../modules/logger';
 
-// let menu = new Menu(util.platform);
+const menu = new Menu();
 
 let _doExchange;
 
@@ -192,7 +192,7 @@ export default {
 		showContextMenu(noteId){
 			// console.log('contextmenu');
 			logger.ga('send', 'event', 'note', 'showContextMenu');
-			this.$store.commit('switchContextMenuNote', noteId);
+			// this.$store.commit('switchContextMenuNote', noteId);
 			// this.$nextTick(() => {
 			setTimeout(() => {
 				menu.showContextMenu([{
@@ -211,7 +211,7 @@ export default {
 					event:'noteHistory'
 				}]);
 				setTimeout(()=>{
-					this.$store.commit('switchContextMenuNote', 0);
+					// this.$store.commit('switchContextMenuNote', 0);
 				},30);
 			},30);
 		},
