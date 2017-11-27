@@ -23,6 +23,11 @@
 import 'highlight.js/styles/tomorrow.css';
 import renderer from '../modules/renderer';
 import {uiData} from '../modules/controller';
+import scroll from '../modules/scroll';
+
+// 滚动时源码和渲染后位置的对应表
+let scrollMap = [];
+
 
 export default {
 	computed:{
@@ -45,21 +50,25 @@ export default {
 				shell.openExternal($target.href);
 				e.preventDefault();
 			}
+		},
+		// 将预览区滚动到和源码位置一样
+		scrollToSourceLine(row) {
+			let targetPosition = scrollMap[row];
+			if(typeof targetPosition === 'undefined') return;
+			scroll.doScroll(this.$el, targetPosition, 500);
 		}
 	},
 	watch:{
 		html(){
+			console.time('buildScrollMap');
 			this.$nextTick(() => {
-				let scrollMap = [];
+				scrollMap = [];
 
 				let $preview = this.$el;
 				let $previewAnchors = $preview.querySelectorAll('.line');
 				Array.prototype.forEach.call($previewAnchors, function($previewAnchor){
 					let line = $previewAnchor.dataset.line;
 					let top = $previewAnchor.offsetTop;
-					/*if(line == 8){
-						console.log(line, top, $previewAnchor);
-					}*/
 					if(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){
 						scrollMap[line] = top;
 					}
@@ -78,11 +87,7 @@ export default {
 						scrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);
 					}
 				}
-				// console.log(scrollMap[8]);
-
-				// this.$store.commit('changeScrollMap', scrollMap);
-				// console.log(scrollMap);
-				// console.log('html changed');
+				console.timeEnd('buildScrollMap');
 			});
 		}
 	},

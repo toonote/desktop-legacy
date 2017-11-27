@@ -63,7 +63,8 @@ let app = new Vue({
 		},
 		// 编辑器滚动
 		lineScroll: function(row){
-			this.$store.dispatch('syncScroll', row);
+			this.$refs.preview.scrollToSourceLine(row);
+			// this.$store.dispatch('syncScroll', row);
 		}
 	},
 	data(){
