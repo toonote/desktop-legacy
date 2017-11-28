@@ -65,12 +65,11 @@
 
 
 <script>
-import Menu from '../api/menu/index';
-import util from '../modules/util';
+import Menu from '../modules/menu/electron';
 import logger from '../modules/logger';
-import {getConfig} from '../modules/config';
+import {getConfig} from '../modules/util/config';
 // import app from '../component/app';
-let menu = new Menu(util.platform);
+let menu = new Menu();
 
 export default {
 	methods:{
@@ -176,76 +175,76 @@ export default {
 		// 新建笔记
 		newNote(){
 			logger.ga('send', 'event', 'note', 'new');
-			this.$store.dispatch('newNote');
+			// this.$store.dispatch('newNote');
 		},
 		// 切换当前笔记
 		switchCurrentNote(note){
 			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'init');
-			this.$store.commit('switchCurrentNote', note);
+			// this.$store.commit('switchCurrentNote', note);
 		},
 		// 打开当前右键笔记
 		openContextMenuNote(){
 			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'contextMenu');
-			this.$store.dispatch('openContextMenuNote');
+			// this.$store.dispatch('openContextMenuNote');
 		},
 		// 删除当前右键笔记
 		deleteContextMenuNote(){
 			logger.ga('send', 'event', 'note', 'delete', 'contextMenu');
-			this.$store.dispatch('deleteContextMenuNote');
+			// this.$store.dispatch('deleteContextMenuNote');
 		},
 		// 查看当前右键笔记历史版本
 		historyContextMenuNote(){
 			logger.ga('send', 'event', 'history', 'enter', 'contextMenu');
-			this.$store.dispatch('historyContextMenuNote');
+			// this.$store.dispatch('historyContextMenuNote');
 		},
 		// 切换当前笔记本
 		switchCurrentNotebook(notebook){
-			this.$store.commit('switchCurrentNotebook', notebook);
+			// this.$store.commit('switchCurrentNotebook', notebook);
 		},
 		// 更新meta信息
 		updateMeta(metaData){
-			this.$store.commit('updateNotebooks', metaData.notebook);
+			// this.$store.commit('updateNotebooks', metaData.notebook);
 		},
 		// 导入备份
 		importBackup(){
 			logger.ga('send', 'event', 'note', 'importBackup');
-			this.$store.dispatch('importBackup');
+			// this.$store.dispatch('importBackup');
 		},
 		// 导出指定格式
 		export(format){
 			logger.ga('send', 'event', 'note', 'export', format);
-			this.$store.dispatch('export', format);
+			// this.$store.dispatch('export', format);
 		},
 		// 复制指定格式
 		copy(format){
 			logger.ga('send', 'event', 'note', 'copy', format);
-			this.$store.dispatch('copy', format);
+			// this.$store.dispatch('copy', format);
 		},
 		// 切换界面布局
 		switchLayout(component){
 			logger.ga('send', 'event', 'app', 'layout', component);
-			this.$store.commit('switchLayout', component);
+			// this.$store.commit('switchLayout', component);
 		},
 		// 查看当前右键历史版本
 		versionOpen(){
 			logger.ga('send', 'event', 'history', 'switchActiveVersion');
-			this.$store.dispatch('switchActiveVersion');
+			// this.$store.dispatch('switchActiveVersion');
 		},
 		// 恢复当前右键历史版本
 		versionRestore(){
 			logger.ga('send', 'event', 'history', 'restoreActiveVersion');
-			this.$store.dispatch('restoreActiveVersion');
+			// this.$store.dispatch('restoreActiveVersion');
 		},
 		// 编辑相关操作（撤销/重做）
 		doEdit(action){
-			this.$store.commit('editAction', action);
+			// this.$store.commit('editAction', action);
 			this.$nextTick(() => {
-				this.$store.commit('editAction', '');
+				// this.$store.commit('editAction', '');
 			});
 		},
 		// 清除数据
 		clearData(){
-			this.$store.dispatch('clearData');
+			// this.$store.dispatch('clearData');
 		}
 		/******************菜单响应结束*****************/
 	},

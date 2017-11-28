@@ -9,6 +9,9 @@ import Preview from './component/Preview.vue';
 import NotebookSelect from './component/NotebookSelect.vue';
 
 import {uiData, updateCurrentNote} from './modules/controller';
+import * as menu from './modules/menu';
+
+menu.init();
 // 生成store
 // import getStore from './vuex/store';
 
