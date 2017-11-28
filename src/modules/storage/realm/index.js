@@ -104,3 +104,30 @@ export function updateResult(name, arr){
 		});
 	});
 }
+
+/**
+ * 插入数据
+ * @param {string} name Schema名称
+ * @param {Object} obj 新数据
+ * @param {Object[]} reverseLinkArr 需要处理的反向链接信息
+ */
+export function createResult(name, obj, reverseLinkArr = []){
+	if(!obj.id){
+		obj.id = idGen();
+	}
+
+	realm.write(() => {
+		const newObj = realm.create(name, obj, true);
+		// 处理反向链接
+		// [{
+		//	   name: 'Category',
+		//     id: '123456',
+		//     field: 'notes',
+		// }]
+		reverseLinkArr.forEach((linkInfo) => {
+			return getResults(linkInfo.name).filtered(`id="${linkInfo.id}"`)[0][linkInfo.field].push(newObj);
+		});
+	});
+
+	return obj.id;
+}

@@ -1,5 +1,6 @@
 import Menu from './electron';
 import env from  '../util/env';
+import * as controller from '../controller';
 
 const getMenu = function(){
 	let appMenu = {
@@ -97,7 +98,7 @@ const onMenuClick = function(eventType, command){
 		location.reload(true);
 		break;
 	case 'newNote':
-		this.newNote();
+		controller.newNote();
 		break;
 	case 'noteOpen':
 		this.openContextMenuNote();

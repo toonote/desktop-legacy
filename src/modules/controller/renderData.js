@@ -3,10 +3,12 @@
 let cache = {};
 
 // 将realm Results转换成普通数组和对象
-const mapNotebook = function(source, isDeep = false){
+const mapNotebook = function(source, isDeep = false, forceNoArray = false){
 	let isArray = true;
-	if(!source.map){
+	if(!source.map || forceNoArray){
 		isArray = false;
+	}
+	if(!source.map){
 		source = [source];
 	}
 	let ret = source.map((notebook) => {
@@ -38,10 +40,12 @@ const mapNotebook = function(source, isDeep = false){
 };
 
 // 将realm Results转换成普通数组和对象
-const mapCategory = function(source, isDeep = false){
+const mapCategory = function(source, isDeep = false, forceNoArray = false){
 	let isArray = true;
-	if(!source.map){
+	if(!source.map || forceNoArray){
 		isArray = false;
+	}
+	if(!source.map){
 		source = [source];
 	}
 	let ret = source.map((category) => {
@@ -64,7 +68,7 @@ const mapCategory = function(source, isDeep = false){
 		if(isDeep){
 			cache[cacheKey] = ret;
 			ret.notes = mapNote(category.notes, true);
-			ret.notebook = mapNotebook(category.notebook, true);
+			ret.notebook = mapNotebook(category.notebook, true, true);
 		}
 		return ret;
 	});
@@ -76,10 +80,12 @@ const mapCategory = function(source, isDeep = false){
 };
 
 // 将realm Results转换成普通数组和对象
-const mapNote = function(source, isDeep = false){
+const mapNote = function(source, isDeep = false, forceNoArray = false){
 	let isArray = true;
-	if(!source.map){
+	if(!source.map || forceNoArray){
 		isArray = false;
+	}
+	if(!source.map){
 		source = [source];
 	}
 	let ret = source.map((note) => {
@@ -107,8 +113,8 @@ const mapNote = function(source, isDeep = false){
 		};
 		if(isDeep){
 			cache[cacheKey] = ret;
-			ret.category = mapCategory(note.category, true);
-			ret.notebook = mapNotebook(note.notebook, true);
+			ret.category = mapCategory(note.category, true, true);
+			ret.notebook = mapNotebook(note.notebook, true, true);
 		}
 		return ret;
 	});
@@ -132,6 +138,11 @@ const mapNoteWithContent = function(source){
 export function update(source, dest){
 	cache = {};
 	dest.notebookList.data = mapNotebook(source.Notebook);
+	let currentNotebookId = dest.currentNotebook.data.id;
+	if(!currentNotebookId){
+		currentNotebookId = dest.notebookList.data[0].id;
+	}
+	switchCurrentNotebook(source, dest, currentNotebookId);
 	return dest;
 }
 
