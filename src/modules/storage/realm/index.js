@@ -21,6 +21,25 @@ const DB_PATH = path.join(require('electron').remote.app.getPath('userData'), fi
 
 let realm;
 
+let _isInWrite = false;
+/**
+ * 确保处在realm.write回调函数中
+ * @param {function} cb 回调函数
+ */
+function ensureWrite(cb){
+	if(!_isInWrite){
+		_isInWrite = true;
+		realm.write(cb);
+		_isInWrite = false;
+	}else{
+		cb();
+	}
+}
+
+/**
+ * 初始化数据
+ * 如果没有数据，则新建一些默认数据
+ */
 function initData(){
 	console.time('initData');
 	// 新建第一个笔记本
@@ -96,7 +115,7 @@ export function getResults(name){
  * @param {Object|Array<Object>} arr 新数据
  */
 export function updateResult(name, arr){
-	realm.write(() => {
+	ensureWrite(() => {
 		if(!Array.isArray(arr)) arr = [arr];
 		arr.forEach((obj) => {
 			// 当主键相同时，第三个参数会覆盖已有记录
@@ -110,13 +129,14 @@ export function updateResult(name, arr){
  * @param {string} name Schema名称
  * @param {Object} obj 新数据
  * @param {Object[]} reverseLinkArr 需要处理的反向链接信息
+ * @returns {string} 新数据的ID
  */
 export function createResult(name, obj, reverseLinkArr = []){
 	if(!obj.id){
 		obj.id = idGen();
 	}
 
-	realm.write(() => {
+	ensureWrite(() => {
 		const newObj = realm.create(name, obj, true);
 		// 处理反向链接
 		// [{
@@ -124,10 +144,38 @@ export function createResult(name, obj, reverseLinkArr = []){
 		//     id: '123456',
 		//     field: 'notes',
 		// }]
-		reverseLinkArr.forEach((linkInfo) => {
-			return getResults(linkInfo.name).filtered(`id="${linkInfo.id}"`)[0][linkInfo.field].push(newObj);
-		});
+		createReverseLink(newObj, reverseLinkArr);
 	});
 
 	return obj.id;
+}
+
+/**
+ * 为result创建反向链接
+ * @param {Realm.Results | string} result realm对象
+ * @param {Object[]} reverseLinkArr 需要处理的反向链接信息
+ */
+export function createReverseLink(result, reverseLinkArr){
+	ensureWrite(() => {
+		reverseLinkArr.forEach((linkInfo) => {
+			return getResults(linkInfo.name).filtered(`id="${linkInfo.id}"`)[0][linkInfo.field].push(result);
+		});
+	});
+}
+
+/**
+ * 为result移除反向链接
+ * @param {Realm.Results | string} result realm对象
+ * @param {Object[]} reverseLinkArr 需要处理的反向链接信息
+ */
+export function removeReverseLink(result, reverseLinkArr){
+	ensureWrite(() => {
+		reverseLinkArr.forEach((linkInfo) => {
+			const targetField = getResults(linkInfo.name).filtered(`id="${linkInfo.id}"`)[0][linkInfo.field];
+			const index = targetField.indexOf(result);
+			if(index > -1){
+				targetField.splice(index, 1);
+			}
+		});
+	});
 }

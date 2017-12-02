@@ -55,8 +55,10 @@ let app = new Vue({
 			}
 		},
 		// 编辑器内容改变
-		contentChange: function(content){
-			updateCurrentNote({content});
+		contentChange: function(data){
+			updateCurrentNote({
+				content:data.content
+			}, data.isEditingHeading);
 			// this.$store.dispatch('changeCurrentNoteContent', content);
 		},
 		// 编辑器滚动
