@@ -79,7 +79,7 @@ export const updateCurrentNote = throttle((data) => {
 			}
 		}
 	}
-	console.log('hasChanged', hasChanged, data);
+	// console.log('hasChanged', hasChanged, data);
 	if(!hasChanged) return;
 	console.time('updateNote');
 	updateResult('Note', {

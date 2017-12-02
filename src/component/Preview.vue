@@ -53,41 +53,46 @@ export default {
 		},
 		// 将预览区滚动到和源码位置一样
 		scrollToSourceLine(row) {
+			if(!scrollMap || !scrollMap.length){
+				this.buildScrollMap();
+			}
 			let targetPosition = scrollMap[row];
 			if(typeof targetPosition === 'undefined') return;
 			scroll.doScroll(this.$el, targetPosition, 500);
+		},
+		// 构建滚动对应的信息表
+		buildScrollMap(){
+			console.time('buildScrollMap');
+			let $preview = this.$el;
+			let $previewAnchors = $preview.querySelectorAll('.line');
+			Array.prototype.forEach.call($previewAnchors, function($previewAnchor){
+				let line = $previewAnchor.dataset.line;
+				let top = $previewAnchor.offsetTop;
+				if(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){
+					scrollMap[line] = top;
+				}
+			});
+			scrollMap[0] = 0;
+
+			let contentLines = this.currentNoteContent.data.split('\n').length;
+			if(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;
+
+			for(var i = 1; i<contentLines -1; i++){
+				if(!scrollMap[i]){
+					var j = i+1;
+					while(!scrollMap[j] && j < contentLines - 1){
+						j++;
+					}
+					scrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);
+				}
+			}
+			console.timeEnd('buildScrollMap');
 		}
 	},
 	watch:{
 		html(){
-			console.time('buildScrollMap');
 			this.$nextTick(() => {
 				scrollMap = [];
-
-				let $preview = this.$el;
-				let $previewAnchors = $preview.querySelectorAll('.line');
-				Array.prototype.forEach.call($previewAnchors, function($previewAnchor){
-					let line = $previewAnchor.dataset.line;
-					let top = $previewAnchor.offsetTop;
-					if(top && (top > scrollMap[line] || typeof scrollMap[line] === 'undefined')){
-						scrollMap[line] = top;
-					}
-				});
-				scrollMap[0] = 0;
-
-				let contentLines = this.currentNoteContent.data.split('\n').length;
-				if(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;
-
-				for(var i = 1; i<contentLines -1; i++){
-					if(!scrollMap[i]){
-						var j = i+1;
-						while(!scrollMap[j] && j < contentLines - 1){
-							j++;
-						}
-						scrollMap[i] = scrollMap[i-1] + (scrollMap[j] - scrollMap[i-1]) / (j-i+1);
-					}
-				}
-				console.timeEnd('buildScrollMap');
 			});
 		}
 	},
