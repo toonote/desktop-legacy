@@ -32,11 +32,11 @@ let scrollMap = [];
 export default {
 	computed:{
 		html(){
-			if(!this.currentNote.data || !this.currentNote.data.content){
+			if(!this.currentNoteContent.data){
 				return ''
 			}
 			console.time('renderHTML');
-			const html = renderer.render(this.currentNote.data.content)
+			const html = renderer.render(this.currentNoteContent.data)
 			console.timeEnd('renderHTML');
 			return html;
 		},
@@ -75,7 +75,7 @@ export default {
 				});
 				scrollMap[0] = 0;
 
-				let contentLines = this.currentNote.data.content.split('\n').length;
+				let contentLines = this.currentNoteContent.data.split('\n').length;
 				if(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;
 
 				for(var i = 1; i<contentLines -1; i++){
@@ -93,7 +93,7 @@ export default {
 	},
 	data(){
 		var data = {
-			currentNote: uiData.currentNote
+			currentNoteContent: uiData.currentNoteContent
 			// content:'',
 			// html:''
 		};

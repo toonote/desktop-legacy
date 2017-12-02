@@ -127,35 +127,50 @@ const mapNote = function(source, isDeep = false, forceNoArray = false){
 
 
 // 将realm Results转换成普通数组和对象
-const mapNoteWithContent = function(source){
+/* const mapNoteWithContent = function(source){
 	const ret = mapNote(source);
 	return {
 		...ret,
 		content: source.content
 	};
-};
+}; */
 
 export function update(source, dest){
 	cache = {};
-	dest.notebookList.data = mapNotebook(source.Notebook);
+	dest.notebookList.data = mapNotebook(source.Notebook, true);
 	let currentNotebookId = dest.currentNotebook.data.id;
-	if(!currentNotebookId){
-		currentNotebookId = dest.notebookList.data[0].id;
+	if(currentNotebookId){
+		switchCurrentNotebook(source, dest, currentNotebookId);
 	}
-	switchCurrentNotebook(source, dest, currentNotebookId);
 	return dest;
 }
 
 export function switchCurrentNotebook(source, dest, notebookId){
-	const targetNoteobookResult = source.Notebook.filtered(`id="${notebookId}"`);
-	dest.currentNotebook.data = mapNotebook(targetNoteobookResult[0], true);
+	// const targetNoteobookResult = source.Notebook.filtered(`id="${notebookId}"`);
+	// dest.currentNotebook.data = mapNotebook(targetNoteobookResult[0], true);
+	dest.currentNotebook.data = dest.notebookList.data.filter((notebook) => {
+		return notebook.id === notebookId;
+	})[0];
 }
 
 export function switchCurrentNote(source, dest, noteId){
-	const targetNoteoResult = source.Note.filtered(`id="${noteId}"`);
-	dest.currentNote.data = mapNoteWithContent(targetNoteoResult[0]);
+	dest.notebookList.data.forEach((notebook) => {
+		notebook.notes.forEach((note) => {
+			if(note.id === noteId){
+				dest.currentNote.data = note;
+				dest.currentNoteContent.data = source.Note.filtered(`id="${noteId}"`)[0].content;
+			}
+		});
+	});
 }
 
 export function updateCurrentNote(dest, data){
-	dest.currentNote.data = Object.assign(dest.currentNote.data, data);
+	if(data.content){
+		dest.currentNoteContent.data = data.content;
+	}
+	for(let key in data){
+		if(key !== 'content'){
+			dest.currentNote.data[key] = data[key];
+		}
+	}
 }

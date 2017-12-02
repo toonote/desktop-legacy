@@ -28,12 +28,7 @@ let app = new Vue({
 	// store,
 	computed:{
 		content(){
-			console.log(this.currentNote.data);
-			if(!this.currentNote.data){
-				return '';
-			}else{
-				return this.currentNote.data.content;
-			}
+			return this.currentNoteContent.data || '';
 		},
 		/* editAction(){
 			return this.$store.getters.editAction;
@@ -73,6 +68,7 @@ let app = new Vue({
 	data(){
 		return {
 			currentNote: uiData.currentNote,
+			currentNoteContent: uiData.currentNoteContent,
 			tnEvent: {}
 		};
 	},

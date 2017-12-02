@@ -16,6 +16,9 @@ export const uiData = {
 	},
 	currentNote:{
 		data: {}
+	},
+	currentNoteContent:{
+		data: ''
 	}
 };
 
@@ -28,7 +31,7 @@ results = {
 };
 for(let schema in results){
 	results[schema].addListener((puppies, changes) => {
-		console.log('changed', puppies, changes);
+		// console.log('changed', puppies, changes);
 		updateRenderData(results, uiData);
 	});
 }
@@ -66,12 +69,17 @@ export function switchCurrentNote(noteId){
  */
 export const updateCurrentNote = throttle((data) => {
 	let hasChanged = false;
-	for(let key in data){
-		if(data[key] !== uiData.currentNote.data[key]){
-			hasChanged = true;
+	if(typeof data.content !== 'undefined' && data.content !== uiData.currentNoteContent.data){
+		hasChanged = true;
+	}
+	if(!hasChanged){
+		for(let key in data){
+			if(data[key] !== uiData.currentNote.data[key]){
+				hasChanged = true;
+			}
 		}
 	}
-	console.log(hasChanged);
+	console.log('hasChanged', hasChanged, data);
 	if(!hasChanged) return;
 	console.time('updateNote');
 	updateResult('Note', {
