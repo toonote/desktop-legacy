@@ -1,3 +1,5 @@
+import debug from './modules/util/debug';
+
 import Vue from 'vue';
 // import Vuex from 'vuex';
 
@@ -10,6 +12,8 @@ import NotebookSelect from './component/NotebookSelect.vue';
 
 import {uiData, updateCurrentNote} from './modules/controller';
 import * as menu from './modules/menu';
+
+const logger = debug('main');
 
 menu.init();
 // 生成store
@@ -87,7 +91,7 @@ let app = new Vue({
 			this._tnEvent('editAction', {
 				action: this.$store.getters.editAction
 			});
-			console.log('tnEvent editActions: %s', this.$store.getters.editAction);
+			logger('tnEvent editActions: %s', this.$store.getters.editAction);
 		}
 	}
 });

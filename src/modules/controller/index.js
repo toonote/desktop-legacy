@@ -1,6 +1,9 @@
+import debug from '../util/debug';
 import * as realm from '../storage/realm';
 import * as renderData from './renderData';
 import {throttle} from 'lodash';
+
+const logger = debug('controller:main');
 
 let results;
 let updateRenderData = throttle(renderData.update, 16, {
@@ -31,7 +34,7 @@ results = {
 };
 for(let schema in results){
 	results[schema].addListener((puppies, changes) => {
-		// console.log('changed', puppies, changes);
+		logger('changed', puppies, changes);
 		updateRenderData(results, uiData);
 	});
 }
@@ -80,7 +83,7 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 			if(titlePart.length === 2){
 				data.title = titlePart[1];
 				const categoryTitle = titlePart[0].trim();
-				// console.log('update note category to :', categoryTitle);
+				logger('update note category to :', categoryTitle);
 				updateCurrentNoteCategory(categoryTitle);
 			}
 		}
@@ -95,7 +98,7 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 			}
 		}
 	}
-	// console.log('hasChanged', hasChanged, data);
+	logger('hasChanged', hasChanged, data);
 	if(!hasChanged) return;
 	console.time('updateNote');
 	realm.updateResult('Note', {
