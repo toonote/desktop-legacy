@@ -34,7 +34,9 @@ results = {
 };
 for(let schema in results){
 	results[schema].addListener((puppies, changes) => {
-		logger('changed', puppies, changes);
+		logger('realm data changed');
+		logger(puppies);
+		logger(changes);
 		updateRenderData(results, uiData);
 	});
 }
@@ -196,7 +198,8 @@ export const newNote = function(data = {}){
 		field: 'notes',
 		id: currentNote.notebook.id,
 	}]);
-	updateRenderData(results, uiData);
+	logger('newNoteId:' + newNoteId);
+	renderData.update(results, uiData);
 	switchCurrentNote(newNoteId);
 	console.timeEnd('newNote');
 };

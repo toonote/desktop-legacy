@@ -1,3 +1,5 @@
+import debug from '../util/debug';
+const logger = debug('controller:renderData');
 // 以Schema + ID为key缓存普通对象
 // 有这个对象后可以实现不同对象之间的循环引用
 let cache = {};
@@ -89,7 +91,7 @@ const mapNote = function(source, isDeep = false, forceNoArray = false){
 		source = [source];
 	}
 	let ret = source.map((note) => {
-		// console.log(note);
+		logger('mapNote, noteId:' + note.id);
 		const cacheKey = 'NOTE' + note.id;
 		if(cache[cacheKey]) return cache[cacheKey];
 		let ret = {
@@ -154,9 +156,11 @@ export function switchCurrentNotebook(source, dest, notebookId){
 }
 
 export function switchCurrentNote(source, dest, noteId){
+	logger('switchCurrentNote');
 	dest.notebookList.data.forEach((notebook) => {
 		notebook.notes.forEach((note) => {
 			if(note.id === noteId){
+				logger('switchCurrentNote found target');
 				dest.currentNote.data = note;
 				dest.currentNoteContent.data = source.Note.filtered(`id="${noteId}"`)[0].content;
 			}
