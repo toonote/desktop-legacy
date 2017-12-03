@@ -91,11 +91,13 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 		}
 	}
 	if(typeof data.content !== 'undefined' && data.content !== uiData.currentNoteContent.data){
+		logger('content changed.');
 		hasChanged = true;
 	}
 	if(!hasChanged){
 		for(let key in data){
-			if(data[key] !== uiData.currentNote.data[key]){
+			if(key !== 'content' && data[key] !== uiData.currentNote.data[key]){
+				logger(key + ' changed.');
 				hasChanged = true;
 			}
 		}
