@@ -88,80 +88,89 @@ const getMenu = function(){
 
 // 处理菜单绑定
 const onMenuClick = function(eventType, command){
+	console.log('onMenuClick', eventType, command);
+	// 旧版command是一个字符串
+	// 新版是一个对象，包含{data,event}
+	let data = {};
+	if(typeof command === 'object'){
+		data = command.data;
+		command = command.event;
+	}
 	switch(command){
 		// 关于 - 仅windows下触发
-	case 'about':
-		const version = require('electron').remote.app.getVersion();
-		alert(`TooNote (${version})\nhttps://xiaotu.io`);
-		break;
-	case 'devReload':
-		location.reload(true);
-		break;
-	case 'newNote':
-		controller.newNote();
-		break;
-	case 'noteOpen':
-		this.openContextMenuNote();
-		break;
-	case 'noteDelete':
-		if(confirm('确定要删除该笔记吗？删除后将无法找回该笔记内容')){
-			this.deleteContextMenuNote();
-		}
-		break;
-	case 'noteHistory':
-		this.historyContextMenuNote();
-		break;
-	case 'importBackup':
-		this.importBackup();
-		break;
-	case 'exportMd':
-		this.export('md');
-		break;
-	case 'exportHtmlBody':
-		this.export('htmlBody');
-		break;
-	case 'exportHtmlBodyWithCss':
-		this.export('htmlBodyWithCss');
-		break;
-	case 'exportHtml':
-		this.export('html');
-		break;
-	case 'exportPdf':
-		this.export('pdf');
-		break;
-	case 'switchLayoutSidebar':
-		this.switchLayout('sidebar');
-		break;
-	case 'switchLayoutEditor':
-		this.switchLayout('editor');
-		break;
-	case 'switchLayoutPreview':
-		this.switchLayout('preview');
-		break;
-	case 'versionOpen':
-		this.versionOpen();
-		break;
-	case 'versionRestore':
-		this.versionRestore();
-		break;
-	case 'undo':
-		this.doEdit('undo');
-		break;
-	case 'redo':
-		this.doEdit('redo');
-		break;
-	case 'clearData':
-		this.clearData();
-		break;
-	case 'copyFullMd':
-		this.copy('md');
-		break;
-	case 'copyFullHTML':
-		this.copy('html');
-		break;
-	case 'copyFullHTMLForWx':
-		this.copy('wx');
-		break;
+		case 'about':
+			const version = require('electron').remote.app.getVersion();
+			alert(`TooNote (${version})\nhttps://xiaotu.io`);
+			break;
+		case 'devReload':
+			location.reload(true);
+			break;
+		case 'newNote':
+			controller.newNote();
+			break;
+		case 'noteOpen':
+			console.log('ready to switchCurrentNote');
+			controller.switchCurrentNote(data.targetId);
+			break;
+		case 'noteDelete':
+			if(confirm('确定要删除该笔记吗？删除后将无法找回该笔记内容')){
+				this.deleteContextMenuNote();
+			}
+			break;
+		case 'noteHistory':
+			this.historyContextMenuNote();
+			break;
+		case 'importBackup':
+			this.importBackup();
+			break;
+		case 'exportMd':
+			this.export('md');
+			break;
+		case 'exportHtmlBody':
+			this.export('htmlBody');
+			break;
+		case 'exportHtmlBodyWithCss':
+			this.export('htmlBodyWithCss');
+			break;
+		case 'exportHtml':
+			this.export('html');
+			break;
+		case 'exportPdf':
+			this.export('pdf');
+			break;
+		case 'switchLayoutSidebar':
+			this.switchLayout('sidebar');
+			break;
+		case 'switchLayoutEditor':
+			this.switchLayout('editor');
+			break;
+		case 'switchLayoutPreview':
+			this.switchLayout('preview');
+			break;
+		case 'versionOpen':
+			this.versionOpen();
+			break;
+		case 'versionRestore':
+			this.versionRestore();
+			break;
+		case 'undo':
+			this.doEdit('undo');
+			break;
+		case 'redo':
+			this.doEdit('redo');
+			break;
+		case 'clearData':
+			this.clearData();
+			break;
+		case 'copyFullMd':
+			this.copy('md');
+			break;
+		case 'copyFullHTML':
+			this.copy('html');
+			break;
+		case 'copyFullHTMLForWx':
+			this.copy('wx');
+			break;
 	}
 
 };

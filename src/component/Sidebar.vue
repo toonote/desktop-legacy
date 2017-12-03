@@ -167,7 +167,7 @@ export default {
 				ret = true;
 			}
 			// 当前右键笔记
-			if(this.contextMenuNoteId === noteId){
+			if(this.currentContextMenuNoteId === noteId){
 				ret = true;
 			}
 			return ret;
@@ -192,8 +192,7 @@ export default {
 		showContextMenu(noteId){
 			// console.log('contextmenu');
 			logger.ga('send', 'event', 'note', 'showContextMenu');
-			// this.$store.commit('switchContextMenuNote', noteId);
-			// this.$nextTick(() => {
+			this.currentContextMenuNoteId = noteId;
 			setTimeout(() => {
 				menu.showContextMenu([{
 					title:'打开',
@@ -209,9 +208,13 @@ export default {
 				},{
 					title:'历史版本',
 					event:'noteHistory'
-				}]);
+				}], {
+					targetType: 'note',
+					targetId: noteId,
+					from: 'sidebar',
+				});
 				setTimeout(()=>{
-					// this.$store.commit('switchContextMenuNote', 0);
+					this.currentContextMenuNoteId = '';
 				},30);
 			},30);
 		},
@@ -262,6 +265,7 @@ export default {
 		return {
 			currentNotebook: uiData.currentNotebook,
 			currentNote: uiData.currentNote,
+			currentContextMenuNoteId: '',
 			keyword: '',
 			foldMap: {}
 		};

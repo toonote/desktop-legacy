@@ -27,7 +27,9 @@
         // 分号党
         "semi": ["error", "always"],
         // tab缩进
-        "indent": ["error", "tab"],
+        "indent": ["error", "tab", {
+			"SwitchCase": 1
+		}],
         // 字符串单引号
         "quotes": ["error", "single"],
         // 全等号

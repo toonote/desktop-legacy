@@ -12,7 +12,7 @@ class ElectronMenu extends Menu{
 		// console.log('no cache');
 		ElectronMenu._instance = this;
 	}
-	_getMenu(menuList){
+	_getMenu(menuList, data = {}){
 		// 标记是否已经添加过退出菜单
 		let exitMenuPosition = '';
 		let buildMenu = (menuItem)=>{
@@ -106,7 +106,10 @@ class ElectronMenu extends Menu{
 						// console.log('[menu electron] bind click', event);
 						return (item, focusWindow) => {
 							// console.log('[menu electron] click', event);
-							this.trigger('click', event);
+							this.trigger('click', {
+								event,
+								data
+							});
 						};
 					})(menuItem.event) : undefined,
 				submenu:subMenu
@@ -123,8 +126,8 @@ class ElectronMenu extends Menu{
 		let menu = this._getMenu(menuList);
 		remote.Menu.setApplicationMenu(menu);
 	}
-	showContextMenu(menuList){
-		let contextMenu = this._getMenu(menuList);
+	showContextMenu(menuList, data){
+		let contextMenu = this._getMenu(menuList, data);
 		contextMenu.popup(remote.getCurrentWindow());
 	}
 	get isVue(){
