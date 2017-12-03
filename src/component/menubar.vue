@@ -66,7 +66,7 @@
 
 <script>
 import Menu from '../modules/menu/electron';
-import logger from '../modules/logger';
+import stat from '../modules/util/stat';
 import {getConfig} from '../modules/util/config';
 // import app from '../component/app';
 let menu = new Menu();

@@ -1,6 +1,9 @@
+import debug from '../util/debug';
 import Menu from './electron';
 import env from  '../util/env';
 import * as controller from '../controller';
+
+const logger = debug('menu');
 
 const getMenu = function(){
 	let appMenu = {
@@ -88,7 +91,7 @@ const getMenu = function(){
 
 // 处理菜单绑定
 const onMenuClick = function(eventType, command){
-	console.log('onMenuClick', eventType, command);
+	logger('onMenuClick', eventType, command);
 	// 旧版command是一个字符串
 	// 新版是一个对象，包含{data,event}
 	let data = {};
@@ -109,12 +112,13 @@ const onMenuClick = function(eventType, command){
 			controller.newNote();
 			break;
 		case 'noteOpen':
-			console.log('ready to switchCurrentNote');
+			logger('ready to switchCurrentNote');
 			controller.switchCurrentNote(data.targetId);
 			break;
 		case 'noteDelete':
+			logger('noteDelete');
 			if(confirm('确定要删除该笔记吗？删除后将无法找回该笔记内容')){
-				this.deleteContextMenuNote();
+				controller.deleteNote(data.targetId);
 			}
 			break;
 		case 'noteHistory':

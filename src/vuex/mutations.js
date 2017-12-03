@@ -1,4 +1,4 @@
-import logger from '../modules/logger';
+import stat from '../modules/util/stat';
 export default {
 	newNote(state, note) {
 		state.currentNotebook.notes.push(note);

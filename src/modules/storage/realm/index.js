@@ -151,6 +151,20 @@ export function createResult(name, obj, reverseLinkArr = []){
 }
 
 /**
+ * 删除数据
+ * @param {string} name Schema名称
+ * @param {string} id 数据ID
+ */
+export function deleteResult(name, id){
+	const target = getResults(name).filtered(`id="${id}"`)[0];
+	ensureWrite(() => {
+		if(target){
+			realm.delete(target);
+		}
+	});
+}
+
+/**
  * 为result创建反向链接
  * @param {Realm.Results | string} result realm对象
  * @param {Object[]} reverseLinkArr 需要处理的反向链接信息

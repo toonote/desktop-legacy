@@ -125,12 +125,14 @@
 
 
 <script>
+import debug from '../modules/util/debug';
 import {uiData, switchCurrentNote} from '../modules/controller';
 import User from './User.vue';
 import Menu from '../modules/menu/electron';
+import stat from '../modules/util/stat';
 import {throttle} from 'lodash';
 // import env from '../modules/util/env';
-import logger from '../modules/logger';
+const logger = debug('sidebar');
 
 const menu = new Menu();
 
@@ -151,10 +153,10 @@ export default {
 	watch: {
 		/* keyword(){
 			if(this.keyword){
-				logger.ga('send', 'event', 'note', 'searchStarted');
+				stat.ga('send', 'event', 'note', 'searchStarted');
 				this.$store.dispatch('search', this.keyword);
 			}else{
-				logger.ga('send', 'event', 'note', 'searchEnded');
+				stat.ga('send', 'event', 'note', 'searchEnded');
 				this.$store.commit('switchSearching', false);
 			}
 		} */
@@ -183,7 +185,7 @@ export default {
 		},
 		switchCurrentNote(noteId){
 			if(noteId === this.currentNote.data.id) return;
-			logger.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
+			stat.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
 			console.log('switchCurrentNote');
 			switchCurrentNote(noteId);
 			// this.$store.dispatch('switchCurrentNoteById', noteId);
@@ -191,7 +193,7 @@ export default {
 		},
 		showContextMenu(noteId){
 			// console.log('contextmenu');
-			logger.ga('send', 'event', 'note', 'showContextMenu');
+			stat.ga('send', 'event', 'note', 'showContextMenu');
 			this.currentContextMenuNoteId = noteId;
 			setTimeout(() => {
 				menu.showContextMenu([{
@@ -241,7 +243,7 @@ export default {
 				}, 500);
 			}
 			_doExchange();
-			logger.ga('send', 'event', 'note', 'sort');
+			stat.ga('send', 'event', 'note', 'sort');
 		},
 		drop(e){
 			return;

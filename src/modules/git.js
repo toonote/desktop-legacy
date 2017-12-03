@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import logger from './logger';
+import stat from './stat';
 import util from './util';
 
 export default class Git{
@@ -76,4 +76,3 @@ export default class Git{
 		return this.runCommand(`show ${version}:${filePath}`);
 	}
 }
-

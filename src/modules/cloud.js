@@ -1,4 +1,4 @@
-import logger from './logger';
+import stat from './stat';
 import RestfulModel from 'tn-restful-model';
 import meta from './meta';
 import note from './note';

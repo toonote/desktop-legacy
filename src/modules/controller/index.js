@@ -110,6 +110,24 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 }, 500);
 
 /**
+ * 删除笔记
+ * @param {string} noteId 笔记id
+ * @returns {void}
+ */
+export function deleteNote(noteId){
+	console.time('deleteNote');
+	let isCurrentNote = noteId === uiData.currentNote.data.id;
+	realm.deleteResult('Note', noteId);
+	// renderData.deleteNote(results, uiData, noteId);
+	// switchCurrentNote();
+	if(isCurrentNote){
+		logger('currentNote deleted, switching to new currentNote');
+		switchCurrentNote(uiData.currentNotebook.data.notes[0].id);
+	}
+	console.timeEnd('deleteNote');
+}
+
+/**
  * 修改当前笔记的分类
  * @param {string} categoryTitle 新分类的标题
  */

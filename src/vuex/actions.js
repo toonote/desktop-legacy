@@ -11,7 +11,7 @@ import renderer from '../modules/renderer';
 import Git from '../modules/git';
 import login from '../modules/login';
 import * as cloud from '../modules/cloud';
-import logger from '../modules/logger';
+import stat from '../modules/util/stat';
 import {getConfig, setConfig} from '../modules/config';
 
 let git = new Git();
@@ -334,28 +334,28 @@ export default {
 	async export(context, format) {
 		let content = '';
 		switch(format){
-		case 'md':
-			content = context.state.currentNote.content;
-			break;
-		case 'htmlBody':
-			content = renderer.render(context.state.currentNote.content);
-			break;
-		case 'htmlBodyWithCss':
-			content = await getHtmlWithCss(context.state.currentNote.content);
-			console.log(content);
-			break;
-		case 'html':
-		case 'pdf':
-			let body = renderer.render(context.state.currentNote.content);
+			case 'md':
+				content = context.state.currentNote.content;
+				break;
+			case 'htmlBody':
+				content = renderer.render(context.state.currentNote.content);
+				break;
+			case 'htmlBodyWithCss':
+				content = await getHtmlWithCss(context.state.currentNote.content);
+				console.log(content);
+				break;
+			case 'html':
+			case 'pdf':
+				let body = renderer.render(context.state.currentNote.content);
 				// var postcss = require('postcss');
 				// var atImport = require('postcss-import');
-			let css = io.getFileText('/style/htmlbody.css');
+				let css = io.getFileText('/style/htmlbody.css');
 				// 加载PDF样式
-			if(format === 'pdf'){
-				css += io.getFileText('/style/pdf.css');
-			}
+				if(format === 'pdf'){
+					css += io.getFileText('/style/pdf.css');
+				}
 				// css += io.getFileText('/node_modules/highlight.js/styles/github-gist.css');
-			css += io.getFileText('/node_modules/highlight.js/styles/tomorrow.css');
+				css += io.getFileText('/node_modules/highlight.js/styles/tomorrow.css');
 				/*var outputCss = postcss()
 					.use(atImport())
 					.process(css, {
@@ -363,7 +363,7 @@ export default {
 					})
 					.css;*/
 
-			content = '<!doctype html><html>\n' +
+				content = '<!doctype html><html>\n' +
 						'<head>\n' +
 						'<meta charset="utf-8">\n' +
 						'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
@@ -372,7 +372,7 @@ export default {
 						'<style>\n' + css + '</style>\n' +
 						'</head>\n' +
 						'<body class="htmlBody">\n' + body + '</body>\n</html>';
-			break;
+				break;
 		}
 		io.export(format, content, context.state.currentNote.title);
 	},
@@ -380,23 +380,23 @@ export default {
 		let content = '';
 		let type = '';
 		switch(format){
-		case 'md':
-			type = 'text';
-			content = context.state.currentNote.content;
-			break;
-		case 'html':
-			type = 'html';
-			content = await getHtmlWithCss(context.state.currentNote.content);
-			break;
-		case 'wx':
-			type = 'html';
-			content = await getHtmlWithCss(context.state.currentNote.content, [
-				'/style/wx.css'
-			]);
-			content = content.replace(/<\/span>\n/ig, '</span><br />');
-			content = content.replace(/([^>])$/img, '$1<br />');
-			content = content.replace(/<br \/>\n/ig, '<br />');
-			break;
+			case 'md':
+				type = 'text';
+				content = context.state.currentNote.content;
+				break;
+			case 'html':
+				type = 'html';
+				content = await getHtmlWithCss(context.state.currentNote.content);
+				break;
+			case 'wx':
+				type = 'html';
+				content = await getHtmlWithCss(context.state.currentNote.content, [
+					'/style/wx.css'
+				]);
+				content = content.replace(/<\/span>\n/ig, '</span><br />');
+				content = content.replace(/([^>])$/img, '$1<br />');
+				content = content.replace(/<br \/>\n/ig, '<br />');
+				break;
 		}
 		let clipboard = require('electron').clipboard;
 		if(type === 'text'){
