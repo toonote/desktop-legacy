@@ -182,3 +182,8 @@ export function updateCurrentNote(dest, data){
 export function updateCurrentNoteCategory(source, dest, categoryId){
 	dest.currentNote.data.category = mapCategory(source.Category.filtered(`id="${categoryId}"`)[0], true, true);
 }
+
+export function search(source, dest, keyword){
+	const searchResults = source.Note.filtered(`title CONTAINS[c] "${keyword}"`);
+	dest.searchNoteList.data = mapNote(searchResults, true);
+}

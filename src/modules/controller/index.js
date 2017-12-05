@@ -23,6 +23,9 @@ export const uiData = {
 	currentNoteContent:{
 		data: ''
 	},
+	searchNoteList:{
+		data: []
+	},
 	layout:{
 		data:{
 			sidebar: true,
@@ -214,7 +217,7 @@ export const newNote = function(data = {}){
 };
 
 /**
- *
+ * 切换组件的可视状态
  * @param {string} component 要切换的组件
  * @param {boolean} [value] 切换的值，如果不传，则当前值取反
  */
@@ -224,4 +227,12 @@ export const switchLayout = function(component, value){
 		value = !oldValue;
 	}
 	uiData.layout.data[component] = value;
+};
+
+/**
+ * 搜索关键词
+ * @param {string} keyword 关键词
+ */
+export const search = function(keyword){
+	renderData.search(results, uiData, keyword);
 };

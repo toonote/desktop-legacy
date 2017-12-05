@@ -68,9 +68,9 @@
 <section class="sidebar">
 	<user></user>
 	<section class="searchWrapper">
-		<input type="search" v-model.trim="keyword" placeholder="搜索..." />
+		<input type="search" v-model.trim="searchKeyword" placeholder="搜索..." />
 	</section>
-	<section class="wrapper" v-show="!keyword">
+	<section class="wrapper" v-show="!searchKeyword">
 		<h2>{{currentNotebook.data.title}}</h2>
 		<ul>
 			<li
@@ -101,32 +101,27 @@
 			</li>
 		</ul>
 	</section>
-	<!-- <section class="wrapper" v-show="isSearching">
-		<div class="notFound" v-show="!searchResults.length">搜的什么鬼 一篇都没有</div>
-		<ul v-show="searchResults.length">
+	<section class="wrapper" v-show="searchKeyword">
+		<div class="notFound" v-show="!searchNoteList.data.length">搜的什么鬼 一篇都没有</div>
+		<h2 v-show="searchNoteList.data.length">{{currentNotebook.data.title}}</h2>
+		<ul v-show="searchNoteList.data.length">
 			<li
-				class="icon folder"
-				v-for="(notes,category) in searchResultsWithCategories"
-			>{{category}}
-				<ul>
-					<li
-						class="icon note"
-						v-bind:class="{active:isActive(note.id)}"
-						v-for="note in notes"
-						v-on:click="switchCurrentNote(note.id)"
-						v-on:contextmenu="showContextMenu(note.id)"
-					>{{note.title}}</li>
-				</ul>
-			</li>
+				class="icon note"
+				:class="{active:isActive(note.id)}"
+				:key="note.id"
+				v-for="note in searchNoteList.data"
+				@click.stop="switchCurrentNote(note.id)"
+				@contextmenu.stop="showContextMenu(note.id)"
+			>{{note.title}} （{{note.category.title}}）</li>
 		</ul>
-	</section> -->
+	</section>
 </section>
 </template>
 
 
 <script>
 import debug from '../modules/util/debug';
-import {uiData, switchCurrentNote} from '../modules/controller';
+import {uiData, switchCurrentNote, search} from '../modules/controller';
 import User from './User.vue';
 import Menu from '../modules/menu/electron';
 import stat from '../modules/util/stat';
@@ -140,26 +135,14 @@ let _doExchange;
 
 export default {
 	computed: {
-		/* ...mapGetters([
-			'notebooks',
-			'currentNote',
-			'contextMenuNoteId',
-			'notebooksWithCategories',
-			'isSearching',
-			'searchResults',
-			'searchResultsWithCategories'
-		]) */
 	},
 	watch: {
-		/* keyword(){
-			if(this.keyword){
+		searchKeyword(){
+			if(this.searchKeyword){
 				stat.ga('send', 'event', 'note', 'searchStarted');
-				this.$store.dispatch('search', this.keyword);
-			}else{
-				stat.ga('send', 'event', 'note', 'searchEnded');
-				this.$store.commit('switchSearching', false);
+				search(this.searchKeyword);
 			}
-		} */
+		}
 	},
 	methods: {
 		isActive(noteId){
@@ -256,19 +239,12 @@ export default {
 		}*/
 	},
 	data(){
-		/* var data = {
-			currentMovingNoteId:0,
-			currentTargetingNoteId:0,
-			isAnimating:false,
-			keyword:'',
-			foldMap:{}
-		};
-		return data; */
 		return {
 			currentNotebook: uiData.currentNotebook,
 			currentNote: uiData.currentNote,
+			searchKeyword: '',
+			searchNoteList: uiData.searchNoteList,
 			currentContextMenuNoteId: '',
-			keyword: '',
 			foldMap: {}
 		};
 	},

@@ -75,7 +75,6 @@ let app = new Vue({
 		}, */
 		layout: {
 			handler(){
-				console.log('layout');
 				this._tnEvent('layout');
 				logger('tnEvent layout');
 			},
