@@ -28,10 +28,9 @@ import scroll from '../modules/scroll';
 // 滚动时源码和渲染后位置的对应表
 let scrollMap = [];
 
-
 export default {
 	computed:{
-		html(){
+		/* html(){
 			if(!this.currentNoteContent.data){
 				return ''
 			}
@@ -39,9 +38,15 @@ export default {
 			const html = renderer.render(this.currentNoteContent.data)
 			console.timeEnd('renderHTML');
 			return html;
-		},
+		}, */
 	},
 	methods: {
+		renderHtml() {
+			console.time('renderHtml');
+			const html = renderer.render(this.currentNoteContent.data)
+			console.timeEnd('renderHtml');
+			return html;
+		},
 		handleContent(e) {
 			let $target = e.target;
 			// 链接
@@ -62,6 +67,7 @@ export default {
 		},
 		// 构建滚动对应的信息表
 		buildScrollMap(){
+			if(!this.layout.data.preview) return;
 			console.time('buildScrollMap');
 			let $preview = this.$el;
 			let $previewAnchors = $preview.querySelectorAll('.line');
@@ -90,6 +96,28 @@ export default {
 		}
 	},
 	watch:{
+		currentNoteContent: {
+			handler(){
+				if(!this.currentNoteContent.data){
+					this.html = '';
+					return;
+				}
+				// 如果预览区没显示，则不渲染
+				if(!this.layout.data.preview){
+					return;
+				}
+				this.html = this.renderHtml();
+			},
+			deep: true
+		},
+		layout: {
+			handler(){
+				if(this.layout.data.preview){
+					this.html = this.renderHtml();
+				}
+			},
+			deep: true
+		},
 		html(){
 			this.$nextTick(() => {
 				scrollMap = [];
@@ -98,9 +126,9 @@ export default {
 	},
 	data(){
 		var data = {
-			currentNoteContent: uiData.currentNoteContent
-			// content:'',
-			// html:''
+			currentNoteContent: uiData.currentNoteContent,
+			layout: uiData.layout,
+			html: ''
 		};
 		return data;
 	},

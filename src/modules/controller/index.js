@@ -22,6 +22,13 @@ export const uiData = {
 	},
 	currentNoteContent:{
 		data: ''
+	},
+	layout:{
+		data:{
+			sidebar: true,
+			editor: true,
+			preview: true
+		}
 	}
 };
 
@@ -204,4 +211,17 @@ export const newNote = function(data = {}){
 	renderData.update(results, uiData);
 	switchCurrentNote(newNoteId);
 	console.timeEnd('newNote');
+};
+
+/**
+ *
+ * @param {string} component 要切换的组件
+ * @param {boolean} [value] 切换的值，如果不传，则当前值取反
+ */
+export const switchLayout = function(component, value){
+	const oldValue = uiData.layout.data[component];
+	if(typeof value === 'undefined'){
+		value = !oldValue;
+	}
+	uiData.layout.data[component] = value;
 };

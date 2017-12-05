@@ -43,10 +43,9 @@ body{
 .main.withSidebar::after{
     left: calc(50% + 100px);
 }*/
-.main.withMenubar{
+/* .main.withMenubar{
 	height:calc(100% - 24px);
-}
-
+}*/
 .icon::before{
 	content:' ';
 	display: inline-block;

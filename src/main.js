@@ -1,12 +1,10 @@
 import debug from './modules/util/debug';
 
 import Vue from 'vue';
-// import Vuex from 'vuex';
 
 import Sidebar from './component/Sidebar.vue';
 import Editor from 'tn-md-editor';
 import Preview from './component/Preview.vue';
-// import menubar from './component/menubar.vue';
 // import versions from './component/versions.vue';
 import NotebookSelect from './component/NotebookSelect.vue';
 
@@ -16,31 +14,15 @@ import * as menu from './modules/menu';
 const logger = debug('main');
 
 menu.init();
-// 生成store
-// import getStore from './vuex/store';
 
 // import io from './modules/io.js';
 
-// 使用Vuex
-// Vue.use(Vuex);
-
-// store
-// let store = getStore();
-
 let app = new Vue({
 	el: '#wrapper',
-	// store,
 	computed:{
 		content(){
 			return this.currentNoteContent.data || '';
 		},
-		/* editAction(){
-			return this.$store.getters.editAction;
-		},
-		layout(){
-			this._tnEvent('layout');
-			return this.$store.getters.layout;
-		} */
 	},
 	methods:{
 		_tnEvent: function(type, data){
@@ -63,23 +45,21 @@ let app = new Vue({
 			updateCurrentNote({
 				content:data.content
 			}, data.isEditingHeading);
-			// this.$store.dispatch('changeCurrentNoteContent', content);
 		},
 		// 编辑器滚动
 		lineScroll: function(row){
 			this.$refs.preview.scrollToSourceLine(row);
-			// this.$store.dispatch('syncScroll', row);
 		}
 	},
 	data(){
 		return {
 			currentNote: uiData.currentNote,
 			currentNoteContent: uiData.currentNoteContent,
+			layout: uiData.layout,
 			tnEvent: {}
 		};
 	},
 	components: {
-		// menubar,
 		Sidebar,
 		Editor,
 		Preview,
@@ -87,16 +67,21 @@ let app = new Vue({
 		NotebookSelect
 	},
 	watch: {
-		editAction(){
+		/* editAction(){
 			this._tnEvent('editAction', {
 				action: this.$store.getters.editAction
 			});
 			logger('tnEvent editActions: %s', this.$store.getters.editAction);
+		}, */
+		layout: {
+			handler(){
+				console.log('layout');
+				this._tnEvent('layout');
+				logger('tnEvent layout');
+			},
+			deep: true
 		}
 	}
 });
-
-// 初始化
-// store.dispatch('init');
 
 export default app;

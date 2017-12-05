@@ -8,33 +8,22 @@
 </head>
 <body>
 <div id="wrapper">
-	<!-- <menubar v-bind:class="{hidden:!withMenubar}"></menubar> -->
-	<!-- <div class="main" v-bind:class="{withMenubar:withMenubar, withSidebar:layout.sidebar}"> -->
-	<div class="main">
+	<div class="main" :class="{withSidebar:layout.data.sidebar}">
 		<transition name="slide">
-			<!-- <sidebar v-show="layout.sidebar"></sidebar> -->
-			<sidebar></sidebar>
+			<sidebar v-show="layout.data.sidebar"></sidebar>
 		</transition>
 		<transition name="slide-flex">
 			<editor
+				v-show="layout.data.editor"
 				@content-change="contentChange"
 				@save-image="saveImage"
 				@line-scroll="lineScroll"
 				:content="content"
 				:tn-event="tnEvent"
 			></editor>
-			<!-- <editor
-				v-show="layout.editor"
-				v-on:content-change="contentChange"
-				v-on:save-image="saveImage"
-				v-on:line-scroll="lineScroll"
-				v-bind:content="content"
-				v-bind:tn-event="tnEvent"
-			></editor> -->
 		</transition>
 		<transition name="slide-flex">
-			<!-- <preview v-show="layout.preview"></preview> -->
-			<preview ref="preview"></preview>
+			<preview v-show="layout.data.preview" ref="preview"></preview>
 		</transition>
 	</div>
 	<notebook-select></notebook-select>

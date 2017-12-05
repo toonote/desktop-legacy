@@ -143,13 +143,13 @@ const onMenuClick = function(eventType, command){
 			this.export('pdf');
 			break;
 		case 'switchLayoutSidebar':
-			this.switchLayout('sidebar');
+			controller.switchLayout('sidebar');
 			break;
 		case 'switchLayoutEditor':
-			this.switchLayout('editor');
+			controller.switchLayout('editor');
 			break;
 		case 'switchLayoutPreview':
-			this.switchLayout('preview');
+			controller.switchLayout('preview');
 			break;
 		case 'versionOpen':
 			this.versionOpen();
