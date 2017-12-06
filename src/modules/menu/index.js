@@ -128,19 +128,19 @@ const onMenuClick = function(eventType, command){
 			this.importBackup();
 			break;
 		case 'exportMd':
-			this.export('md');
+			controller.exportNote('md');
 			break;
 		case 'exportHtmlBody':
-			this.export('htmlBody');
+			controller.exportNote('htmlBody');
 			break;
 		case 'exportHtmlBodyWithCss':
-			this.export('htmlBodyWithCss');
+			controller.exportNote('htmlBodyWithCss');
 			break;
 		case 'exportHtml':
-			this.export('html');
+			controller.exportNote('html');
 			break;
 		case 'exportPdf':
-			this.export('pdf');
+			controller.exportNote('pdf');
 			break;
 		case 'switchLayoutSidebar':
 			controller.switchLayout('sidebar');
