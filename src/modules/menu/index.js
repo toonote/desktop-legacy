@@ -1,6 +1,7 @@
 import debug from '../util/debug';
 import Menu from './electron';
 import env from  '../util/env';
+import eventHub from  '../util/eventHub';
 import * as controller from '../controller';
 
 const logger = debug('menu');
@@ -158,10 +159,10 @@ const onMenuClick = function(eventType, command){
 			this.versionRestore();
 			break;
 		case 'undo':
-			this.doEdit('undo');
+			eventHub.emit('edit', 'undo');
 			break;
 		case 'redo':
-			this.doEdit('redo');
+			eventHub.emit('edit', 'redo');
 			break;
 		case 'clearData':
 			this.clearData();

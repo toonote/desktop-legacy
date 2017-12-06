@@ -10,6 +10,7 @@ import NotebookSelect from './component/NotebookSelect.vue';
 
 import {uiData, updateCurrentNote} from './modules/controller';
 import * as menu from './modules/menu';
+import eventHub from './modules/util/eventHub';
 
 const logger = debug('main');
 
@@ -67,12 +68,6 @@ let app = new Vue({
 		NotebookSelect
 	},
 	watch: {
-		/* editAction(){
-			this._tnEvent('editAction', {
-				action: this.$store.getters.editAction
-			});
-			logger('tnEvent editActions: %s', this.$store.getters.editAction);
-		}, */
 		layout: {
 			handler(){
 				this._tnEvent('layout');
@@ -80,6 +75,14 @@ let app = new Vue({
 			},
 			deep: true
 		}
+	},
+	mounted(){
+		eventHub.on('edit', (action) => {
+			this._tnEvent('editAction', {
+				action
+			});
+			logger('tnEvent editAction');
+		});
 	}
 });
 

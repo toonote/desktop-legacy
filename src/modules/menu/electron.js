@@ -38,12 +38,12 @@ class ElectronMenu extends Menu{
 						click: (item, focusWindow) => {
 							this.trigger('click', 'devReload');
 						}
-					},{
+					}/* ,{
 						label:'清理数据',
 						click: (item, focusWindow) => {
 							this.trigger('click', 'clearData');
 						}
-					}]);
+					} */]);
 				}
 				// Mac，退出放到App菜单下
 				if(menuItem.title === 'TooNote'){
