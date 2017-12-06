@@ -2,6 +2,7 @@ import debug from '../util/debug';
 import * as realm from '../storage/realm';
 import * as renderData from './renderData';
 import ioExportNote from './exportNote';
+import ioCopyNote from './copyNote';
 import {throttle} from 'lodash';
 
 const logger = debug('controller:main');
@@ -251,4 +252,12 @@ export const search = function(keyword){
  */
 export const exportNote = function(format){
 	ioExportNote(format, uiData.currentNote.data.title, uiData.currentNoteContent.data);
+};
+
+/**
+ * 复制当前笔记
+ * @param {string} format 格式
+ */
+export const copyNote = function(format){
+	ioCopyNote(format, uiData.currentNoteContent.data);
 };

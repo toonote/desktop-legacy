@@ -167,13 +167,13 @@ const onMenuClick = function(eventType, command){
 			this.clearData();
 			break;
 		case 'copyFullMd':
-			this.copy('md');
+			controller.copyNote('md');
 			break;
 		case 'copyFullHTML':
-			this.copy('html');
+			controller.copyNote('html');
 			break;
 		case 'copyFullHTMLForWx':
-			this.copy('wx');
+			controller.copyNote('wx');
 			break;
 	}
 
