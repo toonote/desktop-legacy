@@ -29,8 +29,8 @@ const getMenu = function(){
 			title:'导出MarkDown',
 			event:'exportMd',
 		},{
-			title:'导出HTML Body',
-			event:'exportHtmlBody',
+			title:'导出HTML正文',
+			event:'exportHtmlContent',
 		},{
 			title:'导出HTML Body（带样式）',
 			event:'exportHtmlBodyWithCss',
@@ -131,8 +131,8 @@ const onMenuClick = function(eventType, command){
 		case 'exportMd':
 			controller.exportNote('md');
 			break;
-		case 'exportHtmlBody':
-			controller.exportNote('htmlBody');
+		case 'exportHtmlContent':
+			controller.exportNote('htmlContent');
 			break;
 		case 'exportHtmlBodyWithCss':
 			controller.exportNote('htmlBodyWithCss');

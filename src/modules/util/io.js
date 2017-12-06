@@ -107,7 +107,7 @@ io.export = function(format, content, filename, callback = function(){}){
 			name: 'Markdown文件',
 			extensions: ['md']
 		});
-	}else if(format === 'htmlBody' || format === 'htmlBodyWithCss' || format === 'html'){
+	}else if(format === 'htmlContent' || format === 'htmlBodyWithCss' || format === 'html'){
 		filters.push({
 			name: 'HTML文件',
 			extensions: ['html']

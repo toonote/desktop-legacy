@@ -21,7 +21,7 @@
 <script>
 // import 'highlight.js/styles/github-gist.css';
 import 'highlight.js/styles/tomorrow.css';
-import renderer from '../modules/renderer';
+import * as mdRender from '../modules/util/mdRender';
 import {uiData} from '../modules/controller';
 import scroll from '../modules/scroll';
 
@@ -30,20 +30,11 @@ let scrollMap = [];
 
 export default {
 	computed:{
-		/* html(){
-			if(!this.currentNoteContent.data){
-				return ''
-			}
-			console.time('renderHTML');
-			const html = renderer.render(this.currentNoteContent.data)
-			console.timeEnd('renderHTML');
-			return html;
-		}, */
 	},
 	methods: {
 		renderHtml() {
 			console.time('renderHtml');
-			const html = renderer.render(this.currentNoteContent.data)
+			const html = mdRender.basicRender(this.currentNoteContent.data)
 			console.timeEnd('renderHtml');
 			return html;
 		},

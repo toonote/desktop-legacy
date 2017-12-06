@@ -1,4 +1,4 @@
-import renderHtml from '../util/renderHtml';
+import * as mdRender from '../util/mdRender';
 
 export default async function(format, noteContent){
 	let content = '';
@@ -10,13 +10,20 @@ export default async function(format, noteContent){
 			break;
 		case 'html':
 			type = 'html';
-			content = await renderHtml(noteContent);
+			content = await mdRender.customRender(noteContent, {
+				withBasicCss: true,
+				inlineCss: true
+			});
 			break;
 		case 'wx':
 			type = 'html';
-			content = await renderHtml(noteContent, [
-				'/style/wx.css'
-			]);
+			content = await mdRender.customRender(noteContent, {
+				withBasicCss: true,
+				inlineCss: true,
+				cssList: [
+					'/style/wx.css'
+				]
+			});
 			content = content.replace(/<\/span>\n/ig, '</span><br />');
 			content = content.replace(/([^>])$/img, '$1<br />');
 			content = content.replace(/<br \/>\n/ig, '<br />');
