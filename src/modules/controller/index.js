@@ -67,6 +67,13 @@ export function switchCurrentNotebook(notebookId){
 }
 
 /**
+ * 退出当前笔记本
+ */
+export function exitNotebook(){
+	uiData.currentNotebook.data = {};
+}
+
+/**
  * 切换当前笔记
  * @param {string} noteId 笔记id
  * @returns {void}

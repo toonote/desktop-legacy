@@ -10,6 +10,17 @@
 	width:250px;
 	overflow-y: auto;
 }
+h2 .operate{
+	float: right;
+	color:#585858;
+	text-decoration: none;
+	opacity: 0;
+	transition: opacity .4s;
+	padding-right: 10px;
+}
+h2:hover .operate{
+	opacity: 1;
+}
 .wrapper{
 	line-height: 24px;
 	padding-top: 10px;
@@ -71,7 +82,7 @@
 		<input type="search" v-model.trim="searchKeyword" placeholder="搜索..." />
 	</section>
 	<section class="wrapper" v-show="!searchKeyword">
-		<h2>{{currentNotebook.data.title}}</h2>
+		<h2>{{currentNotebook.data.title}} <a class="operate" href="#" @click.prevent="exitNotebook">切换</a></h2>
 		<ul>
 			<li
 				class="icon folder"
@@ -121,7 +132,7 @@
 
 <script>
 import debug from '../modules/util/debug';
-import {uiData, switchCurrentNote, search} from '../modules/controller';
+import {uiData, switchCurrentNote, exitNotebook, search} from '../modules/controller';
 import User from './User.vue';
 import Menu from '../modules/menu/electron';
 import stat from '../modules/util/stat';
@@ -173,6 +184,9 @@ export default {
 			switchCurrentNote(noteId);
 			// this.$store.dispatch('switchCurrentNoteById', noteId);
 			// eventHub.$emit('currentNoteChange', noteId);
+		},
+		exitNotebook(){
+			exitNotebook();
 		},
 		showContextMenu(noteId){
 			// console.log('contextmenu');
