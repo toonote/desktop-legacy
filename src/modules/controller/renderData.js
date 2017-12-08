@@ -12,6 +12,8 @@ const mapNotebook = function(source, isDeep = false, forceNoArray = false){
 	}
 	if(!source.map){
 		source = [source];
+	}else{
+		source = source.sorted('order');
 	}
 	let ret = source.map((notebook) => {
 		// console.log(notebook);
@@ -49,6 +51,8 @@ const mapCategory = function(source, isDeep = false, forceNoArray = false){
 	}
 	if(!source.map){
 		source = [source];
+	}else{
+		source = source.sorted('order');
 	}
 	let ret = source.map((category) => {
 		// console.log(category);
@@ -89,6 +93,8 @@ const mapNote = function(source, isDeep = false, forceNoArray = false){
 	}
 	if(!source.map){
 		source = [source];
+	}else{
+		source = source.sorted('order');
 	}
 	let ret = source.map((note) => {
 		logger('mapNote, noteId:' + note.id);

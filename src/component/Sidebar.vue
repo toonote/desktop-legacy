@@ -93,9 +93,8 @@ h2:hover .operate{
 				<transition-group
 					name="note-list"
 					tag="ul"
-					droppable="true"
 					v-show="!isFold(category.id)"
-					v-on:drop="drop"
+					@drop.native.prevent="drop"
 					>
 					<li
 						draggable="true"
@@ -106,7 +105,7 @@ h2:hover .operate{
 						@click.stop="switchCurrentNote(note.id)"
 						@contextmenu.stop="showContextMenu(note.id)"
 						@dragstart="dragStart($event, note.id)"
-						@dragover.prevent="dragOver($event, note.id)"
+						@dragover.prevent="dragOver($event, note)"
 					>{{note.title}}</li>
 				</transition-group>
 			</li>
@@ -218,14 +217,29 @@ export default {
 			},30);
 		},
 		dragStart(e, noteId){
-			// this.currentMovingNoteId = noteId;
+			this.currentMovingNoteId = noteId;
+			e.dataTransfer.effectAllowed = 'move';
+			logger('onDragStart', noteId);
 		},
-		dragOver(e, noteId){
-			return;
-			if(this.isAnimating) return;
-			if(this.currentMovingNoteId === noteId) return;
+		dragOver(e, note){
+			// return;
+			// if(this.isAnimating) return;
+			if(this.currentMovingNoteId === note.id) return;
 
-			this.currentTargetingNoteId = noteId;
+			const currentNote = this.currentNote.data;
+			if(currentNote.category.id === note.category.id){
+				// 如果是同一个分类
+				if(note.order < currentNote){
+					// 在上方
+					logger('在上方');
+				}else{
+					// 在下方
+					logger('在下方');
+				}
+			}
+			// logger('onDragOver');
+
+			/* this.currentTargetingNoteId = noteId;
 
 			if(!_doExchange){
 				_doExchange = throttle(() => {
@@ -240,11 +254,11 @@ export default {
 				}, 500);
 			}
 			_doExchange();
-			stat.ga('send', 'event', 'note', 'sort');
+			stat.ga('send', 'event', 'note', 'sort'); */
 		},
 		drop(e){
-			return;
-			this.currentMovingNoteId = 0;
+			logger('onDrop');
+			this.currentMovingNoteId = '';
 			// console.log('drop', e);
 		}
 		/*hideContextMenu(){
@@ -259,6 +273,7 @@ export default {
 			searchKeyword: '',
 			searchNoteList: uiData.searchNoteList,
 			currentContextMenuNoteId: '',
+			currentMovingNoteId: '',
 			foldMap: {}
 		};
 	},

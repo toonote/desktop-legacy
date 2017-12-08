@@ -8,6 +8,7 @@ import CategorySchema from './schema/Category';
 import NoteSchema from './schema/Note';
 import idGen from '../../util/idGen';
 import io from '../../util/io';
+import * as orderCalc from '../../util/orderCalc';
 const SCHEMA_VERSION = 1;
 
 let filename = 'toonote.realm';
@@ -50,7 +51,7 @@ function initData(){
 			id: idGen(),
 			title: '快速入门',
 			content: io.getFileText('docs/welcome.md'),
-			order: 1,
+			order: orderCalc.getOrderNumber(),
 			createdAt: now,
 			updatedAt: now,
 			localVersion: 1,
@@ -60,7 +61,7 @@ function initData(){
 		const category = {
 			id: idGen(),
 			title: '默认分类',
-			order: 1,
+			order: orderCalc.getOrderNumber(),
 			createdAt: now,
 			updatedAt: now,
 			notes: [note],
@@ -69,7 +70,7 @@ function initData(){
 		const notebook = {
 			id: idGen(),
 			title: '默认笔记',
-			order: 1,
+			order: orderCalc.getOrderNumber(),
 			createdAt: now,
 			updatedAt: now,
 			categories: [category],

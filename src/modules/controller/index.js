@@ -1,6 +1,7 @@
 import debug from '../util/debug';
 import * as realm from '../storage/realm';
 import * as renderData from './renderData';
+import {getOrderNumber} from '../util/orderCalc';
 import ioExportNote from './exportNote';
 import ioCopyNote from './copyNote';
 import {throttle} from 'lodash';
@@ -164,7 +165,9 @@ export const updateCurrentNoteCategory = function(categoryTitle){
 	if(!targetCategory.length){
 		categoryId = realm.createResult('Category', {
 			title: categoryTitle,
-			order: 0,
+			order: getOrderNumber({
+				min: uiData.currentNote.data.category.order
+			}),
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			notes: []
@@ -204,7 +207,9 @@ export const newNote = function(data = {}){
 	data = Object.assign({
 		title: '新笔记',
 		content: '# 新笔记\n\n',
-		order: 0,
+		order: getOrderNumber({
+			min: currentNote.order
+		}),
 		localVersion: 1,
 		remoteVersion: 0,
 		createdAt: new Date(),
@@ -243,7 +248,9 @@ export const switchLayout = function(component, value){
  * @param {string} keyword 关键词
  */
 export const search = function(keyword){
+	console.time('search');
 	renderData.search(results, uiData, keyword);
+	console.timeEnd('search');
 };
 
 /**
@@ -251,7 +258,10 @@ export const search = function(keyword){
  * @param {string} format 格式
  */
 export const exportNote = function(format){
-	ioExportNote(format, uiData.currentNote.data.title, uiData.currentNoteContent.data);
+	console.time('exportNote');
+	ioExportNote(format, uiData.currentNote.data.title, uiData.currentNoteContent.data).then(() => {
+		console.timeEnd('exportNote');
+	});
 };
 
 /**
@@ -259,5 +269,8 @@ export const exportNote = function(format){
  * @param {string} format 格式
  */
 export const copyNote = function(format){
-	ioCopyNote(format, uiData.currentNoteContent.data);
+	console.time('copyNote');
+	ioCopyNote(format, uiData.currentNoteContent.data).then(() => {
+		console.timeEnd('copyNote');
+	});
 };
