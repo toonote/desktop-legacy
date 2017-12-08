@@ -107,6 +107,8 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 				const categoryTitle = titlePart[0].trim();
 				logger('update note category to :', categoryTitle);
 				updateCurrentNoteCategory(categoryTitle);
+			}else{
+				data.title = titlePart[0];
 			}
 		}
 	}
