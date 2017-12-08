@@ -274,3 +274,33 @@ export const copyNote = function(format){
 		console.timeEnd('copyNote');
 	});
 };
+
+export const updateNoteOrder = function(noteId, compareNoteOrder, compareDirection){
+	console.time('updateNoteOrder');
+	const config = {};
+	if(compareDirection === 'up'){
+		config.max = compareNoteOrder;
+		// 取前一个最大的order
+		let previousNote = results.Note.filtered(`order < ${compareNoteOrder}`).sorted('order', true);
+		if(previousNote[0]){
+			config.min = previousNote[0].order;
+		}
+	}else{
+		config.min = compareNoteOrder;
+		// 取后一个最小的order
+		let nextNote = results.Note.filtered(`order > ${compareNoteOrder}`).sorted('order');
+		if(nextNote[0]){
+			config.max = nextNote[0].order;
+		}
+	}
+	logger('ready to getOrderNumber', config);
+	const newOrder = getOrderNumber(config);
+	logger('newOrder:', newOrder);
+	let updateData = {
+		order: newOrder,
+		id: noteId
+	};
+	realm.updateResult('Note', updateData);
+	renderData.updateNote(uiData, updateData);
+	console.timeEnd('updateNoteOrder');
+};

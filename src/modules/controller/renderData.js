@@ -185,6 +185,18 @@ export function updateCurrentNote(dest, data){
 	}
 }
 
+export function updateNote(dest, data){
+	dest.currentNotebook.data.notes.forEach((note) => {
+		if(note.id === data.id){
+			for(let key in data){
+				if(key !== 'content'){
+					note[key] = data[key];
+				}
+			}
+		}
+	});
+}
+
 export function updateCurrentNoteCategory(source, dest, categoryId){
 	dest.currentNote.data.category = mapCategory(source.Category.filtered(`id="${categoryId}"`)[0], true, true);
 }

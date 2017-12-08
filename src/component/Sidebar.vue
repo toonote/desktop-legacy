@@ -44,9 +44,16 @@ h2:hover .operate{
 }
 .wrapper li li{
 	text-indent: 44px;
+	transition: padding-top .4s ease-in-out, padding-bottom .4s ease-in-out;
 }
 .wrapper li.active{
 	background: #CECECE;
+}
+.wrapper li.movingUp{
+	padding-top: 24px;
+}
+.wrapper li.movingDown{
+	padding-bottom: 24px;
 }
 .wrapper li.note::before{
 	padding-right:3px;
@@ -56,9 +63,9 @@ h2:hover .operate{
 	padding-right:3px;
 	background-image:url(../images/icon-folder.png);
 }
-.wrapper .note-list-move {
+/* .wrapper .note-list-move {
 	transition: transform .4s;
-}
+} */
 
 .searchWrapper input{
 	display: block;
@@ -101,10 +108,10 @@ h2:hover .operate{
 						class="icon note"
 						v-for="note in category.notes"
 						:key="note.id"
-						:class="{active:isActive(note.id)}"
+						:class="{active:isActive(note.id), movingUp:movingOverClass(note, 'up'), movingDown:movingOverClass(note, 'down')}"
 						@click.stop="switchCurrentNote(note.id)"
 						@contextmenu.stop="showContextMenu(note.id)"
-						@dragstart="dragStart($event, note.id)"
+						@dragstart="dragStart($event, note)"
 						@dragover.prevent="dragOver($event, note)"
 					>{{note.title}}</li>
 				</transition-group>
@@ -131,7 +138,7 @@ h2:hover .operate{
 
 <script>
 import debug from '../modules/util/debug';
-import {uiData, switchCurrentNote, exitNotebook, search} from '../modules/controller';
+import {uiData, switchCurrentNote, updateNoteOrder, exitNotebook, search} from '../modules/controller';
 import User from './User.vue';
 import Menu from '../modules/menu/electron';
 import stat from '../modules/util/stat';
@@ -141,7 +148,7 @@ const logger = debug('sidebar');
 
 const menu = new Menu();
 
-let _doExchange;
+let movingOverDirection;
 
 export default {
 	computed: {
@@ -169,6 +176,26 @@ export default {
 		},
 		isFold(categoryId){
 			return this.foldMap[categoryId];
+		},
+		movingOverClass(note, direction){
+			if(!this.currentMovingNote || !this.currentMovingOverNote) return false;
+			if(this.currentMovingOverNote.id !== note.id) return false;
+			if(this.currentMovingNote.id === note.id) return false;
+			// 必须是同一个分类
+			if(this.currentMovingNote.category.id !== note.category.id) return false;
+
+			let movingDirection = '';
+			if(note.order < this.currentMovingNote.order){
+				// 在上方
+				// logger('在上方');
+				movingDirection = 'up';
+			}else{
+				// 在下方
+				// logger('在下方');
+				movingDirection = 'down';
+			}
+			movingOverDirection = movingDirection;
+			return movingDirection === direction;
 		},
 		switchFold(categoryId){
 			this.foldMap = {
@@ -216,49 +243,23 @@ export default {
 				},30);
 			},30);
 		},
-		dragStart(e, noteId){
-			this.currentMovingNoteId = noteId;
+		dragStart(e, note){
+			this.currentMovingNote = note;
 			e.dataTransfer.effectAllowed = 'move';
-			logger('onDragStart', noteId);
+			logger('onDragStart', note.id);
 		},
 		dragOver(e, note){
-			// return;
-			// if(this.isAnimating) return;
-			if(this.currentMovingNoteId === note.id) return;
-
-			const currentNote = this.currentNote.data;
-			if(currentNote.category.id === note.category.id){
-				// 如果是同一个分类
-				if(note.order < currentNote){
-					// 在上方
-					logger('在上方');
-				}else{
-					// 在下方
-					logger('在下方');
-				}
-			}
-			// logger('onDragOver');
-
-			/* this.currentTargetingNoteId = noteId;
-
-			if(!_doExchange){
-				_doExchange = throttle(() => {
-					this.isAnimating = true;
-					this.$store.dispatch('exchangeNote', {
-						id1:this.currentMovingNoteId,
-						id2:this.currentTargetingNoteId
-					});
-					setTimeout(() => {
-						this.isAnimating = false;
-					}, 500);
-				}, 500);
-			}
-			_doExchange();
-			stat.ga('send', 'event', 'note', 'sort'); */
+			this.currentMovingOverNote = note;
 		},
 		drop(e){
 			logger('onDrop');
-			this.currentMovingNoteId = '';
+			// 需要更新顺序
+			if(this.currentMovingOverNote.id !== this.currentMovingNote.id){
+				updateNoteOrder(this.currentMovingNote.id, this.currentMovingOverNote.order, movingOverDirection);
+			}
+			this.currentMovingNote = null;
+			this.currentMovingOverNote = null;
+
 			// console.log('drop', e);
 		}
 		/*hideContextMenu(){
@@ -273,7 +274,8 @@ export default {
 			searchKeyword: '',
 			searchNoteList: uiData.searchNoteList,
 			currentContextMenuNoteId: '',
-			currentMovingNoteId: '',
+			currentMovingNote: null,
+			currentMovingOverNote: null,
 			foldMap: {}
 		};
 	},
