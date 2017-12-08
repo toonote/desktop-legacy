@@ -1,7 +1,7 @@
 import debug from '../util/debug';
 import * as realm from '../storage/realm';
 import * as renderData from './renderData';
-import {getOrderNumber} from '../util/orderCalc';
+import {getOrderNumber, normalizeOrderList} from '../util/orderCalc';
 import ioExportNote from './exportNote';
 import ioCopyNote from './copyNote';
 import {throttle} from 'lodash';
@@ -277,20 +277,50 @@ export const copyNote = function(format){
 	});
 };
 
-export const updateNoteOrder = function(noteId, compareNoteOrder, compareDirection){
+export const normalizeAllNoteOrder = function(){
+	console.time('normalizeAllNoteOrder');
+	const allNotes = results.Note.sorted('order');
+	const newOrderList = normalizeOrderList({count:allNotes.length});
+	const updateList = allNotes.map((noteResult, index) => {
+		return {
+			id: noteResult.id,
+			order: newOrderList[index]
+		};
+	});
+	logger('updateList', updateList);
+	realm.updateResult('Note', updateList);
+	renderData.update(results, uiData);
+	console.timeEnd('normalizeAllNoteOrder');
+};
+
+export const updateNoteOrder = function(noteId, compareNoteId, compareDirection){
 	console.time('updateNoteOrder');
+	let compareNote, targetNote;
+	uiData.currentNotebook.data.notes.forEach((note) => {
+		if(note.id === compareNoteId){
+			compareNote = note;
+		}
+		if(note.id === noteId){
+			targetNote = note;
+		}
+	});
+
 	const config = {};
 	if(compareDirection === 'up'){
-		config.max = compareNoteOrder;
+		config.max = compareNote.order;
 		// 取前一个最大的order
-		let previousNote = results.Note.filtered(`order < ${compareNoteOrder}`).sorted('order', true);
+		let previousNote = results.Note.filtered(
+			`order < ${compareNote.order}`
+		).sorted('order', true);
 		if(previousNote[0]){
 			config.min = previousNote[0].order;
 		}
 	}else{
-		config.min = compareNoteOrder;
+		config.min = compareNote.order;
 		// 取后一个最小的order
-		let nextNote = results.Note.filtered(`order > ${compareNoteOrder}`).sorted('order');
+		let nextNote = results.Note.filtered(
+			`order > ${compareNote.order}`
+		).sorted('order');
 		if(nextNote[0]){
 			config.max = nextNote[0].order;
 		}
@@ -298,11 +328,19 @@ export const updateNoteOrder = function(noteId, compareNoteOrder, compareDirecti
 	logger('ready to getOrderNumber', config);
 	const newOrder = getOrderNumber(config);
 	logger('newOrder:', newOrder);
-	let updateData = {
-		order: newOrder,
-		id: noteId
-	};
-	realm.updateResult('Note', updateData);
-	renderData.updateNote(uiData, updateData);
+
+	if(newOrder === false){
+		logger('newOrder is false, try update all');
+		normalizeAllNoteOrder();
+		updateNoteOrder(noteId, compareNoteId, compareDirection);
+	}else{
+		logger('newOrder ok, ready to update');
+		let updateData = {
+			order: newOrder,
+			id: noteId
+		};
+		realm.updateResult('Note', updateData);
+		renderData.updateNote(uiData, updateData);
+	}
 	console.timeEnd('updateNoteOrder');
 };

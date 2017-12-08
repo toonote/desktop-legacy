@@ -253,9 +253,13 @@ export default {
 		},
 		drop(e){
 			logger('onDrop');
-			// 需要更新顺序
-			if(this.currentMovingOverNote.id !== this.currentMovingNote.id){
-				updateNoteOrder(this.currentMovingNote.id, this.currentMovingOverNote.order, movingOverDirection);
+
+			// 限定同分类
+			if(this.currentMovingNote.category.id === this.currentMovingOverNote.category.id){
+				// 需要更新顺序
+				if(this.currentMovingOverNote.id !== this.currentMovingNote.id){
+					updateNoteOrder(this.currentMovingNote.id, this.currentMovingOverNote.id, movingOverDirection);
+				}
 			}
 			this.currentMovingNote = null;
 			this.currentMovingOverNote = null;
