@@ -65,7 +65,7 @@
 
 
 <script>
-import {uiData, switchCurrentNotebook} from '../modules/controller';
+import {uiData, switchCurrentNotebook, recoverLastState} from '../modules/controller';
 
 export default {
 	data(){
@@ -79,6 +79,9 @@ export default {
 		switchCurrentNotebook(notebookId){
 			switchCurrentNotebook(notebookId);
 		}
+	},
+	mounted(){
+		recoverLastState();
 	}
 };
 </script>

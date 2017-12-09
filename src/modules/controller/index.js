@@ -2,6 +2,7 @@ import debug from '../util/debug';
 import * as realm from '../storage/realm';
 import * as renderData from './renderData';
 import {getOrderNumber, normalizeOrderList} from '../util/orderCalc';
+import {getConfig, setConfig} from '../util/config';
 import ioExportNote from './exportNote';
 import ioCopyNote from './copyNote';
 import {throttle} from 'lodash';
@@ -56,16 +57,38 @@ for(let schema in results){
 console.timeEnd('initRenderData');
 
 /**
+ * 尝试恢复上次退出前的状态
+ */
+export function recoverLastState(){
+	console.time('recoverLastState');
+	if(!uiData.notebookList.data.length){
+		logger('recoverLastState not ready, waiting.');
+		setTimeout(recoverLastState, 16);
+	}else{
+		logger('recoverLastState ready, recovering.');
+		const lastState = getConfig('lastState');
+		if(!lastState){
+			logger('nothing to recover.');
+			return;
+		}
+		switchCurrentNotebook(lastState.notebookId, lastState.noteId);
+	}
+	console.timeEnd('recoverLastState');
+}
+
+/**
  * 切换当前笔记本
  * @param {string} notebookId 笔记本id
  * @returns {void}
  */
-export function switchCurrentNotebook(notebookId){
+export function switchCurrentNotebook(notebookId, noteId){
 	console.time('switchCurrentNotebookData');
 	renderData.switchCurrentNotebook(results, uiData, notebookId);
-	// 切到第一篇笔记
-	// todo:应该切到上次查看的笔记
-	switchCurrentNote(uiData.currentNotebook.data.notes[0].id);
+	if(!noteId){
+		// 切到第一篇笔记
+		noteId = uiData.currentNotebook.data.notes[0].id;
+	}
+	switchCurrentNote(noteId);
 	console.timeEnd('switchCurrentNotebookData');
 }
 
@@ -84,6 +107,10 @@ export function exitNotebook(){
 export function switchCurrentNote(noteId){
 	console.time('switchCurrentNoteData');
 	renderData.switchCurrentNote(results, uiData, noteId);
+	setConfig('lastState', {
+		notebookId: uiData.currentNotebook.data.id,
+		noteId: noteId
+	});
 	console.timeEnd('switchCurrentNoteData');
 }
 
