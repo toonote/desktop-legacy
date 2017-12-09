@@ -1,6 +1,7 @@
 import debug from './modules/util/debug';
 
 import Vue from 'vue';
+import './directive/focusInput';
 
 import Sidebar from './component/Sidebar.vue';
 import Editor from 'tn-md-editor';

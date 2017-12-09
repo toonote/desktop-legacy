@@ -125,6 +125,9 @@ const onMenuClick = function(eventType, command){
 		case 'noteHistory':
 			this.historyContextMenuNote();
 			break;
+		case 'categoryRename':
+			eventHub.emit('categoryRename', data.targetId);
+			break;
 		case 'importBackup':
 			this.importBackup();
 			break;

@@ -392,3 +392,13 @@ export const updateNoteOrder = function(noteId, compareNoteId, compareDirection)
 
 	console.timeEnd('updateNoteOrder');
 };
+
+export const categoryRename = function(categoryId, title){
+	if(!title) return;
+	console.time('categoryRename');
+	realm.updateResult('Category', {
+		id: categoryId,
+		title
+	});
+	console.timeEnd('categoryRename');
+};

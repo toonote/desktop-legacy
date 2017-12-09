@@ -63,6 +63,18 @@ h2:hover .operate{
 	padding-right:3px;
 	background-image:url(../images/icon-folder.png);
 }
+.wrapper li .categoryInput{
+	width: calc(100% - 70px);
+    border: 0 none;
+    border-bottom: 1px dashed #718C00;
+    padding: 3px 0;
+    background: none;
+    font-size: 12px;
+    color: #718C00;
+}
+.wrapper li .categoryInput:focus{
+	outline: 0 none;
+}
 /* .wrapper .note-list-move {
 	transition: transform .4s;
 } */
@@ -95,8 +107,20 @@ h2:hover .operate{
 				class="icon folder"
 				v-for="category in currentNotebook.data.categories"
 				:key="category.id"
+				:class="{active:isActive(category.id)}"
+				@contextmenu.stop="showCategoryContextMenu(category.id)"
 				@click="switchFold(category.id)"
-			>{{category.title}}
+			>
+				<span v-show="currentEditCategoryId!==category.id">{{category.title}}</span>
+				<input
+					class="categoryInput"
+					v-focus-input
+					v-show="currentEditCategoryId===category.id"
+					:value="category.title"
+					@keydown.enter="categoryRename(category.id, $event.target.value)"
+					@keydown.esc="currentEditCategoryId=''"
+					@click.stop
+				/>
 				<transition-group
 					name="note-list"
 					tag="ul"
@@ -110,7 +134,7 @@ h2:hover .operate{
 						:key="note.id"
 						:class="{active:isActive(note.id), movingUp:movingOverClass(note, 'up'), movingDown:movingOverClass(note, 'down')}"
 						@click.stop="switchCurrentNote(note.id)"
-						@contextmenu.stop="showContextMenu(note.id)"
+						@contextmenu.stop="showNoteContextMenu(note.id)"
 						@dragstart="dragStart($event, note)"
 						@dragover.prevent="dragOver($event, note)"
 					>{{note.title}}</li>
@@ -128,7 +152,7 @@ h2:hover .operate{
 				:key="note.id"
 				v-for="note in searchNoteList.data"
 				@click.stop="switchCurrentNote(note.id)"
-				@contextmenu.stop="showContextMenu(note.id)"
+				@contextmenu.stop="showNoteContextMenu(note.id)"
 			>{{note.title}} （{{note.category.title}}）</li>
 		</ul>
 	</section>
@@ -138,10 +162,18 @@ h2:hover .operate{
 
 <script>
 import debug from '../modules/util/debug';
-import {uiData, switchCurrentNote, updateNoteOrder, exitNotebook, search} from '../modules/controller';
+import {
+	uiData,
+	switchCurrentNote,
+	updateNoteOrder,
+	exitNotebook,
+	categoryRename,
+	search
+} from '../modules/controller';
 import User from './User.vue';
 import Menu from '../modules/menu/electron';
 import stat from '../modules/util/stat';
+import eventHub from '../modules/util/eventHub';
 import {throttle} from 'lodash';
 // import env from '../modules/util/env';
 const logger = debug('sidebar');
@@ -162,14 +194,18 @@ export default {
 		}
 	},
 	methods: {
-		isActive(noteId){
+		isActive(noteOrCategoryId){
 			let ret = false;
 			// 当前笔记
-			if(this.currentNote.data && noteId === this.currentNote.data.id){
+			if(this.currentNote.data && noteOrCategoryId === this.currentNote.data.id){
 				ret = true;
 			}
 			// 当前右键笔记
-			if(this.currentContextMenuNoteId === noteId){
+			if(this.currentContextMenuNoteId === noteOrCategoryId){
+				ret = true;
+			}
+			// 当前右键笔记
+			if(this.currentContextMenuCategoryId === noteOrCategoryId){
 				ret = true;
 			}
 			return ret;
@@ -214,9 +250,38 @@ export default {
 		exitNotebook(){
 			exitNotebook();
 		},
-		showContextMenu(noteId){
+		categoryRename(categoryId, newTitle){
+			if(!newTitle) return;
+			this.currentEditCategoryId = '';
+			categoryRename(categoryId, newTitle);
+		},
+		showCategoryContextMenu(categoryId){
 			// console.log('contextmenu');
-			stat.ga('send', 'event', 'note', 'showContextMenu');
+			stat.ga('send', 'event', 'note', 'showCategoryContextMenu');
+			this.currentContextMenuCategoryId = categoryId;
+			setTimeout(() => {
+				menu.showContextMenu([{
+					title:'重命名',
+					event:'categoryRename'
+				},{
+					title:'删除',
+					event:'categoryDelete'
+				},{
+					title:'新建',
+					event:'newNote'
+				}], {
+					targetType: 'category',
+					targetId: categoryId,
+					from: 'sidebar',
+				});
+				setTimeout(()=>{
+					this.currentContextMenuCategoryId = '';
+				},30);
+			},30);
+		},
+		showNoteContextMenu(noteId){
+			// console.log('contextmenu');
+			stat.ga('send', 'event', 'note', 'showNoteContextMenu');
 			this.currentContextMenuNoteId = noteId;
 			setTimeout(() => {
 				menu.showContextMenu([{
@@ -278,6 +343,8 @@ export default {
 			searchKeyword: '',
 			searchNoteList: uiData.searchNoteList,
 			currentContextMenuNoteId: '',
+			currentContextMenuCategoryId: '',
+			currentEditCategoryId: '',
 			currentMovingNote: null,
 			currentMovingOverNote: null,
 			foldMap: {}
@@ -285,6 +352,12 @@ export default {
 	},
 	components:{
 		User
+	},
+	mounted(){
+		eventHub.on('categoryRename', (categoryId) => {
+			this.currentEditCategoryId = categoryId;
+			logger('categoryRename', categoryId);
+		});
 	}
 };
 </script>
