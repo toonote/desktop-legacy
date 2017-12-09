@@ -17,7 +17,7 @@ export function getOrderNumber(options = {}){
 	if(typeof max === 'undefined' || max > MAX) max = MAX;
 	min = Math.ceil(min);
 	max = Math.floor(max);
-	let step = 0.2;
+	let step = 0.5;
 	if(max === MAX){
 		step = 100 / (max - min);
 	}

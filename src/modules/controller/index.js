@@ -296,51 +296,72 @@ export const normalizeAllNoteOrder = function(){
 export const updateNoteOrder = function(noteId, compareNoteId, compareDirection){
 	console.time('updateNoteOrder');
 	let compareNote, targetNote;
-	uiData.currentNotebook.data.notes.forEach((note) => {
-		if(note.id === compareNoteId){
-			compareNote = note;
-		}
-		if(note.id === noteId){
-			targetNote = note;
-		}
-	});
 
-	const config = {};
-	if(compareDirection === 'up'){
-		config.max = compareNote.order;
-		// 取前一个最大的order
-		let previousNote = results.Note.filtered(
-			`order < ${compareNote.order}`
-		).sorted('order', true);
-		if(previousNote[0]){
-			config.min = previousNote[0].order;
+	let doUpdateNoteOrder = function(noteId, compareNoteId, compareDirection){
+		logger('moving note order:', noteId);
+		uiData.currentNotebook.data.notes.forEach((note) => {
+			if(note.id === compareNoteId){
+				compareNote = note;
+			}
+			if(note.id === noteId){
+				targetNote = note;
+			}
+		});
+		const config = {};
+		// 与compare对立的元素
+		if(compareDirection === 'up'){
+			config.max = compareNote.order;
+			// 取前一个最大的order
+			let previousNote = results.Note.filtered(
+				`order < ${compareNote.order}`
+			).sorted('order', true);
+			if(previousNote[0]){
+				config.min = previousNote[0].order;
+			}
+		}else{
+			config.min = compareNote.order;
+			// 取后一个最小的order
+			let nextNote = results.Note.filtered(
+				`order > ${compareNote.order}`
+			).sorted('order');
+			if(nextNote[0]){
+				config.max = nextNote[0].order;
+			}
 		}
-	}else{
-		config.min = compareNote.order;
-		// 取后一个最小的order
-		let nextNote = results.Note.filtered(
-			`order > ${compareNote.order}`
-		).sorted('order');
-		if(nextNote[0]){
-			config.max = nextNote[0].order;
-		}
-	}
-	logger('ready to getOrderNumber', config);
-	const newOrder = getOrderNumber(config);
-	logger('newOrder:', newOrder);
+		logger('ready to getOrderNumber', config);
+		const newOrder = getOrderNumber(config);
+		logger('newOrder:', newOrder);
 
-	if(newOrder === false){
-		logger('newOrder is false, try update all');
-		normalizeAllNoteOrder();
-		updateNoteOrder(noteId, compareNoteId, compareDirection);
-	}else{
-		logger('newOrder ok, ready to update');
-		let updateData = {
-			order: newOrder,
-			id: noteId
-		};
-		realm.updateResult('Note', updateData);
-		renderData.updateNote(uiData, updateData);
-	}
+		if(newOrder === false){
+			// logger('newOrder is false, try update all');
+			// normalizeAllNoteOrder();
+
+			// 从目标位置往后挪
+			// 如果direction是up，则把compareNote往后挪
+			// 如果direction是down，则把compareNote的后一个往后挪
+			logger('newOrder is false, try to move next node');
+			let pendingMovingNote;
+			if(compareDirection === 'up'){
+				pendingMovingNote = compareNote;
+			}else if(compareDirection === 'down'){
+				pendingMovingNote = results.Note.filtered(
+					`order > ${compareNote.order}`
+				).sorted('order')[0];
+			}
+			updateNoteOrder(pendingMovingNote.id, pendingMovingNote.id, 'down');
+			updateNoteOrder(noteId, compareNoteId, compareDirection);
+		}else{
+			logger('newOrder ok, ready to update');
+			let updateData = {
+				order: newOrder,
+				id: noteId
+			};
+			realm.updateResult('Note', updateData);
+			renderData.updateNote(uiData, updateData);
+		}
+	};
+
+	doUpdateNoteOrder(noteId, compareNoteId, compareDirection);
+
 	console.timeEnd('updateNoteOrder');
 };
