@@ -128,6 +128,9 @@ const onMenuClick = function(eventType, command){
 		case 'categoryRename':
 			eventHub.emit('categoryRename', data.targetId);
 			break;
+		case 'categoryDelete':
+			controller.deleteCategory(data.targetId);
+			break;
 		case 'importBackup':
 			this.importBackup();
 			break;

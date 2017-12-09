@@ -181,6 +181,27 @@ export function deleteNote(noteId){
 }
 
 /**
+ * 删除分类
+ * @param {string} categoryId 分类id
+ * @returns {void}
+ */
+export function deleteCategory(categoryId){
+	console.time('deleteCategory');
+	let ret = true;
+	uiData.currentNotebook.data.categories.forEach((category) => {
+		if(category.id === categoryId && category.notes.length){
+			alert('该分类不为空，不可删除');
+			ret = false;
+		}
+	});
+	if(ret && confirm('确定要删除该分类吗？')){
+		realm.deleteResult('Category', categoryId);
+	}
+	console.timeEnd('deleteCategory');
+	return ret;
+}
+
+/**
  * 修改当前笔记的分类
  * @param {string} categoryTitle 新分类的标题
  */
