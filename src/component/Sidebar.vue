@@ -63,6 +63,10 @@ h2:hover .operate{
 	padding-right:3px;
 	background-image:url(../images/icon-folder.png);
 }
+.wrapper li.folder-open::before{
+	padding-right:3px;
+	background-image:url(../images/icon-folder-open.png);
+}
 .wrapper li .categoryInput{
 	width: calc(100% - 70px);
     border: 0 none;
@@ -108,7 +112,7 @@ h2:hover .operate{
 				draggable="true"
 				v-for="category in currentNotebook.data.categories"
 				:key="category.id"
-				:class="{active:isActive(category.id)}"
+				:class="{active:isActive(category.id), 'folder-open':!isFold(category.id)}"
 				@dragstart.stop="dragStart($event, 'category', category)"
 				@dragover.stop="dragStart($event, 'category', category)"
 				@contextmenu.stop="showCategoryContextMenu(category.id)"
