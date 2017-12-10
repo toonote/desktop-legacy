@@ -105,9 +105,12 @@ h2:hover .operate{
 		<ul>
 			<li
 				class="icon folder"
+				draggable="true"
 				v-for="category in currentNotebook.data.categories"
 				:key="category.id"
 				:class="{active:isActive(category.id)}"
+				@dragstart.stop="dragStart($event, 'category', category)"
+				@dragover.stop="dragStart($event, 'category', category)"
 				@contextmenu.stop="showCategoryContextMenu(category.id)"
 				@click="switchFold(category.id)"
 			>
@@ -135,8 +138,8 @@ h2:hover .operate{
 						:class="{active:isActive(note.id), movingUp:movingOverClass(note, 'up'), movingDown:movingOverClass(note, 'down')}"
 						@click.stop="switchCurrentNote(note.id)"
 						@contextmenu.stop="showNoteContextMenu(note.id)"
-						@dragstart="dragStart($event, note)"
-						@dragover.prevent="dragOver($event, note)"
+						@dragstart.stop="dragStart($event, 'note', note)"
+						@dragover.stop.prevent="dragOver($event, 'note', note)"
 					>{{note.title}}</li>
 				</transition-group>
 			</li>
@@ -166,6 +169,7 @@ import {
 	uiData,
 	switchCurrentNote,
 	updateNoteOrder,
+	updateCategoryOrder,
 	exitNotebook,
 	categoryRename,
 	search
@@ -214,24 +218,44 @@ export default {
 			return this.foldMap[categoryId];
 		},
 		movingOverClass(note, direction){
-			if(!this.currentMovingNote || !this.currentMovingOverNote) return false;
-			if(this.currentMovingOverNote.id !== note.id) return false;
-			if(this.currentMovingNote.id === note.id) return false;
-			// 必须是同一个分类
-			if(this.currentMovingNote.category.id !== note.category.id) return false;
+			if(this.currentMovingNote){
+				if(!this.currentMovingOverNote) return false;
+				if(this.currentMovingOverNote.id !== note.id) return false;
+				if(this.currentMovingNote.id === note.id) return false;
+				// 必须是同一个分类
+				if(this.currentMovingNote.category.id !== note.category.id) return false;
 
-			let movingDirection = '';
-			if(note.order < this.currentMovingNote.order){
-				// 在上方
-				// logger('在上方');
-				movingDirection = 'up';
-			}else{
-				// 在下方
-				// logger('在下方');
-				movingDirection = 'down';
+				let movingDirection = '';
+				if(note.order < this.currentMovingNote.order){
+					// 在上方
+					// logger('在上方');
+					movingDirection = 'up';
+				}else{
+					// 在下方
+					// logger('在下方');
+					movingDirection = 'down';
+				}
+				movingOverDirection = movingDirection;
+				return movingDirection === direction;
+			}else if(this.currentMovingCategory){
+				let category = note.category;
+				if(!this.currentMovingOverCategory) return false;
+				if(this.currentMovingOverCategory.id !== category.id) return false;
+				if(this.currentMovingCategory.id === category.id) return false;
+
+				let movingDirection = '';
+				if(category.order < this.currentMovingCategory.order){
+					// 在上方
+					// logger('在上方');
+					movingDirection = 'up';
+				}else{
+					// 在下方
+					// logger('在下方');
+					movingDirection = 'down';
+				}
+				movingOverDirection = movingDirection;
+				return false;
 			}
-			movingOverDirection = movingDirection;
-			return movingDirection === direction;
 		},
 		switchFold(categoryId){
 			this.foldMap = {
@@ -308,26 +332,51 @@ export default {
 				},30);
 			},30);
 		},
-		dragStart(e, note){
-			this.currentMovingNote = note;
+		dragStart(e, type, noteOrCategory){
+			if(this.currentMovingNote || this.currentMovingCategory) return;
+			if(type === 'note'){
+				this.currentMovingNote = noteOrCategory;
+			}else{
+				logger('currentMovingCategory', noteOrCategory.id);
+				this.currentMovingCategory = noteOrCategory;
+			}
 			e.dataTransfer.effectAllowed = 'move';
-			logger('onDragStart', note.id);
+			logger('onDragStart', type, noteOrCategory.id);
 		},
-		dragOver(e, note){
-			this.currentMovingOverNote = note;
+		dragOver(e, type, noteOrCategory){
+			if(this.currentMovingNote){
+				this.currentMovingOverNote = noteOrCategory;
+			}else if(this.currentMovingCategory){
+				if(type === 'note'){
+					logger('dragOver', noteOrCategory.category.id);
+					this.currentMovingOverCategory = noteOrCategory.category;
+				}else if(type === 'category'){
+					logger('dragOver', noteOrCategory.id);
+					this.currentMovingOverCategory = noteOrCategory;
+				}
+			}
 		},
 		drop(e){
 			logger('onDrop');
-
-			// 限定同分类
-			if(this.currentMovingNote.category.id === this.currentMovingOverNote.category.id){
+			if(this.currentMovingNote){
+				// 限定同分类
+				if(this.currentMovingNote.category.id === this.currentMovingOverNote.category.id){
+					// 需要更新顺序
+					if(this.currentMovingOverNote.id !== this.currentMovingNote.id){
+						updateNoteOrder(this.currentMovingNote.id, this.currentMovingOverNote.id, movingOverDirection);
+					}
+				}
+			}else if(this.currentMovingCategory){
+				logger('todo:分类排序', movingOverDirection);
 				// 需要更新顺序
-				if(this.currentMovingOverNote.id !== this.currentMovingNote.id){
-					updateNoteOrder(this.currentMovingNote.id, this.currentMovingOverNote.id, movingOverDirection);
+				if(this.currentMovingOverCategory.id !== this.currentMovingCategory.id){
+					updateCategoryOrder(this.currentMovingCategory.id, this.currentMovingOverCategory.id, movingOverDirection);
 				}
 			}
 			this.currentMovingNote = null;
 			this.currentMovingOverNote = null;
+			this.currentMovingCategory = null;
+			this.currentMovingOverCategory = null;
 
 			// console.log('drop', e);
 		}
@@ -347,6 +396,8 @@ export default {
 			currentEditCategoryId: '',
 			currentMovingNote: null,
 			currentMovingOverNote: null,
+			currentMovingCategory: null,
+			currentMovingOverCategory: null,
 			foldMap: {}
 		};
 	},
