@@ -23,6 +23,8 @@
 	cursor: pointer;
 	box-sizing: border-box;
 	text-align: center;
+	margin-left: 20px;
+	margin-right: 20px;
 	padding-top: 160px;
 	width: 140px;
 	height: 200px;
@@ -32,6 +34,8 @@
 	box-shadow: 0 0 8px rgba(0,0,0,.2);
 	text-shadow: 0 0 2px rgba(0,0,0,0.2);
 	color: #333;
+	overflow: hidden;
+	white-space: nowrap;
 	transition: box-shadow .4s;
 }
 .notebookSelect ul > li:hover{
@@ -48,28 +52,91 @@
 	background-position: center center;
 	background-size: 70px 70px;
 }
+.notebookSelect ul > li.createNotebook.placeholder{
+	background: linear-gradient(to bottom, #999, #999) no-repeat;
+	background-size: 100% 140px;
+}
+.notebookSelect ul > li.createNotebook.creating{
+
+}
+.notebookSelect ul > li.createNotebook.placeholder::after{
+	content: '+';
+	background: none;
+	font-size: 100px;
+    line-height: 120px;
+    color: #CCC;
+    /* text-shadow: 0 0 1px rgba(0,0,0,.3); */
+}
+.notebookSelect ul > li.notebookList-enter-active,
+.notebookSelect ul > li.notebookList-leave-active{
+	transition: all .4s ease-in-out;
+}
+.notebookSelect ul > li.notebookList-enter,
+.notebookSelect ul > li.notebookList-leave-to{
+	opacity: 0;
+	width: 0;
+	margin: 0;
+}
+.notebookSelect ul > li.notebookList-enter-to,
+.notebookSelect ul > li.notebookList-leave{
+	opacity: 1;
+}
+
+.notebookTitleInput{
+	display: block;
+	margin: 0 auto;
+	width: 110px;
+}
 </style>
 
 <template>
 <section class="notebookSelect" v-on:click.stop v-if="!currentNotebook.data.id">
-	<ul>
+	<transition-group name="notebookList" tag="ul">
 		<li
 			class="nootbook"
 			v-for="notebook in notebookList.data"
+			v-show="!newNotebook.isCreating"
 			:key="notebook.id"
 			@click="switchCurrentNotebook(notebook.id)"
 		>{{notebook.title}}</li>
-	</ul>
+		<li
+			class="nootbook createNotebook"
+			:class="{creating:newNotebook.isCreating, placeholder:!newNotebook.isCreating}"
+			:key="'newNotebook'"
+			@click="enterCreateNotebook()"
+		>
+			<span v-show="!newNotebook.isCreating">新建笔记本</span>
+			<input
+				class="titleInput notebookTitleInput"
+				v-focus-input
+				v-show="newNotebook.isCreating"
+				placeholder="新建笔记本"
+				@keydown.enter="createNotebook($event.target.value)"
+				@keydown.esc="newNotebook.isCreating=false"
+				@click.stop
+			/>
+		</li>
+	</transition-group>
 </section>
 </template>
 
 
 <script>
-import {uiData, switchCurrentNotebook, recoverLastState} from '../modules/controller';
+import {
+	uiData,
+	switchCurrentNotebook,
+	createNotebook,
+	recoverLastState
+} from '../modules/controller';
 
 export default {
 	data(){
-		return uiData
+		return {
+			...uiData,
+			newNotebook: {
+				isCreating: false
+			}
+		};
 	},
 	computed: {
 	},
@@ -78,6 +145,12 @@ export default {
 	methods: {
 		switchCurrentNotebook(notebookId){
 			switchCurrentNotebook(notebookId);
+		},
+		enterCreateNotebook(){
+			this.newNotebook.isCreating = true;
+		},
+		createNotebook(){
+			this.newNotebook.isCreating = false;
 		}
 	},
 	mounted(){

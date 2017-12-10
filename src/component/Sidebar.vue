@@ -69,15 +69,6 @@ h2:hover .operate{
 }
 .wrapper li .categoryInput{
 	width: calc(100% - 70px);
-    border: 0 none;
-    border-bottom: 1px dashed #718C00;
-    padding: 3px 0;
-    background: none;
-    font-size: 12px;
-    color: #718C00;
-}
-.wrapper li .categoryInput:focus{
-	outline: 0 none;
 }
 /* .wrapper .note-list-move {
 	transition: transform .4s;
@@ -90,7 +81,7 @@ h2:hover .operate{
     height: 28px;
     border-bottom: 1px solid #e0e0e0;
     background: transparent;
-    padding: 0 10px;
+	padding: 0 10px;
 }
 .searchWrapper input:focus{
 	background: white;
@@ -120,7 +111,7 @@ h2:hover .operate{
 			>
 				<span v-show="currentEditCategoryId!==category.id">{{category.title}}</span>
 				<input
-					class="categoryInput"
+					class="titleInput categoryInput"
 					v-focus-input
 					v-show="currentEditCategoryId===category.id"
 					:value="category.title"

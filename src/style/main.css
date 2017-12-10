@@ -67,3 +67,16 @@ body{
 	height:100%;
 	background:rgba(128,128,128,.4);
 }
+
+/* 输入框 */
+.titleInput{
+	border: 0 none;
+	border-bottom: 1px dashed #718C00;
+	padding: 3px 0;
+	background: none;
+	font-size: 12px;
+	color: #718C00;
+}
+.titleInput:focus{
+	outline: 0 none;
+}
