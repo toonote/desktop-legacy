@@ -268,7 +268,7 @@ export default {
 					event:'categoryDelete'
 				},{
 					title:'新建',
-					event:'newNote'
+					event:'categoryCreate'
 				}], {
 					targetType: 'category',
 					targetId: categoryId,

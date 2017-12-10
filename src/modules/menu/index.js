@@ -131,6 +131,11 @@ const onMenuClick = function(eventType, command){
 		case 'categoryDelete':
 			controller.deleteCategory(data.targetId);
 			break;
+		case 'categoryCreate':
+			const categoryId = controller.createCategory('新分类', data.targetId);
+			eventHub.emit('categoryRename', categoryId);
+			// controller.deleteCategory(data.targetId);
+			break;
 		case 'importBackup':
 			this.importBackup();
 			break;

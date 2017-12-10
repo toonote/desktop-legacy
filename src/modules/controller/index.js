@@ -202,30 +202,68 @@ export function deleteCategory(categoryId){
 }
 
 /**
+ * 新建分类
+ * @param {string} title 分类标题
+ * @param {string} [afterWhichId] Category对象ID，默认为当前分类
+ */
+export const createCategory = function(title, afterWhichId){
+	console.time('createCategory');
+	let afterWhich;
+	if(afterWhichId){
+		uiData.currentNotebook.data.categories.forEach((category) => {
+			if(category.id === afterWhichId){
+				afterWhich = category;
+			}
+		});
+	}else{
+		afterWhich = uiData.currentNote.data.category;
+	}
+	// 处理下一个分类的order
+	let orderOptions = {
+		min: afterWhich.order
+	};
+	uiData.currentNotebook.data.categories.forEach((category) => {
+		if(category.order > afterWhich.order){
+			if(!orderOptions.max){
+				orderOptions.max = category.order;
+			}
+			if(category.order < orderOptions.max){
+				orderOptions.max = category.order;
+			}
+		}
+	});
+	let order = getOrderNumber(orderOptions);
+	if(order === false) order = afterWhich.order;
+	const categoryId = realm.createResult('Category', {
+		title: title,
+		order: order,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		notes: []
+	}, [{
+		name: 'Notebook',
+		field: 'categories',
+		id: uiData.currentNotebook.data.id
+	}]);
+	renderData.update(results, uiData);
+	console.timeEnd('createCategory');
+	return categoryId;
+};
+
+/**
  * 修改当前笔记的分类
  * @param {string} categoryTitle 新分类的标题
  */
 export const updateCurrentNoteCategory = function(categoryTitle){
 	if(categoryTitle === uiData.currentNote.data.category.title) return;
 	console.time('updateCurrentNoteCategory');
+	// todo:需要限定笔记本范围
 	const currentNoteResult = results.Note.filtered(`id="${uiData.currentNote.data.id}"`)[0];
 	const targetCategory = results.Category.filtered(`title="${categoryTitle}"`);
 	let categoryId;
 	// 如果分类不存在，则新建
 	if(!targetCategory.length){
-		categoryId = realm.createResult('Category', {
-			title: categoryTitle,
-			order: getOrderNumber({
-				min: uiData.currentNote.data.category.order
-			}),
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			notes: []
-		}, [{
-			name: 'Notebook',
-			field: 'categories',
-			id: uiData.currentNotebook.data.id
-		}]);
+		categoryId = createCategory(categoryTitle);
 	}else{
 		categoryId = targetCategory[0].id;
 	}
