@@ -93,6 +93,17 @@ export function switchCurrentNotebook(notebookId, noteId){
 }
 
 /**
+ * 创建笔记本
+ * @param {string} title 笔记本标题
+ * @returns {void}
+ */
+export function createNotebook(title){
+	console.time('createNotebook');
+	realm.createNotebook(title);
+	console.timeEnd('createNotebook');
+}
+
+/**
  * 退出当前笔记本
  */
 export function exitNotebook(){

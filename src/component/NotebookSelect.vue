@@ -149,7 +149,8 @@ export default {
 		enterCreateNotebook(){
 			this.newNotebook.isCreating = true;
 		},
-		createNotebook(){
+		createNotebook(title){
+			createNotebook(title);
 			this.newNotebook.isCreating = false;
 		}
 	},

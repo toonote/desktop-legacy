@@ -46,44 +46,58 @@ function initData(){
 	// 新建第一个笔记本
 	const notebookList = getResults('Notebook');
 	if(!notebookList.length){
-		const now = new Date();
-		const note = {
-			id: idGen(),
-			title: '快速入门',
-			content: io.getFileText('docs/welcome.md'),
-			order: orderCalc.getOrderNumber(),
-			createdAt: now,
-			updatedAt: now,
-			localVersion: 1,
-			remoteVersion: 0,
-		};
-
-		const category = {
-			id: idGen(),
-			title: '默认分类',
-			order: orderCalc.getOrderNumber(),
-			createdAt: now,
-			updatedAt: now,
-			notes: [note],
-		};
-
-		const notebook = {
-			id: idGen(),
-			title: '默认笔记',
-			order: orderCalc.getOrderNumber(),
-			createdAt: now,
-			updatedAt: now,
-			categories: [category],
-			notes: [note]
-		};
-
-		note.category = category;
-		note.notebook = notebook;
-		category.notebook = notebook;
-
-		updateResult('Notebook', notebook);
+		createNotebook('默认笔记');
 	}
 	console.timeEnd('initData');
+}
+
+/**
+ * 创建笔记本
+ * @param {string} title 笔记本标题
+ */
+export function createNotebook(title){
+	const now = new Date();
+	const note = {
+		id: idGen(),
+		title: '快速入门',
+		content: io.getFileText('docs/welcome.md'),
+		order: orderCalc.getOrderNumber(),
+		createdAt: now,
+		updatedAt: now,
+		localVersion: 1,
+		remoteVersion: 0,
+	};
+
+	const category = {
+		id: idGen(),
+		title: '默认分类',
+		order: orderCalc.getOrderNumber(),
+		createdAt: now,
+		updatedAt: now,
+		notes: [note],
+	};
+
+	const allNotebooks = getResults('Notebook').sorted('order', true);
+	const orderOptions = {};
+	if(allNotebooks[0]){
+		orderOptions.min = orderOptions.order;
+	}
+
+	const notebook = {
+		id: idGen(),
+		title: title,
+		order: orderCalc.getOrderNumber(orderOptions),
+		createdAt: now,
+		updatedAt: now,
+		categories: [category],
+		notes: [note]
+	};
+
+	note.category = category;
+	note.notebook = notebook;
+	category.notebook = notebook;
+
+	updateResult('Notebook', notebook);
 }
 
 /**
