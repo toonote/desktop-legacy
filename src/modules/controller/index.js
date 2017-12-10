@@ -133,7 +133,7 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 				data.title = titlePart[1];
 				const categoryTitle = titlePart[0].trim();
 				logger('update note category to :', categoryTitle);
-				updateCurrentNoteCategory(categoryTitle);
+				updateCurrentNoteCategoryByTitle(categoryTitle);
 			}else{
 				data.title = titlePart[0];
 			}
@@ -254,11 +254,10 @@ export const createCategory = function(title, afterWhichId){
  * 修改当前笔记的分类
  * @param {string} categoryTitle 新分类的标题
  */
-export const updateCurrentNoteCategory = function(categoryTitle){
+export const updateCurrentNoteCategoryByTitle = function(categoryTitle){
 	if(categoryTitle === uiData.currentNote.data.category.title) return;
-	console.time('updateCurrentNoteCategory');
+	console.time('updateCurrentNoteCategoryByTitle');
 	// todo:需要限定笔记本范围
-	const currentNoteResult = results.Note.filtered(`id="${uiData.currentNote.data.id}"`)[0];
 	const targetCategory = results.Category.filtered(`title="${categoryTitle}"`);
 	let categoryId;
 	// 如果分类不存在，则新建
@@ -268,20 +267,35 @@ export const updateCurrentNoteCategory = function(categoryTitle){
 		categoryId = targetCategory[0].id;
 	}
 
-	realm.createReverseLink(currentNoteResult, [{
+	updateNoteCategory(uiData.currentNote.data.id, categoryId);
+
+	console.timeEnd('updateCurrentNoteCategoryByTitle');
+};
+
+/**
+ * 修改笔记的分类
+ * @param {string} noteId 笔记ID
+ * @param {string} categoryId 新分类的ID
+ */
+export const updateNoteCategory = function(noteId, categoryId){
+	console.time('updateNoteCategory');
+	const targetNoteResult = results.Note.filtered(`id="${noteId}"`)[0];
+	const oldCategoryId = targetNoteResult.category[0].id;
+
+	realm.createReverseLink(targetNoteResult, [{
 		name: 'Category',
 		field: 'notes',
 		id: categoryId
 	}]);
 
-	realm.removeReverseLink(currentNoteResult, [{
+	realm.removeReverseLink(targetNoteResult, [{
 		name: 'Category',
 		field: 'notes',
-		id: uiData.currentNote.data.category.id
+		id: oldCategoryId
 	}]);
 
 	renderData.updateCurrentNoteCategory(results, uiData, categoryId);
-	console.timeEnd('updateCurrentNoteCategory');
+	console.timeEnd('updateNoteCategory');
 
 };
 

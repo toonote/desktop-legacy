@@ -169,6 +169,7 @@ import {
 	uiData,
 	switchCurrentNote,
 	updateNoteOrder,
+	updateNoteCategory,
 	updateCategoryOrder,
 	exitNotebook,
 	categoryRename,
@@ -223,7 +224,10 @@ export default {
 				if(this.currentMovingOverNote.id !== note.id) return false;
 				if(this.currentMovingNote.id === note.id) return false;
 				// 必须是同一个分类
-				if(this.currentMovingNote.category.id !== note.category.id) return false;
+				if(this.currentMovingNote.category.id !== note.category.id){
+					movingOverDirection = 'down';
+					return movingOverDirection === direction;
+				}
 
 				let movingDirection = '';
 				if(note.order < this.currentMovingNote.order){
@@ -359,12 +363,13 @@ export default {
 		drop(e){
 			logger('onDrop');
 			if(this.currentMovingNote){
-				// 限定同分类
-				if(this.currentMovingNote.category.id === this.currentMovingOverNote.category.id){
-					// 需要更新顺序
-					if(this.currentMovingOverNote.id !== this.currentMovingNote.id){
-						updateNoteOrder(this.currentMovingNote.id, this.currentMovingOverNote.id, movingOverDirection);
+				if(this.currentMovingOverNote.id !== this.currentMovingNote.id){
+					// 需要更新分类
+					if(this.currentMovingNote.category.id !== this.currentMovingOverNote.category.id){
+						updateNoteCategory(this.currentMovingNote.id, this.currentMovingOverNote.category.id);
 					}
+					// 更新顺序
+					updateNoteOrder(this.currentMovingNote.id, this.currentMovingOverNote.id, movingOverDirection);
 				}
 			}else if(this.currentMovingCategory){
 				logger('todo:分类排序', movingOverDirection);
