@@ -12,6 +12,7 @@ export default {
 		updatedAt: 'date',
 		localVersion: 'int',
 		remoteVersion: 'int',
+		attachments: 'Attachment[]',
 		category: {
 			type: 'linkingObjects',
 			objectType: 'Category',

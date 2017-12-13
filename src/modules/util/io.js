@@ -7,6 +7,16 @@ io.getExt = (filename) => {
 	return path.extname(filename);
 };
 
+io.getFileExt = io.getExt;
+
+io.getFileName = (filename) => {
+	return path.basename(filename);
+};
+
+io.getFileSize = (filename) => {
+	return fs.statSync(filename).size;
+};
+
 io.getFileText = (filePath) => {
 	filePath = path.join(require('electron').remote.app.getAppPath(), filePath);
 	return fs.readFileSync(filePath, 'utf8');

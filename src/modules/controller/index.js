@@ -3,6 +3,7 @@ import * as realm from '../storage/realm';
 import * as renderData from './renderData';
 import {getOrderNumber, normalizeOrderList} from '../util/orderCalc';
 import {getConfig, setConfig} from '../util/config';
+import io from '../util/io';
 import ioExportNote from './exportNote';
 import ioCopyNote from './copyNote';
 import {throttle} from 'lodash';
@@ -503,4 +504,43 @@ export const categoryRename = function(categoryId, title){
 		title
 	});
 	console.timeEnd('categoryRename');
+};
+
+/**
+ * 插入附件
+ * @param {Object} data 配置文件
+ * @param {string} [data.from] 附件来源 clipboard | file
+ * @param {string} [data.path] 附件地址
+ * @param {string} [data.ext] 附件后缀名
+ */
+export const createAttachment = function(data){
+	console.time('createAttachment');
+	const currentNote = uiData.currentNote.data;
+	let filePath = '';
+	if(data.from === 'clipboard'){
+		filePath = io.saveImageFromClipboard();
+	}else{
+		filePath = io.saveImage(data.path, data.ext);
+	}
+	if(!filePath) return false;
+
+	const fileName = io.getFileName(filePath);
+
+	data = {
+		filename: fileName,
+		ext: io.getFileExt(filePath),
+		size: io.getFileSize(filePath),
+		localPath: filePath,
+		remotePath: '',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	};
+	const newAttachmentId = realm.createResult('Attachment', data, [{
+		name: 'Note',
+		field: 'attachments',
+		id: currentNote.id,
+	}]);
+	logger('newAttachmentId:' + newAttachmentId);
+	console.timeEnd('createAttachment');
+	return newAttachmentId;
 };

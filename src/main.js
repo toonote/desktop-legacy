@@ -9,7 +9,7 @@ import Preview from './component/Preview.vue';
 // import versions from './component/versions.vue';
 import NotebookSelect from './component/NotebookSelect.vue';
 
-import {uiData, updateCurrentNote} from './modules/controller';
+import {uiData, updateCurrentNote, createAttachment} from './modules/controller';
 import * as menu from './modules/menu';
 import eventHub from './modules/util/eventHub';
 
@@ -36,10 +36,21 @@ let app = new Vue({
 		},
 		// 编辑器粘贴或者拖拽图片
 		saveImage: function(filepath, ext){
+			let attachementId = '';
+
 			if(filepath === '@clipboard'){
-				this._tnEvent('imageUrl', {url:io.saveImageFromClipboard()});
+				attachementId = createAttachment({from: 'clipboard'});
 			}else{
-				this._tnEvent('imageUrl', {url:io.saveImage(filepath, ext)});
+				attachementId = createAttachment({
+					from: 'file',
+					path: filepath,
+					ext
+				});
+			}
+			if(attachementId){
+				this._tnEvent('imageUrl', {
+					url: 'tnattach://' + attachementId
+				});
 			}
 		},
 		// 编辑器内容改变

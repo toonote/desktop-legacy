@@ -1,5 +1,6 @@
 import Remarkable from 'remarkable';
 import hljs from 'highlight.js';
+import {getResults} from './storage/realm';
 
 let renderer = new Remarkable({
 	highlight: function (str, lang) {
@@ -33,7 +34,7 @@ renderer.use(function(md) {
 					// console.log(str, char, text);
 					let isDone = char.toLowerCase() === 'x';
 					// return `<input type="checkbox" ${isDone?"checked":""} />` + text;
-					return `${isDone ? '✓':'☐'} ` + text;
+					return `${isDone ? '✓' : '☐'} ` + text;
 				});
 			}
 		}
@@ -68,7 +69,7 @@ for(let token in customerRulesMap){
 renderer.renderer.rules.list_item_open = function (tokens, idx) {
 	for(let i = idx + 1; i < idx + 3; i++){
 		if(/[✓☐]/.test(tokens[i].content)){
-			return `<li class="todo${/^✓/i.test(tokens[i].content) ? ' done':' doing'}">`;
+			return `<li class="todo${/^✓/i.test(tokens[i].content) ? ' done' : ' doing'}">`;
 		}
 	}
 	return '<li>';
@@ -85,6 +86,30 @@ renderer.renderer.rules.heading_open = function (tokens, idx) {
 
 renderer.renderer.rules.heading_close = function (tokens, idx) {
 	return '</a></h' + tokens[idx].hLevel + '>';
+};
+
+const srcCache = {};
+
+// 将附件地址替换为本地地址
+// 来自https://github.com/jonschlinkert/remarkable/blob/master/lib/rules.js#L170
+renderer.renderer.rules.image = function (tokens, idx) {
+	const originalSrc = tokens[idx].src;
+	if(!srcCache[originalSrc]){
+		const attachmentId = originalSrc.replace(/^tnattach:\/\//,'');
+		const attachment = getResults('Attachment').filtered(`id="${attachmentId}"`);
+		if(attachment[0]){
+			srcCache[originalSrc] = 'file://' + attachment[0].localPath;
+		}else{
+			srcCache[originalSrc] = originalSrc;
+		}
+	}
+	let realSrc = srcCache[originalSrc];
+
+	var src = ' src="' + realSrc + '"';
+	var title = tokens[idx].title ? (' title="' + tokens[idx].title + '"') : '';
+	var alt = ' alt="' + (tokens[idx].alt ? tokens[idx].alt : '') + '"';
+	var suffix = ' /';
+	return '<img' + src + alt + title + suffix + '>';
 };
 
 export default renderer;
