@@ -35,21 +35,22 @@ let app = new Vue({
 			});
 		},
 		// 编辑器粘贴或者拖拽图片
-		saveImage: function(filepath, ext){
-			let attachementId = '';
+		saveAttachment: function(filepath, ext){
+			let attachmentInfo = {};
 
 			if(filepath === '@clipboard'){
-				attachementId = createAttachment({from: 'clipboard'});
+				attachmentInfo = createAttachment({from: 'clipboard'});
 			}else{
-				attachementId = createAttachment({
+				attachmentInfo = createAttachment({
 					from: 'file',
 					path: filepath,
 					ext
 				});
 			}
-			if(attachementId){
-				this._tnEvent('imageUrl', {
-					url: 'tnattach://' + attachementId
+			if(attachmentInfo.id){
+				this._tnEvent('newAttachment', {
+					url: 'tnattach://' + attachmentInfo.id + attachmentInfo.ext,
+					filename: attachmentInfo.filename
 				});
 			}
 		},

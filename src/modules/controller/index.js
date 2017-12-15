@@ -517,18 +517,20 @@ export const createAttachment = function(data){
 	console.time('createAttachment');
 	const currentNote = uiData.currentNote.data;
 	let filePath = '';
+	let fileName = '';
 	if(data.from === 'clipboard'){
 		filePath = io.saveImageFromClipboard();
+		fileName = io.getFileName(filePath);
 	}else{
 		filePath = io.saveImage(data.path, data.ext);
+		fileName = io.getFileName(data.path);
 	}
 	if(!filePath) return false;
 
-	const fileName = io.getFileName(filePath);
-
+	const ext = io.getFileExt(filePath);
 	data = {
 		filename: fileName,
-		ext: io.getFileExt(filePath),
+		ext,
 		size: io.getFileSize(filePath),
 		localPath: filePath,
 		remotePath: '',
@@ -542,5 +544,9 @@ export const createAttachment = function(data){
 	}]);
 	logger('newAttachmentId:' + newAttachmentId);
 	console.timeEnd('createAttachment');
-	return newAttachmentId;
+	return {
+		id: newAttachmentId,
+		filename: fileName,
+		ext
+	};
 };

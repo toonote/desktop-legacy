@@ -115,6 +115,47 @@
 	border: 1px solid #E0E0E0;
 	padding: 1px;
 }
+/* 附件 */
+.htmlBody .tn-attachment{
+	/* border: 1px solid #ddd; */
+	background:#f0f0f0;
+    padding: 10px;
+}
+.htmlBody .tn-attachment-icon{
+	width: 40px;
+    height: 40px;
+	background: url(../images/filetype.png) no-repeat;
+	background-size: 400px 160px;
+	display: inline-block;
+	vertical-align: top;
+}
+.htmlBody .tn-attachment-icon-sketch{
+	background-position: 0 0;
+}
+.htmlBody .tn-attachment-icon-pdf{
+	background-position: -40px 0;
+}
+.htmlBody .tn-attachment-icon-docx{
+	background-position: -80px 0;
+}
+.htmlBody .tn-attachment-icon-xlsx{
+	background-position: -120px 0;
+}
+.htmlBody .tn-attachment-icon-pptx{
+	background-position: -160px 0;
+}
+.htmlBody .tn-attachment-info{
+	display: inline-block;
+	vertical-align: top;
+	height: 40px;
+}
+.htmlBody .tn-attachment-info p{
+	line-height: 1.4em;
+	margin-bottom: .3em;
+}
+.htmlBody .tn-attachment-info .tn-attachment-size{
+	color: #999;
+}
 
 /*链接*/
 .htmlBody a{
