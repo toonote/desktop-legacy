@@ -136,6 +136,18 @@ const onMenuClick = function(eventType, command){
 			eventHub.emit('categoryRename', categoryId);
 			// controller.deleteCategory(data.targetId);
 			break;
+		case 'attachmentOpen':
+			eventHub.emit('attachmentOpen', data);
+			break;
+		case 'attachmentPreview':
+			eventHub.emit('attachmentPreview', data);
+			break;
+		case 'attachmentOpenInFinder':
+			eventHub.emit('attachmentOpenInFinder', data);
+			break;
+		case 'attachmentSave':
+			eventHub.emit('attachmentSave', data);
+			break;
 		case 'importBackup':
 			this.importBackup();
 			break;

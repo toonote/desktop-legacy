@@ -183,6 +183,24 @@ io.export = function(format, content, filename, callback = function(){}){
 
 };
 
+
+// 导出为各种格式文件
+io.saveAs = function(srcPath, targetFileName, callback = function(){}){
+	let ext = io.getFileExt(targetFileName);
+	let format = [];
+	if(ext){
+		format.push(ext.replace(/\./g, ''));
+	}
+	var filters = [{
+		name: '附件',
+		extensions: format
+	}];
+	let filePath = io.selectPathForWrite(filters, targetFileName);
+	if(!filePath) return;
+
+	fs.createReadStream(srcPath).pipe(fs.createWriteStream(filePath));
+};
+
 /*// 创建备份文件
 function createBackUp(){
 	var filters = [{

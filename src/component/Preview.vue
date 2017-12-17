@@ -13,17 +13,32 @@
 
 <template>
 <section class="preview">
-	<div class="htmlBody" v-html="html" v-on:click="handleContent"></div>
+	<div
+		tabindex="0"
+		class="htmlBody"
+		v-html="html"
+		@keydown.space="previewAttachmentByKeyboard"
+		@click="handleContentOrAttachment"
+		@contextmenu="showContextMenu"
+		@dblclick="openAttachment"
+	></div>
 </section>
 </template>
 
 
 <script>
 // import 'highlight.js/styles/github-gist.css';
+import debug from '../modules/util/debug';
 import 'highlight.js/styles/tomorrow.css';
 import * as mdRender from '../modules/util/mdRender';
+import io from '../modules/util/io';
+import eventHub from '../modules/util/eventHub';
+import Menu from '../modules/menu/electron';
 import {uiData} from '../modules/controller';
 import scroll from '../modules/scroll';
+
+const logger = debug('preview');
+const menu = new Menu();
 
 // 滚动时源码和渲染后位置的对应表
 let scrollMap = [];
@@ -38,14 +53,73 @@ export default {
 			console.timeEnd('renderHtml');
 			return html;
 		},
-		handleContent(e) {
+		handleContentOrAttachment(e) {
 			let $target = e.target;
 			// 链接
 			if($target.tagName === 'A' && /^https?:\/\//.test($target.href)){
+				logger('click on link');
 				let shell = require('electron').shell;
 				shell.openExternal($target.href);
 				e.preventDefault();
+				this.currentContextAttachment = {};
+			}else if($target.closest('.tn-attachment')){
+				logger('click on attachment');
+				let $attachment = $target.closest('.tn-attachment');
+				this.currentContextAttachment = {
+					id: $attachment.dataset.id,
+					src: $attachment.dataset.src,
+					title: $attachment.dataset.title,
+				};
+			}else{
+				this.currentContextAttachment = {};
 			}
+		},
+		// 附件上右键
+		showContextMenu(e) {
+			const $attachment = e.target.closest('.tn-attachment');
+			if(!$attachment) return;
+			menu.showContextMenu([{
+					title:'打开',
+					event:'attachmentOpen'
+				},{
+					title:'预览',
+					event:'attachmentPreview'
+				},{
+					title:'在Finder中查看',
+					event:'attachmentOpenInFinder'
+				},{
+					title:'另存为',
+					event:'attachmentSave'
+				}], {
+					targetType: 'attachment',
+					targetId: $attachment.dataset.id,
+					targetSrc: $attachment.dataset.src,
+					targetTitle: $attachment.dataset.title,
+					from: 'preview',
+				});
+		},
+		openAttachment(src){
+			if(typeof src === 'object'){
+				const $attachment = src.target.closest('.tn-attachment');
+				if(!$attachment) return;
+				src = $attachment.dataset.src;
+			}
+			require('electron').shell.openExternal(src);
+		},
+		previewAttachmentByKeyboard(e){
+			logger('previewAttachmentByKeyboard');
+			if(!this.currentContextAttachment.id) return;
+			this.previewAttachment({
+				targetId: this.currentContextAttachment.id,
+				targetSrc: this.currentContextAttachment.src,
+				targetTitle: this.currentContextAttachment.title
+			});
+			e.preventDefault();
+		},
+		previewAttachment(data){
+			logger('previewAttachment');
+			const src = data.targetSrc.replace(/^file:\/\//,'');
+			require('electron').remote.getCurrentWindow().previewFile(src, data.title);
 		},
 		// 将预览区滚动到和源码位置一样
 		scrollToSourceLine(row) {
@@ -118,12 +192,27 @@ export default {
 	data(){
 		var data = {
 			currentNoteContent: uiData.currentNoteContent,
+			currentContextAttachment: {},
 			layout: uiData.layout,
 			html: ''
 		};
 		return data;
 	},
 	mounted(){
+		eventHub.on('attachmentOpen', (data) => {
+			this.openAttachment(data.targetSrc);
+		});
+		eventHub.on('attachmentPreview', (data) => {
+			this.previewAttachment(data);
+		});
+		eventHub.on('attachmentOpenInFinder', (data) => {
+			const src = data.targetSrc.replace(/^file:\/\//,'');
+			require('electron').shell.showItemInFolder(src);
+		});
+		eventHub.on('attachmentSave', (data) => {
+			const src = data.targetSrc.replace(/^file:\/\//,'');
+			io.saveAs(src, data.targetTitle);
+		});
 		// console.log('[preview] mounted', this, this.$store);
 
 	}

@@ -92,13 +92,13 @@ renderer.renderer.rules.heading_close = function (tokens, idx) {
 const srcCache = {};
 const getFileSize = function(size){
 	if(size / 1024 < 1){
-		return size + ' b';
+		return size + ' B';
 	}else if(size / 1024 / 1024 < 1){
-		return (size / 1024).toFixed(2) + ' k';
+		return (size / 1024).toFixed(2) + ' K';
 	}else if(size / 1024 / 1024 / 1024 < 1){
-		return (size / 1024 / 1024).toFixed(2) + ' m';
+		return (size / 1024 / 1024).toFixed(2) + ' M';
 	}else{
-		return (size / 1024 / 1024 / 1024).toFixed(2) + ' g';
+		return (size / 1024 / 1024 / 1024).toFixed(2) + ' G';
 	}
 };
 // 将附件地址替换为本地地址
@@ -110,6 +110,7 @@ renderer.renderer.rules.image = function (tokens, idx) {
 		const attachment = getResults('Attachment').filtered(`id="${attachmentId}"`);
 		if(attachment[0]){
 			srcCache[originalSrc] = {
+				id: attachmentId,
 				url: 'file://' + attachment[0].localPath,
 				title: attachment[0].filename,
 				ext: attachment[0].ext,
@@ -117,6 +118,7 @@ renderer.renderer.rules.image = function (tokens, idx) {
 			};
 		}else{
 			srcCache[originalSrc] = {
+				id: '',
 				title: '',
 				url: originalSrc,
 				ext: '',
@@ -138,7 +140,7 @@ renderer.renderer.rules.image = function (tokens, idx) {
 	}else{
 		// 如果是附件
 		const extIcon = attachmentInfo.ext.replace(/\./g, '');
-		return `<div class="tn-attachment">
+		return `<div class="tn-attachment" data-id="${attachmentInfo.id}" data-src="${attachmentInfo.url}" data-title="${attachmentInfo.title}">
 				<div class="tn-attachment-icon tn-attachment-icon-${extIcon}"></div>
 				<div class="tn-attachment-info">
 					<p class="tn-attachment-title">${attachmentInfo.title}</p>
