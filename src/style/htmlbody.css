@@ -6,6 +6,9 @@
 	letter-spacing: 1px;
 	padding:0 20px;
 }
+.htmlBody:focus{
+	outline: 0 none;
+}
 /*标题*/
 .htmlBody h1,.htmlBody h2,.htmlBody h3,
 .htmlBody h4,.htmlBody h5,.htmlBody h6{
