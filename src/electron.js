@@ -19,7 +19,11 @@ app.on('ready', function() {
 		resizable:true,
 		icon: __dirname + '/images/logo@64.png'
 	});
-	mainWindow.loadURL('file://' + __dirname + '/main.html');
+	let htmlUrl = 'file://' + __dirname + '/main.html';
+	if(process.env.NODE_ENV !== 'production'){
+		htmlUrl = 'file://' + __dirname + '/main-dev.html';
+	}
+	mainWindow.loadURL(htmlUrl);
 	mainWindow.on('closed', function() {
 		mainWindow = null;
 	});

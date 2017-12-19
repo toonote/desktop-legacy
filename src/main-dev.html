@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>TooNote</title>
+	<link href="./style/main.css" rel="stylesheet" />
+	<link href="http://localhost:8081/style/bundle.css" rel="stylesheet" />
+</head>
+<body>
+<div id="wrapper">
+	<div class="main" :class="{withSidebar:layout.data.sidebar}">
+		<transition name="slide">
+			<sidebar v-show="layout.data.sidebar"></sidebar>
+		</transition>
+		<transition name="slide-flex">
+			<editor
+				v-show="layout.data.editor"
+				@content-change="contentChange"
+				@save-attachment="saveAttachment"
+				@line-scroll="lineScroll"
+				:content="content"
+				:tn-event="tnEvent"
+			></editor>
+		</transition>
+		<transition name="slide-flex">
+			<preview v-show="layout.data.preview" ref="preview"></preview>
+		</transition>
+	</div>
+	<notebook-select></notebook-select>
+	<!-- <versions></versions> -->
+</div>
+<script>
+
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+
+	/*(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');*/
+
+	var uuid = require('uuid');
+
+	// set the uuid to local storage
+	if (!localStorage['gaClientId'])
+	localStorage.setItem('gaClientId',uuid.v4());
+
+	// set the cookie storage for google analytics to none, and provide your own client id
+	var clientId = localStorage['gaClientId'];
+	ga('create', 'UA-57400974-3', {
+		'storage': 'none',
+		'clientId': clientId
+	});
+
+	// finally, disable the protocol check to allow file://
+	ga('set', 'checkProtocolTask', function(){}); // Disable file protocol checking.
+	ga('set', 'page', '/main.html');
+	ga('send', 'pageview');
+	ga('send', 'event', 'app', 'started');
+
+</script>
+<script src="http://localhost:8081/bundle.js"></script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+</body>
+</html>

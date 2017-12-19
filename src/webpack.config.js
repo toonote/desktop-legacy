@@ -21,7 +21,7 @@ npmModules.forEach(function(npmModule){
 	externals[npmModule] = 'commonjs ' + npmModule;
 });
 
-module.exports = {
+const config = {
 	entry: ['./main.js'],
 	target: 'electron',
 	node: false,
@@ -65,7 +65,7 @@ module.exports = {
 		new ExtractTextPlugin('style/bundle.css'),
 		new webpack.DefinePlugin({
 			DEBUG: process.env.NODE_ENV !== 'production' &&
-				process.env.NODE_ENV !== 'test',
+			process.env.NODE_ENV !== 'test',
 			TEST: process.env.NODE_ENV === 'test'
 		}),
 		// 有bug，先屏蔽
@@ -83,5 +83,15 @@ module.exports = {
 			callback();
 		}
 	],
-	devtool: process.env.NODE_ENV === 'production' ? '' : '#source-map'
+	devtool: process.env.NODE_ENV === 'production' ? '' : '#source-map',
 };
+
+if(process.env.NODE_ENV !== 'production'){
+	config.plugins.push(new webpack.HotModuleReplacementPlugin());
+	config.devServer = {
+		hot: process.env.NODE_ENV !== 'production',
+		inline: process.env.NODE_ENV !== 'production'
+	};
+}
+
+module.exports = config;

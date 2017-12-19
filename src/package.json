@@ -5,11 +5,11 @@
   "main": "electron.js",
   "scripts": {
     "test": "NODE_ENV=test webpack && NODE_ENV=test ava --verbose tests",
-    "dev": "webpack -w",
+    "dev": "webpack-dev-server",
     "prod": "NODE_ENV=production webpack",
     "prod-win": "set NODE_ENV=production&& webpack",
     "run": "electron .",
-    "start": "webpack&&npm-run-all -p -r dev run",
+    "start": "npm-run-all -p -r dev run",
     "build:osx": "npm run prod&& ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ electron-packager . --overwrite --arch=all --icon=../assets/logo.icns --out=../dist --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/windows\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\"",
     "build:win": "npm run prod-win&& set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/&& electron-packager . --overwrite --arch=all --icon=../assets/logo.ico --out=../dist --win32metadata.CompanyName=\"TooNote\" --win32metadata.ProductName=\"TooNote\" --win32metadata.FileDescription=\"TooNote\" --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/osx\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\""
   },
@@ -62,6 +62,8 @@
     "eslint": "^3.19.0",
     "extract-text-webpack-plugin": "^2.0.0-beta.5",
     "file-loader": "^0.8.5",
+    "html-webpack-harddisk-plugin": "^0.1.0",
+    "html-webpack-plugin": "^2.30.1",
     "npm-run-all": "^4.0.2",
     "spectron": "^3.7.2",
     "style-loader": "^0.13.1",
@@ -73,6 +75,7 @@
     "vue-loader": "^13.0.0",
     "vue-style-loader": "^1.0.0",
     "vue-template-compiler": "^2.3.4",
-    "webpack": "^3.0.0"
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^2.9.7"
   }
 }
