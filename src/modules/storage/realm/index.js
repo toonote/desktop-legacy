@@ -7,6 +7,9 @@ import NotebookSchema from './schema/Notebook';
 import CategorySchema from './schema/Category';
 import AttachmentSchema from './schema/Attachment';
 import NoteSchema from './schema/Note';
+import VersionSchema from './schema/Version';
+import VersionNoteContentSchema from './schema/VersionNoteContent';
+import TaskSchema from './schema/Task';
 import idGen from '../../util/idGen';
 import io from '../../util/io';
 import * as orderCalc from '../../util/orderCalc';
@@ -107,7 +110,16 @@ export function createNotebook(title){
 export function init(){
 	console.time('openRealm');
 	realm = new Realm({
-		schema: [ConfigSchema, NotebookSchema, CategorySchema, NoteSchema, AttachmentSchema],
+		schema: [
+			ConfigSchema,
+			NotebookSchema,
+			CategorySchema,
+			NoteSchema,
+			AttachmentSchema,
+			VersionSchema,
+			VersionNoteContentSchema,
+			TaskSchema
+		],
 		schemaVersion: SCHEMA_VERSION,
 		path: DB_PATH
 	});

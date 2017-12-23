@@ -91,6 +91,7 @@ h2:hover .operate{
 
 <template>
 <section class="sidebar">
+	<task></task>
 	<user></user>
 	<section class="searchWrapper">
 		<input type="search" v-model.trim="searchKeyword" placeholder="搜索..." />
@@ -171,6 +172,7 @@ import {
 	search
 } from '../modules/controller';
 import User from './User.vue';
+import Task from './Task.vue';
 import Menu from '../modules/menu/electron';
 import stat from '../modules/util/stat';
 import eventHub from '../modules/util/eventHub';
@@ -402,7 +404,8 @@ export default {
 		};
 	},
 	components:{
-		User
+		User,
+		Task
 	},
 	mounted(){
 		eventHub.on('categoryRename', (categoryId) => {

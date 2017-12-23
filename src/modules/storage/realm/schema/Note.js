@@ -13,6 +13,11 @@ export default {
 		localVersion: 'int',
 		remoteVersion: 'int',
 		attachments: 'Attachment[]',
+		versions: {
+			type: 'linkingObjects',
+			objectType: 'Version',
+			property: 'notes'
+		},
 		category: {
 			type: 'linkingObjects',
 			objectType: 'Category',

@@ -6,6 +6,8 @@ import {getConfig, setConfig} from '../util/config';
 import io from '../util/io';
 import ioExportNote from './exportNote';
 import ioCopyNote from './copyNote';
+import eventHub, {EVENTS} from '../util/eventHub';
+import taskInit from '../task';
 import {throttle} from 'lodash';
 
 const logger = debug('controller:main');
@@ -42,6 +44,9 @@ export const uiData = {
 
 console.time('initRenderData');
 realm.init();
+
+taskInit();
+
 results = {
 	Notebook: realm.getResults('Notebook'),
 	Category: realm.getResults('Category'),
@@ -153,6 +158,11 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 	}
 	if(typeof data.content !== 'undefined' && data.content !== uiData.currentNoteContent.data){
 		logger('content changed.');
+		// 触发事件，用于历史版本记录、云服务等
+		eventHub.emit(EVENTS.NOTE_CONTENT_CHANGED, {
+			id: uiData.currentNote.data.id,
+			content: data.content
+		});
 		hasChanged = true;
 	}
 	if(!hasChanged){
