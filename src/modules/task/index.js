@@ -31,22 +31,36 @@ function noteContentChanged(data){
 	if(!data.id || !data.content) return;
 
 	let existTask = getTask({
-		type: 'VERSION_COMMIT',
-		targetId: data.id
+		type: 'VERSION_COMMIT'
 	});
-	if(existTask) return;
+	if(existTask){
+		logger('existTask, ready to push');
+		let existTaskIds = existTask.data.taskIds || [];
+		if(existTaskIds.indexOf(data.id) > -1){
+			logger('note exist in task');
+		}else{
+			existTaskIds.push(data.id);
+			operate.updateTask({
+				id: existTask.id,
+				data: {taskIds:existTaskIds}
+			});
+		}
+	}else{
+		logger('no existTask, ready to create');
+		operate.addTask({
+			type: 'VERSION_COMMIT',
+			priority: 3,
+			targetId: data.id,
+			data: {
+				taskIds: [data.id]
+			},
+			status: 0,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			log: [''],
+		});
+	}
 
-	logger('no existTask, ready to create');
-	operate.addTask({
-		type: 'VERSION_COMMIT',
-		priority: 3,
-		targetId: data.id,
-		data: {},
-		status: 0,
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		log: [''],
-	});
 }
 
 

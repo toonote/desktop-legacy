@@ -42,5 +42,6 @@ export default {
 	font-size:10px;
 	background: rgba(255,255,255,.7);
 	z-index: 2;
+	pointer-events: none;
 }
 </style>

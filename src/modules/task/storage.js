@@ -22,7 +22,7 @@ export const addTask = function(task){
 	if(!task.id){
 		task.id = idGen();
 	}
-	return updateTask(task);
+	return realm.createResult(SCHEMA, task);
 };
 
 export const deleteTask = function(taskId){

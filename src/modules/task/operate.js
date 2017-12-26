@@ -27,6 +27,18 @@ export function addTask(taskData){
 	console.timeEnd('addTask');
 }
 
+/**
+ * 更新一个任务
+ * @param {Object} taskData 任务数据
+ */
+export function updateTask(taskData){
+	logger('updateTask', taskData);
+	console.time('updateTask');
+	taskData.data = JSON.stringify(taskData.data);
+	storage.updateTask(taskData);
+	console.timeEnd('updateTask');
+}
+
 export function getTaskById(taskId){
 
 }
@@ -67,19 +79,12 @@ export const runTask = function(task){
 		logger('timeout:' + timeout);
 		scheduledTaskMap[task.id] = setTimeout(() => {
 			logger('now run task ' + task.id);
-			eventHub.emit(task.type, task);
-			// todo:任务运行完成后要取消任务
-			// delete scheduledTaskMap[task.id];
-			// 更新任务状态为运行中
 			storage.updateTask({
 				id: task.id,
 				status: 2	//正在运行
 			});
-			setTimeout(() => {
-				// debugger;
-				eventHub.emit(EVENTS.TASK_FINISH, task);
-			}, 3000);
-		}, timeout / 30);
+			eventHub.emit(EVENTS.TASK_RUN, task);
+		}, timeout);
 		task.runIn = timeout;
 	}
 };

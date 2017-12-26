@@ -101,7 +101,7 @@ export function createNotebook(title){
 	note.notebook = notebook;
 	category.notebook = notebook;
 
-	updateResult('Notebook', notebook);
+	createResult('Notebook', notebook);
 }
 
 /**
@@ -146,7 +146,10 @@ export function updateResult(name, arr){
 	ensureWrite(() => {
 		if(!Array.isArray(arr)) arr = [arr];
 		arr.forEach((obj) => {
-			// 当主键相同时，第三个参数会覆盖已有记录
+			if(!obj.updatedAt){
+				obj.updatedAt = new Date();
+			}
+			// 第三个参数会使相当主键覆盖
 			realm.create(name, obj, true);
 		});
 	});
@@ -155,27 +158,43 @@ export function updateResult(name, arr){
 /**
  * 插入数据
  * @param {string} name Schema名称
- * @param {Object} obj 新数据
+ * @param {Object|Array<Object>} arr 新数据
  * @param {Object[]} reverseLinkArr 需要处理的反向链接信息
- * @returns {string} 新数据的ID
+ * @returns {string|string[]} 新数据的ID
  */
-export function createResult(name, obj, reverseLinkArr = []){
-	if(!obj.id){
-		obj.id = idGen();
-	}
-
+export function createResult(name, arr, reverseLinkArr = []){
+	const isArray = Array.isArray(arr);
+	const ids = [];
 	ensureWrite(() => {
-		const newObj = realm.create(name, obj, true);
-		// 处理反向链接
-		// [{
-		//	   name: 'Category',
-		//     id: '123456',
-		//     field: 'notes',
-		// }]
-		createReverseLink(newObj, reverseLinkArr);
+		if(!isArray) arr = [arr];
+
+		arr.forEach((obj) => {
+			if(!obj.id){
+				obj.id = idGen();
+				ids.push(obj.id);
+			}
+			if(!obj.createdAt){
+				obj.createdAt = new Date();
+			}
+			if(!obj.updatedAt){
+				obj.updatedAt = new Date();
+			}
+
+			const newObj = realm.create(name, obj, true);
+			// 处理反向链接
+			// [{
+			//	   name: 'Category',
+			//     id: '123456',
+			//     field: 'notes',
+			// }]
+			createReverseLink(newObj, reverseLinkArr);
+		});
 	});
 
-	return obj.id;
+	if(isArray){
+		return ids;
+	}
+	return ids[0];
 }
 
 /**

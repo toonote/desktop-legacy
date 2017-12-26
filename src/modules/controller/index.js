@@ -6,6 +6,7 @@ import {getConfig, setConfig} from '../util/config';
 import io from '../util/io';
 import ioExportNote from './exportNote';
 import ioCopyNote from './copyNote';
+import {init as versionInit} from './version';
 import eventHub, {EVENTS} from '../util/eventHub';
 import taskInit from '../task';
 import {throttle} from 'lodash';
@@ -45,6 +46,7 @@ export const uiData = {
 console.time('initRenderData');
 realm.init();
 
+versionInit();
 taskInit();
 
 results = {
