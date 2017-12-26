@@ -17,6 +17,7 @@ body{
 }
 .slide-flex-enter-active, .slide-flex-leave-active {
 	transition: flex .5s;
+	min-width: 0;
 }
 .slide-flex-enter, .slide-flex-leave-active {
 	flex: 0!important;
