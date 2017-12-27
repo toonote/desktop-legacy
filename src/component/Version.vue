@@ -10,7 +10,6 @@
 	background:white;
 	border:5px solid #bbb;
 	color:#585858;
-	font-family: "PingFang SC";
 	display: flex;
 }
 .wrapper{
@@ -79,60 +78,60 @@
 </style>
 
 <template>
-<section tabindex="1" class="mask" v-on:keydown.esc="hideVersions" v-on:click="hideVersions" v-show="versions.currentNote">
+<section tabindex="1" class="mask" v-on:keydown.esc="hideVersions" v-on:click="hideVersions" v-show="versions.data.list.length">
 <section class="versions" v-on:click.stop="()=>{}">
 	<div class="closeBtn" v-on:click="hideVersions">✖︎</div>
 	<section class="wrapper">
 		<ul>
 			<li
 				class="icon folder"
-			>{{versions.currentNote && versions.currentNote.title}}
+			>{{note.title}}
 				<ul>
 					<li
 						class="icon note"
-						v-bind:class="{active:(versions.activeVersionId && versions.activeVersionId === version.id) || contextMenuVersionId == version.id}"
-						v-for="version in versions.list"
-						v-on:click="switchCurrentVersion(version.id)"
-						v-on:contextmenu="showContextMenu(version.id)"
-					>{{formatDate(version.date)}}</li>
+						:class="{active:isActive(version.id)}"
+						v-for="version in versions.data.list"
+						:key="version.id"
+						@click="switchCurrentVersion(version.id)"
+						@contextmenu="showContextMenu(version.id)"
+					>{{formatDate(version.createdAt)}}</li>
 				</ul>
 			</li>
 		</ul>
 	</section>
-	<section class="content"><pre>{{versions.activeVersionContent}}</pre></section>
+	<section class="content"><pre>{{versions.data.currentContent}}</pre></section>
 </section>
 </section>
 </template>
 
 
 <script>
-import {throttle} from 'lodash';
-import {mapGetters} from 'vuex';
-import Menu from '../api/menu/index';
-import util from '../modules/util';
+import Menu from '../modules/menu/electron';
+import debug from '../modules/util/debug';
+import eventHub from '../modules/util/eventHub';
+import {uiData, showVersions, hideVersions, showVersionContent, updateNote} from  '../modules/controller';
 
-let menu = new Menu(util.platform);
-
-let _doExchange;
+const logger = debug('version');
+const menu = new Menu();
 
 export default {
 	computed: {
-		...mapGetters([
+		/* ...mapGetters([
 			'versions',
 			'contextMenuVersionId'
-		])
+		]) */
 	},
 	watch: {
 		// 出现历史版本对话框的时候聚焦
 		// 以便响应ESC按键
-		'versions.currentNote': function(){
+		/* 'versions.currentNote': function(){
 			// console.log('versions.currentNote changed', this.versions.currentNote.id, this.$el);
 			if(this.versions.currentNote){
 				this.$nextTick(() => {
 					this.$el.focus();
 				});
 			}
-		}
+		} */
 	},
 	methods: {
 		formatDate(date){
@@ -149,15 +148,23 @@ export default {
 			return s.replace(/T/g,' ').replace(/^\d+\-/, '').replace(/:\d+\.\d+Z$/,''); // 11-24 14:16
 
 		},
+		isActive(versionId){
+			return versionId === this.activeVersionId ||
+				versionId === this.contextMenuVersionId;
+			// active:(versions.activeVersionId && versions.activeVersionId === version.id) || contextMenuVersionId == version.id}
+		},
 		switchCurrentVersion(versionId){
-			this.$store.dispatch('switchActiveVersion', versionId);
+			this.activeVersionId = versionId;
+			showVersionContent(versionId, this.note.id);
 		},
 		hideVersions(){
-			this.$store.commit('hideVersions');
+			hideVersions();
+			this.note = {};
 		},
 		showContextMenu(versionId){
 			// console.log('contextmenu');
-			this.$store.commit('switchContextMenuVersion', versionId);
+			this.contextMenuVersionId = versionId;
+			// this.$store.commit('switchContextMenuVersion', versionId);
 			// this.$nextTick(() => {
 			setTimeout(() => {
 				menu.showContextMenu([{
@@ -166,17 +173,53 @@ export default {
 				},{
 					title:'恢复该版本',
 					event:'versionRestore'
-				}]);
+				}], {
+					targetType: 'version',
+					targetId: versionId,
+				});
 				setTimeout(()=>{
-					this.$store.commit('switchContextMenuVersion', 0);
+					this.contextMenuVersionId = '';
+					// this.$store.commit('switchContextMenuVersion', 0);
 				},30);
 			},30);
 		}
 	},
 	data(){
-		var data = {
+		return {
+			versions:uiData.versions,
+			currentNotebook:uiData.currentNotebook,
+			contextMenuVersionId: '',
+			activeVersionId: '',
+			note:{}
 		};
-		return data;
+	},
+	mounted(){
+		eventHub.on('noteHistory', (noteId) => {
+			logger('show noteHistory');
+			this.note = this.currentNotebook.data.notes.filter((note) => {
+				return note.id === noteId;
+			})[0];
+			this.contextMenuVersionId = '';
+			this.activeVersionId = '';
+			showVersions(noteId);
+			if(!this.versions.data.list.length){
+				alert('暂无历史版本');
+			}
+			// this.versions.currentNote = {};
+		});
+		eventHub.on('versionOpen', (versionId) => {
+			logger('versionOpen');
+			this.switchCurrentVersion(versionId);
+		});
+		eventHub.on('versionRestore', (versionId) => {
+			logger('versionRestore');
+			this.switchCurrentVersion(versionId);
+			updateNote({
+				id: this.note.id,
+				content: this.versions.data.currentContent
+			});
+			alert(`“${this.note.title}”版本恢复成功`);
+		});
 	}
 };
 </script>

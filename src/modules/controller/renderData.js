@@ -174,14 +174,9 @@ export function switchCurrentNote(source, dest, noteId){
 	});
 }
 
-export function updateCurrentNote(dest, data){
-	if(data.content){
-		dest.currentNoteContent.data = data.content;
-	}
-	for(let key in data){
-		if(key !== 'content'){
-			dest.currentNote.data[key] = data[key];
-		}
+export function updateCurrentNoteContent(dest, content){
+	if(content){
+		dest.currentNoteContent.data = content;
 	}
 }
 

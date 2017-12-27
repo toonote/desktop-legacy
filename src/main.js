@@ -6,10 +6,10 @@ import './directive/focusInput';
 import Sidebar from './component/Sidebar.vue';
 import Editor from 'tn-md-editor';
 import Preview from './component/Preview.vue';
-// import versions from './component/versions.vue';
+import Version from './component/Version.vue';
 import NotebookSelect from './component/NotebookSelect.vue';
 
-import {uiData, updateCurrentNote, createAttachment} from './modules/controller';
+import {uiData, updateNote, createAttachment} from './modules/controller';
 import * as menu from './modules/menu';
 import eventHub from './modules/util/eventHub';
 
@@ -56,7 +56,7 @@ let app = new Vue({
 		},
 		// 编辑器内容改变
 		contentChange: function(data){
-			updateCurrentNote({
+			updateNote({
 				content:data.content
 			}, data.isEditingHeading);
 		},
@@ -77,7 +77,7 @@ let app = new Vue({
 		Sidebar,
 		Editor,
 		Preview,
-		// versions,
+		Version,
 		NotebookSelect
 	},
 	watch: {

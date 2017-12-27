@@ -34,6 +34,12 @@ export const uiData = {
 	searchNoteList:{
 		data: []
 	},
+	versions: {
+		data: {
+			list: [],
+			currentContent: ''
+		}
+	},
 	layout:{
 		data:{
 			sidebar: true,
@@ -134,11 +140,14 @@ export function switchCurrentNote(noteId){
 }
 
 /**
- * 更新当前笔记
+ * 更新笔记
  * @param {Object} 更新的数据
  * @returns {void}
  */
-export const updateCurrentNote = throttle((data, isEditingHeading) => {
+export const updateNote = throttle((data, isEditingHeading) => {
+	if(!data.id){
+		data.id = uiData.currentNote.data.id;
+	}
 	let hasChanged = false;
 	// 处理通过标题修改分类的情况
 	if(data.content && !isEditingHeading){
@@ -152,7 +161,7 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 				data.title = titlePart[1];
 				const categoryTitle = titlePart[0].trim();
 				logger('update note category to :', categoryTitle);
-				updateCurrentNoteCategoryByTitle(categoryTitle);
+				updateNoteCategoryByTitle(data.id, categoryTitle);
 			}else{
 				data.title = titlePart[0];
 			}
@@ -162,14 +171,17 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 		logger('content changed.');
 		// 触发事件，用于历史版本记录、云服务等
 		eventHub.emit(EVENTS.NOTE_CONTENT_CHANGED, {
-			id: uiData.currentNote.data.id,
+			id: data.id,
 			content: data.content
 		});
 		hasChanged = true;
 	}
 	if(!hasChanged){
+		let targetNote = uiData.currentNotebook.data.notes.filter((note) => {
+			return note.id === data.id;
+		})[0];
 		for(let key in data){
-			if(key !== 'content' && data[key] !== uiData.currentNote.data[key]){
+			if(key !== 'content' && data[key] !== targetNote[key]){
 				logger(key + ' changed.');
 				hasChanged = true;
 			}
@@ -178,11 +190,11 @@ export const updateCurrentNote = throttle((data, isEditingHeading) => {
 	logger('hasChanged', hasChanged, data);
 	if(!hasChanged) return;
 	console.time('updateNote');
-	realm.updateResult('Note', {
-		...data,
-		id: uiData.currentNote.data.id,
-	});
-	renderData.updateCurrentNote(uiData, data);
+	realm.updateResult('Note', data);
+	renderData.updateNote(uiData, data);
+	if(data.id === uiData.currentNote.data.id){
+		renderData.updateCurrentNoteContent(uiData, data.content);
+	}
 	console.timeEnd('updateNote');
 }, 500);
 
@@ -276,11 +288,15 @@ export const createCategory = function(title, afterWhichId){
 
 /**
  * 修改当前笔记的分类
+ * @param {string} noteId	笔记ID
  * @param {string} categoryTitle 新分类的标题
  */
-export const updateCurrentNoteCategoryByTitle = function(categoryTitle){
-	if(categoryTitle === uiData.currentNote.data.category.title) return;
-	console.time('updateCurrentNoteCategoryByTitle');
+export const updateNoteCategoryByTitle = function(noteId, categoryTitle){
+	const targetNote = uiData.currentNotebook.data.notes.filter((note) => {
+		return note.id === noteId;
+	})[0];
+	if(categoryTitle === targetNote.category.title) return;
+	console.time('updateNoteCategoryByTitle');
 	// todo:需要限定笔记本范围
 	const targetCategory = results.Category.filtered(`title="${categoryTitle}"`);
 	let categoryId;
@@ -291,9 +307,9 @@ export const updateCurrentNoteCategoryByTitle = function(categoryTitle){
 		categoryId = targetCategory[0].id;
 	}
 
-	updateNoteCategory(uiData.currentNote.data.id, categoryId);
+	updateNoteCategory(targetNote.id, categoryId);
 
-	console.timeEnd('updateCurrentNoteCategoryByTitle');
+	console.timeEnd('updateNoteCategoryByTitle');
 };
 
 /**
@@ -561,4 +577,47 @@ export const createAttachment = function(data){
 		filename: fileName,
 		ext
 	};
+};
+
+/**
+ * 显示指定笔记的历史版本
+ * @param {string} noteId 笔记ID
+ */
+export const showVersions = function(noteId){
+	console.time('showVersions');
+	const targetNote = realm.getResults('Note').filtered(`id="${noteId}"`);
+	if(!targetNote.length){
+		uiData.versions.data.list = [];
+	}else{
+		uiData.versions.data.list = targetNote[0].versions.sorted('createdAt', true).map((version) => {
+			return {
+				id: version.id,
+				message: version.message,
+				createdAt: version.createdAt
+			};
+		});
+	}
+	console.timeEnd('showVersions');
+};
+
+/**
+ * 显示指定笔记的历史版本
+ */
+export const hideVersions = function(){
+	uiData.versions.data.list = [];
+	uiData.versions.data.currentContent = '';
+};
+
+/**
+ * 显示当前版本的内容
+ * @param {string} versionId
+ * @param {string} noteId
+ */
+export const showVersionContent = function(versionId, noteId){
+	console.time('showVersionContent');
+	const content = realm.getResults('VersionNoteContent').filtered(`versionId="${versionId}" AND noteId="${noteId}"`);
+	if(content.length){
+		uiData.versions.data.currentContent = content[0].content;
+	}
+	console.timeEnd('showVersionContent');
 };

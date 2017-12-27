@@ -123,7 +123,8 @@ const onMenuClick = function(eventType, command){
 			}
 			break;
 		case 'noteHistory':
-			this.historyContextMenuNote();
+			logger('ready to show note version window');
+			eventHub.emit('noteHistory', data.targetId);
 			break;
 		case 'categoryRename':
 			eventHub.emit('categoryRename', data.targetId);
@@ -176,10 +177,10 @@ const onMenuClick = function(eventType, command){
 			controller.switchLayout('preview');
 			break;
 		case 'versionOpen':
-			this.versionOpen();
+			eventHub.emit('versionOpen', data.targetId);
 			break;
 		case 'versionRestore':
-			this.versionRestore();
+			eventHub.emit('versionRestore', data.targetId);
 			break;
 		case 'undo':
 			eventHub.emit('edit', 'undo');
