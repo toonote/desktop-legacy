@@ -337,9 +337,24 @@ export const updateNoteCategory = function(noteId, categoryId){
 		id: oldCategoryId
 	}]);
 
+	deleteEmptyCategory(oldCategoryId);
+
 	renderData.updateCurrentNoteCategory(results, uiData, categoryId);
 	console.timeEnd('updateNoteCategory');
 
+};
+
+/**
+ * 删除空分类
+ * @param {string} categoryId 分类ID
+ */
+export const deleteEmptyCategory = function(categoryId){
+	console.time('deleteEmptyCategory');
+	const targetCategory = results.Category.filtered(`id="${categoryId}"`)[0];
+	if(!targetCategory) return;
+	if(targetCategory.notes.length) return;
+	realm.deleteResult('Category', categoryId);
+	console.timeEnd('deleteEmptyCategory');
 };
 
 /**
