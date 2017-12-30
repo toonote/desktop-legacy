@@ -107,25 +107,29 @@ export function createNotebook(title){
 /**
  * 初始化realm数据库
  */
-export function init(){
+export function init(noInitData = false){
 	console.time('openRealm');
-	realm = new Realm({
-		schema: [
-			ConfigSchema,
-			NotebookSchema,
-			CategorySchema,
-			NoteSchema,
-			AttachmentSchema,
-			VersionSchema,
-			VersionNoteContentSchema,
-			TaskSchema
-		],
-		schemaVersion: SCHEMA_VERSION,
-		path: DB_PATH
-	});
+	if(!realm){
+		realm = new Realm({
+			schema: [
+				ConfigSchema,
+				NotebookSchema,
+				CategorySchema,
+				NoteSchema,
+				AttachmentSchema,
+				VersionSchema,
+				VersionNoteContentSchema,
+				TaskSchema
+			],
+			schemaVersion: SCHEMA_VERSION,
+			path: DB_PATH
+		});
+	}
 	console.timeEnd('openRealm');
 	// 初始化数据
-	initData();
+	if(!noInitData){
+		initData();
+	}
 }
 
 /**
@@ -134,6 +138,9 @@ export function init(){
  * @returns {Realm.Results} Schema结果
  */
 export function getResults(name){
+	if(!realm){
+		init(true);
+	}
 	return realm.objects(name);
 }
 

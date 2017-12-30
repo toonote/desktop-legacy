@@ -9,7 +9,10 @@ import ioCopyNote from './copyNote';
 import {init as versionInit} from './version';
 import eventHub, {EVENTS} from '../util/eventHub';
 import taskInit from '../task';
+import upgrade from '../upgrade';
 import {throttle} from 'lodash';
+
+upgrade();
 
 const logger = debug('controller:main');
 
