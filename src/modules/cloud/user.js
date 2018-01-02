@@ -2,12 +2,17 @@
 
 import {getConfig, setConfig} from '../util/config';
 import {getAgent} from '../util/http';
+import debug from '../util/debug';
+
+const logger = debug('user:module');
 
 const URL_BASE = 'https://api.xiaotu.io';
 let agent;
 
 // 用户信息
-export let userData = {};
+export const userData = {
+	data: {}
+};
 
 // 显示登录窗口
 const oauth = async function(){
@@ -51,7 +56,7 @@ export async function login(isForce = false){
 	if(isForce){
 		token = await oauth();
 	}else{
-		token = getConfig('token');
+		token = getConfig('cloudToken');
 	}
 	if(token){
 		await initUserByToken(token);
@@ -60,7 +65,8 @@ export async function login(isForce = false){
 
 // 用户初始化
 export async function init(){
-	const token = getConfig('token');
+	const token = getConfig('cloudToken');
+	logger('token:' + token);
 	if(!token){
 		return false;
 	}
@@ -72,10 +78,13 @@ export async function initUserByToken(token){
 	if(!agent){
 		agent = getAgent(URL_BASE);
 	}
+	logger('ready to get userInfo');
 	return agent.get('/user/info').then((data) => {
-		userData = data.data;
+		logger('get userInfo success', data);
+		userData.data = data.data;
 		return data.data;
 	}).catch((e) => {
+		logger('get userInfo failed', e);
 		if(e.response && e.response.status === 403){
 			login(true);
 		}

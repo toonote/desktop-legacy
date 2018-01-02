@@ -296,7 +296,7 @@ module.exports = function(env){
 	console.log('[upgrade]step3: 配置：', config);
 	realm.write(() => {
 		realm.create('Config', {
-			key: 'cloundToken',
+			key: 'cloudToken',
 			value: config.cloudToken
 		});
 		realm.create('Config', {

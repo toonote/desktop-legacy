@@ -89,6 +89,7 @@ const config = {
 if(process.env.NODE_ENV !== 'production'){
 	config.plugins.push(new webpack.HotModuleReplacementPlugin());
 	config.devServer = {
+		port: 8081,
 		hot: process.env.NODE_ENV !== 'production',
 		inline: process.env.NODE_ENV !== 'production'
 	};

@@ -39,16 +39,15 @@
     "debug": "^3.1.0",
     "eases": "^1.0.8",
     "electron": "^1.7.10",
-    "electron-machine-id": "^1.0.9",
     "highlight.js": "^9.7.0",
     "inline-css": "^2.2.2",
     "lodash": "^4.17.4",
+    "node-machine-id": "^1.1.9",
     "realm": "^2.1.1",
     "remarkable": "^1.6.1",
     "spectron": "^3.7.2",
     "uuid": "^2.0.3",
-    "vue": "^2.3.4",
-    "vuex": "^2.0.0"
+    "vue": "^2.3.4"
   },
   "devDependencies": {
     "ava": "^0.20.0",
