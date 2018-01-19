@@ -19,7 +19,7 @@
     "type": "git",
     "url": "https://github.com/TooBug/TooNote.git"
   },
-  "license": "ISC",
+  "license": "MIT",
   "babel": {
     "presets": [],
     "plugins": [
