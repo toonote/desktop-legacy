@@ -8,6 +8,9 @@ export default {
 		message: 'string',
 		createdAt: 'date',
 		updatedAt: 'date',
-		notes: 'Note[]'
+		notes: 'Note[]',
+		categories: 'Category[]',
+		notebooks: 'Notebook[]',
+		changes: 'string'
 	}
 };

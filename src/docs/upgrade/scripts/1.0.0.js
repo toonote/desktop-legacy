@@ -3,139 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const uuid = require('uuid');
 const Realm = require('realm');
-
-const ConfigSchema = {
-	name: 'Config',
-	primaryKey: 'key',
-	properties: {
-		key: 'string',
-		value: 'string'
-	}
-};
-
-const NotebookSchema = {
-	name: 'Notebook',
-	primaryKey: 'id',
-	properties: {
-		id: 'string',
-		title: 'string',
-		order: 'int',
-		createdAt: 'date',
-		updatedAt: 'date',
-		categories: 'Category[]',
-		notes: 'Note[]'
-	}
-};
-
-const CategorySchema = {
-	name: 'Category',
-	primaryKey: 'id',
-	properties: {
-		id: 'string',
-		title: 'string',
-		order: 'int',
-		createdAt: 'date',
-		updatedAt: 'date',
-		notes: 'Note[]',
-		notebook: {
-			type: 'linkingObjects',
-			objectType: 'Notebook',
-			property: 'categories'
-		}
-	}
-};
-
-const AttachmentSchema = {
-	name: 'Attachment',
-	primaryKey: 'id',
-	properties: {
-		id: 'string',
-		filename: 'string',
-		ext: 'string',
-		size: 'int',
-		createdAt: 'date',
-		updatedAt: 'date',
-		localPath: 'string',
-		remotePath: 'string',
-		note: {
-			type: 'linkingObjects',
-			objectType: 'Note',
-			property: 'attachments'
-		}
-	}
-};
-
-const NoteSchema = {
-	name: 'Note',
-	primaryKey: 'id',
-	properties: {
-		id: 'string',
-		title: 'string',
-		content: 'string',
-		order: 'int',
-		createdAt: 'date',
-		updatedAt: 'date',
-		localVersion: 'int',
-		remoteVersion: 'int',
-		attachments: 'Attachment[]',
-		versions: {
-			type: 'linkingObjects',
-			objectType: 'Version',
-			property: 'notes'
-		},
-		category: {
-			type: 'linkingObjects',
-			objectType: 'Category',
-			property: 'notes'
-		},
-		notebook: {
-			type: 'linkingObjects',
-			objectType: 'Notebook',
-			property: 'notes'
-		}
-	}
-};
-
-const VersionSchema = {
-	name: 'Version',
-	primaryKey: 'id',
-	properties: {
-		id: 'string',
-		message: 'string',
-		createdAt: 'date',
-		updatedAt: 'date',
-		notes: 'Note[]'
-	}
-};
-
-const VersionNoteContentSchema = {
-	name: 'VersionNoteContent',
-	primaryKey: 'id',
-	properties: {
-		id: 'string',
-		noteId: 'string',
-		versionId: 'string',
-		content: 'string',
-		createdAt: 'date',
-		updatedAt: 'date',
-	}
-};
-
-const TaskSchema = {
-	name: 'Task',
-	primaryKey: 'id',
-	properties: {
-		id: 'string',
-		type: 'string',
-		priority: 'int',
-		targetId: 'string',
-		data: 'string',
-		status: 'int',
-		createdAt: 'date',
-		updatedAt: 'date',
-		log: 'string[]',
-	}
-};
+const Schemas = require('./1.0.0.schema');
 
 const initRealm = function(env){
 	let filename = 'toonote.realm';
@@ -148,14 +16,14 @@ const initRealm = function(env){
 	const DB_PATH = path.join(require('electron').remote.app.getPath('userData'), filename);
 	return new Realm({
 		schema: [
-			ConfigSchema,
-			NotebookSchema,
-			CategorySchema,
-			NoteSchema,
-			AttachmentSchema,
-			VersionSchema,
-			VersionNoteContentSchema,
-			TaskSchema
+			Schemas.Config,
+			Schemas.Notebook,
+			Schemas.Category,
+			Schemas.Note,
+			Schemas.Attachment,
+			Schemas.Version,
+			Schemas.VersionNoteContent,
+			Schemas.Task
 		],
 		schemaVersion: 1,
 		path: DB_PATH
@@ -297,11 +165,11 @@ module.exports = function(env){
 	realm.write(() => {
 		realm.create('Config', {
 			key: 'cloudToken',
-			value: config.cloudToken
+			value: JSON.stringify(config.cloudToken)
 		});
 		realm.create('Config', {
 			key: 'dataVersion',
-			value: '1.0.0'
+			value: JSON.stringify('1.0.0')
 		});
 		if(config.lastOpenNoteId){
 			const note = realm.objects('Note').filtered(`id="${config.lastOpenNoteId}"`)[0];

@@ -10,6 +10,11 @@ export default {
 		createdAt: 'date',
 		updatedAt: 'date',
 		categories: 'Category[]',
-		notes: 'Note[]'
+		notes: 'Note[]',
+		versions: {
+			type: 'linkingObjects',
+			objectType: 'Version',
+			property: 'notebooks'
+		}
 	}
 };

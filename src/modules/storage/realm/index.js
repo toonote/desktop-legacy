@@ -207,14 +207,17 @@ export function createResult(name, arr, reverseLinkArr = []){
 /**
  * 删除数据
  * @param {string} name Schema名称
- * @param {string} id 数据ID
+ * @param {string|string[]} id 数据ID
  */
-export function deleteResult(name, id){
-	const target = getResults(name).filtered(`id="${id}"`)[0];
+export function deleteResult(name, idArr){
+	if(!Array.isArray(idArr)) idArr = [idArr];
 	ensureWrite(() => {
-		if(target){
-			realm.delete(target);
-		}
+		idArr.forEach((id) => {
+			const target = getResults(name).filtered(`id="${id}"`)[0];
+			if(target){
+				realm.delete(target);
+			}
+		});
 	});
 }
 
