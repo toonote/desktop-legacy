@@ -53,6 +53,7 @@
 
 <script>
 import * as user from '../modules/cloud/user';
+import * as sync from '../modules/cloud/sync';
 import debug from '../modules/util/debug';
 
 const logger = debug('user:main');
@@ -75,6 +76,7 @@ export default {
 	},
 	mounted(){
 		user.init();
+		sync.init();
 	}
 
 };

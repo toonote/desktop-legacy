@@ -229,7 +229,11 @@ export function deleteResult(name, idArr){
 export function createReverseLink(result, reverseLinkArr){
 	ensureWrite(() => {
 		reverseLinkArr.forEach((linkInfo) => {
-			return getResults(linkInfo.name).filtered(`id="${linkInfo.id}"`)[0][linkInfo.field].push(result);
+			const targetField = getResults(linkInfo.name).filtered(`id="${linkInfo.id}"`)[0][linkInfo.field];
+			const index = targetField.indexOf(result);
+			if(index === -1){
+				return targetField.push(result);
+			}
 		});
 	});
 }

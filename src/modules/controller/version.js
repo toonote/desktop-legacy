@@ -23,7 +23,8 @@ const createVersion = function(task){
 	// 新建版本
 	const versionId = realm.createResult('Version', {
 		message: '【修改】\n' + allNotes.map((note) => note.title).join('\n'),
-		notes: allNotes
+		notes: allNotes,
+		changes: ''
 	});
 	logger('version id ' + versionId);
 

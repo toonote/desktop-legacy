@@ -3,6 +3,7 @@
 import {getConfig, setConfig} from '../util/config';
 import {getAgent} from '../util/http';
 import debug from '../util/debug';
+import eventHub, { EVENTS } from '../util/eventHub';
 
 const logger = debug('user:module');
 
@@ -86,6 +87,7 @@ export async function initUserByToken(token){
 	return agent.get('/user/info').then((data) => {
 		logger('get userInfo success', data);
 		userData.data = data.data;
+		eventHub.emit(EVENTS.USER_LOGIN, userData.data);
 		return data.data;
 	}).catch((e) => {
 		logger('get userInfo failed', e);
