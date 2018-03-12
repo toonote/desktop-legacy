@@ -11,7 +11,7 @@ const getModel = async function(modelName){
 	if(!_modelCache[modelName]){
 		let model = new RestfulModel({
 			model: modelName,
-			baseUrl: 'https://api.xiaotu.io/api/v1/',
+			baseUrl: DEBUG ? 'https://test-api.xiaotu.io/api/v1/' : 'https://api.xiaotu.io/api/v1/',
 			headers: {
 				'X-TooNote-Token': await getConfig('cloudToken')
 			},

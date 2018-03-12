@@ -22,8 +22,11 @@
 </div>
 <script>
 	(async function(){
+		const DEBUG = /\?debug/.test(location.href);
 		const axios = require('axios');
-		const BASE_URL = 'https://api.xiaotu.io';
+		const BASE_URL = DEBUG ?
+			'https://test-api.xiaotu.io':
+			'https://api.xiaotu.io';
 
 		// step 1，获取场景值
 		let response = await axios.get(`${BASE_URL}/user/getLoginScene?_=${Date.now()}`);

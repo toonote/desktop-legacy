@@ -6,7 +6,7 @@ import debug from '../util/debug';
 
 const logger = debug('user:module');
 
-const URL_BASE = 'https://api.xiaotu.io';
+const URL_BASE = DEBUG ? 'https://test-api.xiaotu.io' : 'https://api.xiaotu.io';
 let agent;
 
 // 用户信息
@@ -25,7 +25,11 @@ const oauth = async function(){
 	let webContents = loginWindow.webContents;
 	// 加载空白页，显示loading
 	// loginWindow.loadURL('about:blank');
-	loginWindow.loadURL(`file://${__dirname}/login.html`);
+	let query = '';
+	if(DEBUG){
+		query = '?debug';
+	}
+	loginWindow.loadURL(`file://${__dirname}/login.html${query}`);
 	// webContents.executeJavaScript('document.write("正在登录...")');
 	// 打开调试工具
 	if(DEBUG){
