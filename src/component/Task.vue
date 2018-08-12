@@ -38,8 +38,10 @@ export default {
 <style scoped>
 .task{
 	position: absolute;
+	bottom: 0;
 	color:red;
-	font-size:10px;
+	font-size:9px;
+	border: 1px solid #eee;
 	background: rgba(255,255,255,.7);
 	z-index: 2;
 	pointer-events: none;

@@ -9,9 +9,9 @@
     "prod": "NODE_ENV=production webpack",
     "prod-win": "set NODE_ENV=production&& webpack",
     "run": "sleep 5&&electron .",
-	"start": "npm-run-all -p -r dev run",
-	"build-upgrade": "node build.js build-upgrade",
-    "build:modules": "cd node_modules/realm&&../.bin/node-pre-gyp install --runtime=electron --target=1.7.10",
+    "start": "npm-run-all -p -r dev run",
+    "build-upgrade": "node build.js build-upgrade",
+    "build:modules": "cd node_modules/realm&&../.bin/node-pre-gyp install --runtime=electron --target=2.0.7",
     "build:osx": "npm run prod&& ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ electron-packager . --overwrite --arch=all --icon=../assets/logo.icns --out=../dist --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/windows\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\"",
     "build:win": "npm run prod-win&& set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/&& electron-packager . --overwrite --arch=all --icon=../assets/logo.ico --out=../dist --win32metadata.CompanyName=\"TooNote\" --win32metadata.ProductName=\"TooNote\" --win32metadata.FileDescription=\"TooNote\" --ignore=\"^/(?:api|component|models|modules|vuex)\" --ignore=\"/osx\" --ignore=\"\\.map$\" --ignore=\"node_modules/(?:d[$/]|babel-core|es5\\-ext|vue/src|vue/types|remarkable/dist|[\\w\\-]+/benchmark|[\\w\\-]+/test|[\\w\\-]+/docs|[\\w\\-]+/demo|brace/mode/[^m])\""
   },
@@ -24,13 +24,11 @@
   "babel": {
     "presets": [],
     "plugins": [
-      "transform-object-rest-spread"
+      "@babel/plugin-proposal-object-rest-spread"
     ],
     "env": {
       "production": {
-        "presets": [
-          "babili"
-        ]
+        "presets": []
       }
     }
   },
@@ -39,44 +37,42 @@
     "brace": "^0.10.0",
     "debug": "^3.1.0",
     "eases": "^1.0.8",
-    "electron": "^1.7.10",
     "highlight.js": "^9.7.0",
-    "inline-css": "^2.2.2",
-    "lodash": "^4.17.4",
-    "node-machine-id": "^1.1.9",
-    "realm": "^2.1.1",
+    "inline-css": "^2.4.0",
+    "lodash": "^4.17.10",
+    "node-machine-id": "^1.1.10",
+    "realm": "^2.14.2",
     "remarkable": "^1.6.1",
-    "spectron": "^3.7.2",
     "uuid": "^2.0.3",
-    "vue": "^2.3.4"
+    "vue": "^2.5.17"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-rc.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-rc.1",
     "ava": "^0.20.0",
-    "babel-core": "^6.4.0",
-    "babel-loader": "^6.2.5",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-object-rest-spread": "^6.16.0",
-    "babel-preset-babili": "0.0.5",
-    "css-loader": "^0.23.1",
-    "electron": "^1.6.6",
-    "electron-devtools-installer": "^2.0.1",
+    "babel-loader": "^8.0.0-beta.4",
+    "css-loader": "^1.0.0",
+    "electron": "^2.0.7",
+    "electron-devtools-installer": "^2.2.4",
     "eslint": "^3.19.0",
-    "extract-text-webpack-plugin": "^2.0.0-beta.5",
+    "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^0.8.5",
     "html-webpack-harddisk-plugin": "^0.1.0",
-    "html-webpack-plugin": "^2.30.1",
-    "npm-run-all": "^4.0.2",
-    "spectron": "^3.7.2",
-    "style-loader": "^0.13.1",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.4.1",
+    "npm-run-all": "^4.1.3",
+    "spectron": "^3.8.0",
+    "style-loader": "^0.22.1",
     "tn-md-editor": "git+https://github.com/TooNote/MdEditor.git",
     "tn-restful-model": "git+https://github.com/TooNote/RestfulModel.git",
     "url-loader": "^0.5.7",
-    "vue-hot-reload-api": "^2.0.6",
+    "vue-hot-reload-api": "^2.3.0",
     "vue-html-loader": "^1.2.3",
-    "vue-loader": "^13.0.0",
+    "vue-loader": "^15.3.0",
     "vue-style-loader": "^1.0.0",
-    "vue-template-compiler": "^2.3.4",
-    "webpack": "^3.0.0",
-    "webpack-dev-server": "^2.9.7"
+    "vue-template-compiler": "^2.5.17",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
   }
 }

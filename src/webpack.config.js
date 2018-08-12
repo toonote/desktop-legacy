@@ -1,6 +1,7 @@
 var webpack = require('webpack');
 var path = require('path');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var VueLoaderPlugin = require('vue-loader').VueLoaderPlugin;
 // 将npm中的模块在webpack打包时变成require(moduleName)
 // 而不是将代码打包进去
 var npmModules = Object.keys(require('./package.json').dependencies);
@@ -22,8 +23,9 @@ npmModules.forEach(function(npmModule){
 });
 
 const config = {
+	mode: 'production',
 	entry: ['./main.js'],
-	target: 'electron',
+	target: 'electron-renderer',
 	node: false,
 	output: {
 		path: __dirname,
@@ -47,22 +49,26 @@ const config = {
 			test: /\.js$/,
 			exclude: /node_modules/,
 			use:{
-				loader: 'babel-loader',
-				options: {
-					// presets: ['es2015','stage-0'],
-					// plugins: ['transform-runtime']
-				}
+				loader: 'babel-loader'
 			}
 		},{
 			test: /\.css$/,
             // exclude: /\-module\.css$/,
             // loader: ExtractTextPlugin.extract('style-loader','css-loader?root=' + path.normalize(__dirname + '/htdocs').replace(/\\/g,'/'))
             // loader: ExtractTextPlugin.extract('style-loader','css-loader')
-			use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' })
+			// use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' })
+			use: [
+				MiniCssExtractPlugin.loader,
+				'css-loader'
+			]
 		}]
 	},
 	plugins: [
-		new ExtractTextPlugin('style/bundle.css'),
+		new VueLoaderPlugin(),
+		new MiniCssExtractPlugin({
+			filename: 'style/bundle.css'
+		}),
+		// new ExtractTextPlugin('style/bundle.css'),
 		new webpack.DefinePlugin({
 			DEBUG: process.env.NODE_ENV !== 'production' &&
 			process.env.NODE_ENV !== 'test',
@@ -87,6 +93,7 @@ const config = {
 };
 
 if(process.env.NODE_ENV !== 'production'){
+	config.mode = 'development';
 	config.plugins.push(new webpack.HotModuleReplacementPlugin());
 	config.devServer = {
 		port: 8081,
