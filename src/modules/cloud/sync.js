@@ -77,23 +77,13 @@ const syncAllNote = async function(){
 		logger('error getting note list', response);
 		return;
 	}
-	/* updateResult('Note', response.data.map((note) => {
-		return {
-			id: note.id,
-			title: note.title,
-			order: note.order,
-			createdAt: new Date(note.createdAt),
-			updatedAt: new Date(note.updatedAt),
-			remoteVersion: note.version
-		};
-	})); */
 
 	// 获取内容
 	for(let i = 0; i < response.data.data.length; i++){
 		const id = response.data.data[i].id;
 		const noteResponse = await agent.get('/api/v2/note/' + id);
 		if(noteResponse.status !== 200 || !noteResponse.data.data || noteResponse.data.code !== 0){
-			logger('error getting note list', noteResponse);
+			logger('error getting note item', noteResponse);
 			return;
 		}
 		const remoteNote = noteResponse.data.data;
@@ -132,6 +122,69 @@ const syncAllNote = async function(){
 
 };
 
+const syncAllVersion = async function(){
+	const response = await agent.get('/api/v2/version');
+	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+		logger('error getting version list', response);
+		return;
+	}
+
+	// 获取内容
+	for(let i = 0; i < response.data.data.length; i++){
+		const id = response.data.data[i].id;
+		const message = response.data.data[i].message;
+		const createdAt = response.data.data[i].createdAt;
+		const updatedAt = response.data.data[i].updatedAt;
+
+		const versionChangeResponse = await agent.get('/api/v2/versionChange', {
+			params: {
+				where: JSON.stringify({
+					versionId: id
+				})
+			}
+		});
+		if(versionChangeResponse.status !== 200 || !versionChangeResponse.data.data || versionChangeResponse.data.code !== 0){
+			logger('error getting versionChange item', versionChangeResponse);
+			return;
+		}
+		const remoteVersionChanges = versionChangeResponse.data.data;
+
+		let parentVersion;
+		const parentId = response.data.data[i].parentId;
+		if(parentId){
+			parentVersion = getResults('Version').filtered(`id="${parentId}"`)[0];
+		}
+
+		const versionData = {
+			id,
+			message,
+			createdAt,
+			updatedAt,
+			parentVersion,
+			changes: JSON.stringify(remoteVersionChanges),
+			notes: [],
+			categories: [],
+			notebooks: []
+		};
+		const linkMap = {
+			Note: 'notes',
+			Category: 'categories',
+			Notebook: 'notebooks'
+		};
+
+		// 如果反向链接的目标不存在了……那么，反向链接建立不了？
+		// 从版本上看，笔记就消失了？！
+		remoteVersionChanges.forEach((change) => {
+			const target = getResults(change.targetType).filtered(`id="${change.targetId}"`)[0];
+			if(target){
+				versionData[linkMap[change.targetType]].push(target);
+			}
+		});
+		updateResult('Version', versionData);
+
+	}
+};
+
 /**
  * 执行同步
  */
@@ -143,6 +196,7 @@ export async function doSync(){
 		await syncAllNotebook();
 		await syncAllCategory();
 		await syncAllNote();
+		await syncAllVersion();
 	}else{
 		// 有共识版本
 		// step1 获取共识版本之后新的版本数据

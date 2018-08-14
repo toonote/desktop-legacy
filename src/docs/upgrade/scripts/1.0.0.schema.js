@@ -138,6 +138,7 @@ exports.Version =  {
 		message: 'string',
 		createdAt: 'date',
 		updatedAt: 'date',
+		parentVersion: 'Version',
 		notes: 'Note[]',
 		categories: 'Category[]',
 		notebooks: 'Notebook[]',
