@@ -1,7 +1,7 @@
 import eventHub, { EVENTS } from '../util/eventHub';
 import debug from '../util/debug';
 import { getResults, createResult, updateResult, deleteResult, createReverseLink } from '../storage/realm/index';
-import { getConfig } from '../util/config';
+import { getConfig, setConfig } from '../util/config';
 import { getAgent } from '../util/http';
 
 const logger = new debug('cloud:sync');
@@ -26,8 +26,94 @@ export function init(){
 	}); */
 }
 
-const syncAllNotebook = async function(){
-	const response = await agent.get('/api/v2/notebook');
+const dealDeleteInChange = function(change){
+	if(change.action === 'delete'){
+		const schemaName = change.targetType;
+		deleteResult(schemaName, change.targetId);
+		logger('delete %s: %s', schemaName, change.targetId);
+	}
+};
+
+const writeVersion = function(version, changes){
+	let parentVersion;
+	const parentId = version.parentId;
+	if(parentId){
+		parentVersion = getResults('Version').filtered(`id="${parentId}"`)[0];
+	}
+	// 将changes中的变更在本地重做一遍
+	// 修改和新增的其实不用做，因为拉回来的版本数据中肯定有
+	// 删除的需要单独处理一下
+	// 修改的数据结构如下：
+	/* change = {
+		action: 'create|edit|delete',
+		targetType: 'Note|Category|Notebook',
+		targetId: 'xxxxxx',
+		data: {
+			title: 'abc',
+			categoryId: 'xxxxxx'
+		}
+	}; */
+	changes.forEach((change) => {
+		dealDeleteInChange(change);
+	});
+
+	const versionData = {
+		id: version.id,
+		message: version.message,
+		createdAt: version.createdAt,
+		updatedAt: version.updatedAt,
+		parentVersion,
+		changes: JSON.stringify(changes),
+		notes: [],
+		categories: [],
+		notebooks: []
+	};
+	const linkMap = {
+		Note: 'notes',
+		Category: 'categories',
+		Notebook: 'notebooks'
+	};
+
+	// 如果反向链接的目标不存在了……那么，反向链接建立不了？
+	// 从版本上看，笔记就消失了？！
+	changes.forEach((change) => {
+		const target = getResults(change.targetType).filtered(`id="${change.targetId}"`)[0];
+		if(target){
+			versionData[linkMap[change.targetType]].push(target);
+		}
+	});
+	updateResult('Version', versionData);
+	// 设置共识版本
+	setConfig('commonVersion', version.id);
+};
+
+const getVersionChanges = async function(versionId){
+	const versionChangeResponse = await agent.get('/api/v2/versionChange', {
+		params: {
+			where: JSON.stringify({
+				versionId: versionId
+			})
+		}
+	});
+	if(versionChangeResponse.status !== 200 || !versionChangeResponse.data.data || versionChangeResponse.data.code !== 0){
+		logger('error getting versionChange item', versionChangeResponse);
+		return;
+	}
+	return versionChangeResponse.data.data;
+};
+
+const downloadAllNotebook = async function(notebookIds){
+	let params = {};
+	if(notebookIds){
+		params = {
+			where: {
+				id: notebookIds
+			}
+		};
+	}
+	const response = await agent.get('/api/v2/notebook', {
+		params
+	});
 	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
 		logger('error getting notebook list', response);
 		return;
@@ -43,8 +129,18 @@ const syncAllNotebook = async function(){
 	}));
 };
 
-const syncAllCategory = async function(){
-	const response = await agent.get('/api/v2/category');
+const downloadAllCategory = async function(categoryIds){
+	let params = {};
+	if(categoryIds){
+		params = {
+			where: {
+				id: categoryIds
+			}
+		};
+	}
+	const response = await agent.get('/api/v2/category', {
+		params
+	});
 	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
 		logger('error getting category list', response);
 		return;
@@ -62,6 +158,7 @@ const syncAllCategory = async function(){
 	for(let i = 0; i < response.data.data.length; i++){
 		const remoteCategory = response.data.data[i];
 		const category = getResults('Category').filtered(`id="${remoteCategory.id}"`)[0];
+		// todo:删除反向链接
 		createReverseLink(category, [{
 			name: 'Notebook',
 			id: remoteCategory.notebookId,
@@ -71,8 +168,18 @@ const syncAllCategory = async function(){
 
 };
 
-const syncAllNote = async function(){
-	const response = await agent.get('/api/v2/note');
+const downloadAllNote = async function(noteIds){
+	let params = {};
+	if(noteIds){
+		params = {
+			where: {
+				id: noteIds
+			}
+		};
+	}
+	const response = await agent.get('/api/v2/note', {
+		params
+	});
 	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
 		logger('error getting note list', response);
 		return;
@@ -98,6 +205,7 @@ const syncAllNote = async function(){
 			remoteVersion: remoteNote.version
 		});
 
+		// todo:删除反向链接
 		// 反向链接
 		const note = getResults('Note').filtered(`id="${remoteNote.id}"`)[0];
 		const reverseLink = [];
@@ -122,7 +230,7 @@ const syncAllNote = async function(){
 
 };
 
-const syncAllVersion = async function(){
+const downloadAllVersion = async function(){
 	const response = await agent.get('/api/v2/version');
 	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
 		logger('error getting version list', response);
@@ -131,57 +239,70 @@ const syncAllVersion = async function(){
 
 	// 获取内容
 	for(let i = 0; i < response.data.data.length; i++){
-		const id = response.data.data[i].id;
-		const message = response.data.data[i].message;
-		const createdAt = response.data.data[i].createdAt;
-		const updatedAt = response.data.data[i].updatedAt;
+		const version = response.data.data[i];
+		const remoteVersionChanges = await getVersionChanges(version.id);
 
-		const versionChangeResponse = await agent.get('/api/v2/versionChange', {
-			params: {
-				where: JSON.stringify({
-					versionId: id
-				})
+		writeVersion(version, remoteVersionChanges);
+	}
+};
+
+const downloadAllAfterVersion = async function(commonVersionId){
+	const response = await agent.get('/api/v2/version', {
+		params: {
+			commonVersionId
+		}
+	});
+	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+		logger('error getting version data after commonVersion', response);
+		return;
+	}
+
+	const newVersions = response.data.data;
+
+	// 稍后需要去拉取的id列表
+	const noteIds = [];
+	const categoryIds = [];
+	const notebookIds = [];
+
+	// 临时数组，存储与newVersions对应的changes
+	const tmpChanges = [];
+
+	for(let i = 0; i < newVersions.length;i++){
+		const version = newVersions[i];
+		logger('got new version', version);
+		const versionChanges = await getVersionChanges(version.id);
+		tmpChanges[i] = versionChanges;
+		versionChanges.forEach((change) => {
+			dealDeleteInChange(change);
+			if(change.action === 'delete') return;
+			if(change.targetType === 'Note'){
+				if(noteIds.indexOf(change.targetId) === -1){
+					noteIds.push(change.targetId);
+				}
+			}else if(change.targetType === 'Category'){
+				if(categoryIds.indexOf(change.targetId) === -1){
+					categoryIds.push(change.targetId);
+				}
+			}else if(change.targetType === 'Notebook'){
+				if(notebookIds.indexOf(change.targetId) === -1){
+					notebookIds.push(change.targetId);
+				}
 			}
 		});
-		if(versionChangeResponse.status !== 200 || !versionChangeResponse.data.data || versionChangeResponse.data.code !== 0){
-			logger('error getting versionChange item', versionChangeResponse);
-			return;
-		}
-		const remoteVersionChanges = versionChangeResponse.data.data;
+	}
 
-		let parentVersion;
-		const parentId = response.data.data[i].parentId;
-		if(parentId){
-			parentVersion = getResults('Version').filtered(`id="${parentId}"`)[0];
-		}
+	if(notebookIds.length){
+		await downloadAllNotebook(notebookIds);
+	}
+	if(categoryIds.length){
+		await downloadAllCategory(categoryIds);
+	}
+	if(noteIds.length){
+		await downloadAllNote(noteIds);
+	}
 
-		const versionData = {
-			id,
-			message,
-			createdAt,
-			updatedAt,
-			parentVersion,
-			changes: JSON.stringify(remoteVersionChanges),
-			notes: [],
-			categories: [],
-			notebooks: []
-		};
-		const linkMap = {
-			Note: 'notes',
-			Category: 'categories',
-			Notebook: 'notebooks'
-		};
-
-		// 如果反向链接的目标不存在了……那么，反向链接建立不了？
-		// 从版本上看，笔记就消失了？！
-		remoteVersionChanges.forEach((change) => {
-			const target = getResults(change.targetType).filtered(`id="${change.targetId}"`)[0];
-			if(target){
-				versionData[linkMap[change.targetType]].push(target);
-			}
-		});
-		updateResult('Version', versionData);
-
+	for(let i = 0; i < newVersions.length;i++){
+		writeVersion(newVersions[i], tmpChanges[i]);
 	}
 };
 
@@ -193,99 +314,11 @@ export async function doSync(){
 	const commonVersion = getConfig('commonVersion');
 	if(!commonVersion){
 		logger('no commonVersion, ready to get all data');
-		await syncAllNotebook();
-		await syncAllCategory();
-		await syncAllNote();
-		await syncAllVersion();
+		await downloadAllNotebook();
+		await downloadAllCategory();
+		await downloadAllNote();
+		await downloadAllVersion();
 	}else{
-		// 有共识版本
-		// step1 获取共识版本之后新的版本数据
-		const response = await agent.get('/api/v2/version/diff', {
-			params: {
-				commonVersion
-			}
-		});
-		if(response.status !== 200 || !response.data.data || response.data.code !== 0){
-			logger('error getting version diff', response);
-			return;
-		}
-		const newVersions = response.data.data.newVersions;
-		logger('got newVersions', newVersions);
-
-		// step2 写入版本数据
-		const versions = [];
-		const allChanges = {
-			note:{
-				add: [],
-				edit: [],
-				delete: []
-			},
-			category:{
-				add: [],
-				edit: [],
-				delete: []
-			},
-			notebook:{
-				add: [],
-				edit: [],
-				delete: []
-			}
-		};
-		newVersions.forEach((version) => {
-
-			const changes = JSON.parse(version.changes);
-			if(changes && changes.length){
-				changes.forEach((change) => {
-					// todo:关联关系如何处理？
-					allChanges[change.type][change.action] = {
-						id: change.targetId,
-						...change.data
-					};
-				});
-			}
-			updateResult('Note', allChanges.note.add.concat(allChanges.note.edit));
-			deleteResult('Note', allChanges.note.delete.map((note)=>note.id));
-			updateResult('Category', allChanges.category.add.concat(allChanges.category.edit));
-			deleteResult('Category', allChanges.category.delete.map((category)=>category.id));
-			updateResult('Notebook', allChanges.notebook.add.concat(allChanges.notebook.edit));
-			deleteResult('Notebook', allChanges.notebook.delete.map((notebook)=>notebook.id));
-			/* updateResult('Note', version.notes.forEach((note) => {
-				return {
-					id: note.id,
-					title: note.title,
-					order: note.order,
-					createdAt: new Date(note.createdAt),
-					updatedAt: new Date(note.updatedAt),
-					remoteVersion: note.version
-				};
-			}));
-			updateResult('Category', version.categories.forEach((category) => {
-				return {
-					id: category.id,
-					title: category.title,
-					order: category.order,
-					createdAt: new Date(category.createdAt),
-					updatedAt: new Date(category.updatedAt)
-				};
-			}));
-			updateResult('Notebook', version.notebooks.forEach((notebook) => {
-				return {
-					id: notebook.id,
-					title: notebook.title,
-					order: notebook.order,
-					createdAt: new Date(notebook.createdAt),
-					updatedAt: new Date(notebook.updatedAt),
-				};
-			})); */
-			versions.push({
-				id: version.id,
-				message: version.message,
-				createdAt: new Date(version.createdAt),
-				updatedAt: new Date(version.updatedAt)
-			});
-		});
-		updateResult('Version', versions);
-
-		// step3 发送新版本到服务端
+		await downloadAllAfterVersion(commonVersion);
 	}
 }

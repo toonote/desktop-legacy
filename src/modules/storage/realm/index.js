@@ -122,7 +122,14 @@ export function init(noInitData = false){
 				TaskSchema
 			],
 			schemaVersion: SCHEMA_VERSION,
-			path: DB_PATH
+			path: DB_PATH,
+			shouldCompactOnLaunch(totalSize, usedSize){
+				console.log('usedSize: %d, totalSize: %d, %f%', usedSize, totalSize, usedSize / totalSize * 100);
+				/* if(usedSize / totalSize < 0.3){
+					return true;
+				} */
+				return false;
+			}
 		});
 	}
 	console.timeEnd('openRealm');
@@ -207,7 +214,7 @@ export function createResult(name, arr, reverseLinkArr = []){
 /**
  * 删除数据
  * @param {string} name Schema名称
- * @param {string|string[]} id 数据ID
+ * @param {string|string[]} idArr 数据ID
  */
 export function deleteResult(name, idArr){
 	if(!Array.isArray(idArr)) idArr = [idArr];
