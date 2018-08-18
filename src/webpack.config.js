@@ -94,6 +94,7 @@ const config = {
 
 if(process.env.NODE_ENV !== 'production'){
 	config.mode = 'development';
+	config.output.publicPath = 'http://localhost:8081/';
 	config.plugins.push(new webpack.HotModuleReplacementPlugin());
 	config.devServer = {
 		port: 8081,
