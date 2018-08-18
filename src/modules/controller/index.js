@@ -151,7 +151,7 @@ export const updateNote = throttle((data, isEditingHeading) => {
 	if(!data.id){
 		data.id = uiData.currentNote.data.id;
 	}
-	let hasChanged = false;
+
 	// 处理通过标题修改分类的情况
 	if(data.content && !isEditingHeading){
 		const firstLine = data.content.split('\n', 2)[0];
@@ -170,30 +170,40 @@ export const updateNote = throttle((data, isEditingHeading) => {
 			}
 		}
 	}
+
+	let hasNoteChanged = false;
+	let hasNoteContentChaned = false;
+	// 判断内容是否更新
 	if(typeof data.content !== 'undefined' && data.content !== uiData.currentNoteContent.data){
 		logger('content changed.');
-		// 触发事件，用于历史版本记录、云服务等
-		eventHub.emit(EVENTS.NOTE_CONTENT_CHANGED, {
-			id: data.id,
-			content: data.content
-		});
-		hasChanged = true;
+		hasNoteContentChaned = true;
 	}
-	if(!hasChanged){
-		let targetNote = uiData.currentNotebook.data.notes.filter((note) => {
-			return note.id === data.id;
-		})[0];
-		for(let key in data){
-			if(key !== 'content' && data[key] !== targetNote[key]){
-				logger(key + ' changed.');
-				hasChanged = true;
-			}
+	// 判断除内容以外字段是否更新
+	let targetNote = uiData.currentNotebook.data.notes.filter((note) => {
+		return note.id === data.id;
+	})[0];
+	for(let key in data){
+		if(key !== 'content' && data[key] !== targetNote[key]){
+			logger(key + ' changed.');
+			hasNoteChanged = true;
 		}
 	}
-	logger('hasChanged', hasChanged, data);
-	if(!hasChanged) return;
+	logger('hasNoteChanged', hasNoteChanged, data);
+
+	// 更新DB
+	if(!hasNoteChanged && !hasNoteContentChaned) return;
 	console.time('updateNote');
 	realm.updateResult('Note', data);
+
+	// 触发事件，用于历史版本记录、云服务等
+	if(hasNoteContentChaned){
+		eventHub.emit(EVENTS.NOTE_CONTENT_CHANGED, data);
+	}
+	if(hasNoteChanged){
+		eventHub.emit(EVENTS.NOTE_CHANGED, data);
+	}
+
+	// 更新界面
 	renderData.updateNote(uiData, data);
 	if(data.id === uiData.currentNote.data.id){
 		renderData.updateCurrentNoteContent(uiData, data.content);

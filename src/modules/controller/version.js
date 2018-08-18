@@ -5,31 +5,72 @@ import debug from '../util/debug';
 const logger = debug('controller:version');
 const createVersion = function(task){
 	if(task.type !== 'VERSION_COMMIT') return;
-	if(!task.data.taskIds){
+	const allChanges = task.data.changes;
+	if(!allChanges){
 		eventHub.emit(EVENTS.TASK_FINISH, task);
 		return;
 	}
 
 	console.time('createVersion');
 	// 获取所有涉及的笔记
-	const allNotes = realm.getResults('Note').filtered(task.data.taskIds.map((taskId) => {
-		return `id="${taskId}"`;
+	const allNoteChanges = allChanges.filter((change) => {
+		return change.targetType === 'Note' || change.targetType === 'NoteContent';
+	});
+
+	const allNoteIds = allNoteChanges.map((change) => change.targetId);
+
+	const allNotes = realm.getResults('Note').filtered(allNoteIds.map((noteId) => {
+		return `id="${noteId}"`;
 	}).join(' OR '));
 
+	// todo:还有分类和笔记本
 	if(!allNotes.length) return;
 
 	logger('ready to create version for ' + allNotes.length + ' notes.');
+
+	// 获取最新版本
+	const allVersion = realm.getResults('Version').sorted('createdAt', true);
+	let lastVersion;
+	for(let i = 0; i < allVersion.length; i++) {
+		if(!allVersion[i].childVersion.length){
+			lastVersion = allVersion[i];
+			break;
+		}
+	}
 
 	// 新建版本
 	const versionId = realm.createResult('Version', {
 		message: '【修改】\n' + allNotes.map((note) => note.title).join('\n'),
 		notes: allNotes,
-		changes: ''
+		parentVersion: lastVersion,
+		changes: JSON.stringify(allNotes.map((note) => {
+			return {
+				action: 'edit',
+				targetType: 'Note',
+				targetId: note.id,
+				// 内容变更不写在这里
+				// todo:关联关系
+				data: {
+					id: note.id,
+					title: note.title,
+					order: note.order,
+					createdAt: note.createdAt,
+					updatedAt: note.updatedAt,
+				},
+			};
+		}))
 	});
 	logger('version id ' + versionId);
 
 	// 记录笔记内容
-	const noteVersionData = allNotes.map((note) => {
+	// 获取所有涉及的笔记
+	const noteContentChangeIds = allChanges.filter((change) => {
+		return change.targetType === 'NoteContent';
+	}).map((change) => change.targetId);
+
+	const noteVersionData = allNotes.filter((note) => {
+		return noteContentChangeIds.indexOf(note.id) > -1;
+	}).map((note) => {
 		return {
 			versionId,
 			noteId: note.id,

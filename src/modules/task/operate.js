@@ -39,9 +39,6 @@ export function updateTask(taskData){
 	console.timeEnd('updateTask');
 }
 
-export function getTaskById(taskId){
-
-}
 
 export function cancelTask(taskId){
 
@@ -74,6 +71,9 @@ export const runTask = function(task){
 	}
 	logger('now ready to schedule task ' + task.id);
 	let timeout = taskPriority[task.priority];
+	if(DEBUG){
+		timeout = 10;
+	}
 	if(timeout >= 0 && timeout < Infinity){
 		timeout *= 1000;
 		logger('timeout:' + timeout);
@@ -99,7 +99,7 @@ export const connectRenderData = function(renderData){
 				id: task.id,
 				type: task.type,
 				priority: task.priority,
-				targetId: task.targetId,
+				// targetId: task.targetId,
 				data: JSON.parse(task.data),
 				status: task.status,
 				createdAt: task.createdAt,

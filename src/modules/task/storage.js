@@ -14,6 +14,10 @@ export const getAllTasks = function(){
 	return allTasks;
 };
 
+export const getTaskById = function(taskId){
+	return getAllTasks().filtered(`id="${taskId}"`)[0];
+};
+
 export const updateTask = function(task){
 	realm.updateResult(SCHEMA, task);
 };

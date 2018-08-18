@@ -7,7 +7,7 @@ export default {
 		id: 'string',
 		type: 'string',
 		priority: 'int',
-		targetId: 'string',
+		// targetId: 'string',
 		data: 'string',
 		status: 'int',
 		createdAt: 'date',

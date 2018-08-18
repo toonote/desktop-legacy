@@ -26,23 +26,41 @@ function getTask(object){
 	})[0];
 }
 
+// 笔记内容被修改时触发
 function noteContentChanged(data){
 	logger('noteContentChanged', data);
-	if(!data.id || !data.content) return;
+	return noteChanged(data, true);
+}
+
+// 笔记（除内容以外）被修改时触发
+function noteChanged(data, isContentChanged = false){
+	logger('noteChanged', data);
+	if(!data.id) return;
+	if(isContentChanged && !data.content) return;
+
+	// 因为内容要单独存储历史记录，所以这里分一下Note/NoteContent
+	// 入库前再改为Note，把content单独存
+	const targetType = isContentChanged ? 'NoteContent' : 'Note';
 
 	let existTask = getTask({
 		type: 'VERSION_COMMIT'
 	});
+
 	if(existTask){
 		logger('existTask, ready to push');
-		let existTaskIds = existTask.data.taskIds || [];
-		if(existTaskIds.indexOf(data.id) > -1){
+		const existChanges = existTask.data.changes || [];
+		const noteExist = existChanges.some((change) => {
+			return change.targetType === targetType &&
+				change.targetId === data.id;
+		});
+
+		if(noteExist){
 			logger('note exist in task');
 		}else{
-			existTaskIds.push(data.id);
+			existChanges.push(data.id);
 			operate.updateTask({
 				id: existTask.id,
-				data: {taskIds:existTaskIds}
+				data: {changes:existChanges}
 			});
 		}
 	}else{
@@ -50,9 +68,13 @@ function noteContentChanged(data){
 		operate.addTask({
 			type: 'VERSION_COMMIT',
 			priority: 3,
-			targetId: data.id,
+			// targetId: data.id,
 			data: {
-				taskIds: [data.id]
+				changes: [{
+					action: 'edit',
+					targetType,
+					targetId: data.id,
+				}]
 			},
 			status: 0,
 			createdAt: new Date(),
@@ -63,10 +85,10 @@ function noteContentChanged(data){
 
 }
 
-
 function init(){
 	operate.connectRenderData(taskRenderData);
 	eventHub.on(EVENTS.NOTE_CONTENT_CHANGED, noteContentChanged);
+	eventHub.on(EVENTS.NOTE_CHANGED, noteChanged);
 }
 
 export default init;
