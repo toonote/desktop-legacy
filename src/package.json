@@ -1,5 +1,6 @@
 {
-  "name": "TooNote",
+  "name": "toonote",
+  "productName": "TooNote",
   "version": "1.0.0",
   "description": "Markdown based note app.",
   "main": "electron.js",
