@@ -50,6 +50,10 @@ function noteChanged(data, isContentChanged = false){
 		logger('existTask, ready to push');
 		const existChanges = existTask.data.changes || [];
 		const noteExist = existChanges.some((change) => {
+			let changeTargetType = targetType;
+			if(changeTargetType === 'NoteContent'){
+				changeTargetType = 'Note';
+			}
 			return change.targetType === targetType &&
 				change.targetId === data.id;
 		});
@@ -57,7 +61,11 @@ function noteChanged(data, isContentChanged = false){
 		if(noteExist){
 			logger('note exist in task');
 		}else{
-			existChanges.push(data.id);
+			existChanges.push({
+				action:'edit',
+				targetType,
+				targetId:data.id
+			});
 			operate.updateTask({
 				id: existTask.id,
 				data: {changes:existChanges}

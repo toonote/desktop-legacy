@@ -81,7 +81,7 @@ const createVersion = function(task){
 	// 记录笔记内容
 	// 获取所有涉及的笔记
 	const noteContentChangeIds = allChanges.filter((change) => {
-		return change.targetType === 'NoteContent';
+		return change.targetType === 'NoteContent' || change.action === 'create';
 	}).map((change) => change.targetId);
 
 	const noteVersionData = allNotes.filter((note) => {
