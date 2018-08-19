@@ -290,17 +290,22 @@ export const createCategory = function(title, afterWhichId){
 	});
 	let order = getOrderNumber(orderOptions);
 	if(order === false) order = afterWhich.order;
-	const categoryId = realm.createResult('Category', {
+	const categoryData = {
 		title: title,
 		order: order,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		notes: []
-	}, [{
+	};
+	// 写DB
+	const categoryId = realm.createResult('Category', categoryData, [{
 		name: 'Notebook',
 		field: 'categories',
 		id: uiData.currentNotebook.data.id
 	}]);
+	// 触发事件
+	eventHub.emit(EVENTS.CATEGORY_CREATED, categoryData);
+	// 更新UI
 	renderData.update(results, uiData);
 	console.timeEnd('createCategory');
 	return categoryId;

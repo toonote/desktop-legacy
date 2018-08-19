@@ -143,12 +143,40 @@ function noteDeleted(noteId){
 
 }
 
+// 新建笔记时触发
+function categoryCreated(data){
+	logger('categoryCreated', data);
+	if(!data.id) return;
+
+	logger('ready to create category');
+	operate.addTask({
+		type: 'VERSION_COMMIT',
+		priority: 3,
+		// targetId: data.id,
+		data: {
+			changes: [{
+				action: 'create',
+				targetType: 'Category',
+				targetId: data.id,
+			}]
+		},
+		status: 0,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		log: [''],
+	});
+
+}
+
 function init(){
 	operate.connectRenderData(taskRenderData);
+
 	eventHub.on(EVENTS.NOTE_CONTENT_CHANGED, noteContentChanged);
 	eventHub.on(EVENTS.NOTE_CHANGED, noteChanged);
 	eventHub.on(EVENTS.NOTE_CREATED, noteCreated);
 	eventHub.on(EVENTS.NOTE_DELETED, noteDeleted);
+
+	eventHub.on(EVENTS.CATEGORY_CREATED, categoryCreated);
 }
 
 export default init;

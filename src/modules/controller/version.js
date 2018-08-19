@@ -6,28 +6,59 @@ const logger = debug('controller:version');
 const createVersion = function(task){
 
 	if(task.type !== 'VERSION_COMMIT') return;
-	const allChanges = task.data.changes;
-	if(!allChanges){
+	if(!task.data.changes){
 		eventHub.emit(EVENTS.TASK_FINISH, task);
 		return;
 	}
 
 	console.time('createVersion');
-	// 获取所有涉及的笔记
-	const allNoteChanges = allChanges.filter((change) => {
-		return change.targetType === 'Note' || change.targetType === 'NoteContent';
+
+	// 按action/targetType归类
+	// const allChanges = {};
+	const allChanges = task.data.changes;
+	const allNoteIds = [];
+	const allCategoryIds = [];
+	const allNotebookIds = [];
+
+	allChanges.forEach((change) => {
+		// if(!allChanges[change.targetType]) allChanges[change.targetType] = {};
+		// if(!allChanges[change.targetType][change.action]) allChanges[change.targetType][change.action] = [];
+		// allChanges[change.targetType][change.action].push(change);
+		if(change.targetType === 'Note' || change.targetType === 'NoteContent'){
+			allNoteIds.push(change.targetId);
+		}else if(change.targetType === 'Category'){
+			allCategoryIds.push(change.targetId);
+		}else if(change.targetType === 'Notebook'){
+			allNotebookIds.push(change.targetId);
+		}
 	});
 
-	const allNoteIds = allNoteChanges.map((change) => change.targetId);
+	let allNotes = [];
+	if(allNoteIds.length){
+		allNotes = realm.getResults('Note').filtered(allNoteIds.map((noteId) => {
+			return `id="${noteId}"`;
+		}).join(' OR '));
+	}
+	let allCategories = [];
+	if(allCategoryIds.length){
+		allCategories = realm.getResults('Category').filtered(allCategoryIds.map((noteId) => {
+			return `id="${noteId}"`;
+		}).join(' OR '));
+	}
+	let allNotebooks = [];
+	if(allNotebookIds.length){
+		allNotebooks = realm.getResults('Notebook').filtered(allNotebookIds.map((noteId) => {
+			return `id="${noteId}"`;
+		}).join(' OR '));
+	}
 
-	const allNotes = realm.getResults('Note').filtered(allNoteIds.map((noteId) => {
-		return `id="${noteId}"`;
-	}).join(' OR '));
 
-	// todo:还有分类和笔记本
-	// if(!allNotes.length) return;
+	/* // 获取所有涉及的笔记
+	const allNoteChanges = allChanges.filter((change) => {
+		return change.targetType === 'Note' || change.targetType === 'NoteContent';
+	}); */
 
-	logger('ready to create version for ' + allNotes.length + ' notes.');
+	logger('ready to create version');
 
 	// 获取最新版本
 	const allVersion = realm.getResults('Version').sorted('createdAt', true);
@@ -41,55 +72,72 @@ const createVersion = function(task){
 
 	// 新建版本
 	const versionId = realm.createResult('Version', {
-		message: allNoteChanges.map((change) => {
+		message: allChanges.map((change) => {
 			const actionMap = {
 				create: '新建',
 				edit: '修改',
 				delete: '删除',
 			};
+
+			const targetTypeMap = {
+				Note: '笔记',
+				NoteContent: '笔记',
+				Category: '分类',
+				Notebook: '笔记本',
+			};
+
+			const targetTypeStr = targetTypeMap[change.targetType];
+			const actionStr = actionMap[change.action];
+			let schema = change.targetType;
+			if(schema === 'NoteContent'){
+				schema = 'Note';
+			}
+
+
 			let messageItem = '';
 			if(change.action === 'delete'){
-				messageItem = `【${actionMap[change.action]}】${change.targetId}`;
+				messageItem = `【${targetTypeStr}】【${actionStr}】${change.targetId}`;
 			}else{
-				const note = allNotes.filter((note) => {
-					return note.id === change.targetId;
-				})[0];
-				if(note){
-					messageItem = `【${actionMap[change.action]}】${note.title}`;
+				const target = realm.getResults(schema).filtered(`id="${change.targetId}"`)[0];
+				if(target){
+					messageItem = `【${targetTypeStr}】【${actionStr}】${target.title}`;
 				}
 			}
 			return messageItem;
 		}).filter((line)=>line).join('\n'),
 		notes: allNotes,
+		categories: allCategories,
+		notebooks: allNotebooks,
 		parentVersion: lastVersion,
 		changes: JSON.stringify(allChanges.map((change) => {
-			const note = allNotes.filter((note) => {
-				return note.id === change.targetId;
-			})[0];
-
+			let schema = change.targetType;
+			if(schema === 'NoteContent'){
+				schema = 'Note';
+			}
+			const target = realm.getResults(schema).filtered(`id="${change.targetId}"`)[0];
 			if(change.action === 'delete'){
 				return {
 					action: change.action,
-					targetType: 'Note',
+					targetType: schema,
 					targetId: change.targetId,
 					data: {}
 				};
 			}
 
-			if(!note) return null;
+			if(!target) return null;
 
 			return {
 				action: change.action,
-				targetType: 'Note',
-				targetId: note.id,
+				targetType: schema,
+				targetId: change.targetId,
 				// 内容变更不写在这里
 				// todo:关联关系
 				data: {
-					id: note.id,
-					title: note.title,
-					order: note.order,
-					createdAt: note.createdAt,
-					updatedAt: note.updatedAt,
+					id: target.id,
+					title: target.title,
+					order: target.order,
+					createdAt: target.createdAt,
+					updatedAt: target.updatedAt,
 				},
 			};
 		}).filter((change)=>change))
