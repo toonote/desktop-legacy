@@ -40,12 +40,28 @@ const createVersion = function(task){
 
 	// 新建版本
 	const versionId = realm.createResult('Version', {
-		message: '【修改】\n' + allNotes.map((note) => note.title).join('\n'),
+		message: allNoteChanges.map((change) => {
+			const note = allNotes.filter((note) => {
+				return note.id === change.targetId;
+			})[0];
+			if(!note) return '';
+			const actionMap = {
+				create: '新建',
+				edit: '修改',
+				delete: '删除',
+			};
+			return `【${actionMap[change.action]}】${note.title}`;
+		}).filter((line)=>line).join('\n'),
 		notes: allNotes,
 		parentVersion: lastVersion,
-		changes: JSON.stringify(allNotes.map((note) => {
+		changes: JSON.stringify(allChanges.map((change) => {
+			const note = allNotes.filter((note) => {
+				return note.id === change.targetId;
+			})[0];
+			if(!note) return null;
+
 			return {
-				action: 'edit',
+				action: change.action,
 				targetType: 'Note',
 				targetId: note.id,
 				// 内容变更不写在这里
@@ -58,7 +74,7 @@ const createVersion = function(task){
 					updatedAt: note.updatedAt,
 				},
 			};
-		}))
+		}).filter((change)=>change))
 	});
 	logger('version id ' + versionId);
 

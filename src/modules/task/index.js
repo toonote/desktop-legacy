@@ -85,10 +85,36 @@ function noteChanged(data, isContentChanged = false){
 
 }
 
+// 新建笔记时触发
+function noteCreated(data){
+	logger('noteCreated', data);
+	if(!data.id) return;
+
+	logger('ready to create');
+	operate.addTask({
+		type: 'VERSION_COMMIT',
+		priority: 3,
+		// targetId: data.id,
+		data: {
+			changes: [{
+				action: 'create',
+				targetType: 'Note',
+				targetId: data.id,
+			}]
+		},
+		status: 0,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		log: [''],
+	});
+
+}
+
 function init(){
 	operate.connectRenderData(taskRenderData);
 	eventHub.on(EVENTS.NOTE_CONTENT_CHANGED, noteContentChanged);
 	eventHub.on(EVENTS.NOTE_CHANGED, noteChanged);
+	eventHub.on(EVENTS.NOTE_CREATED, noteCreated);
 }
 
 export default init;

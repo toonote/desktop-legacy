@@ -218,10 +218,17 @@ export const updateNote = throttle((data, isEditingHeading) => {
  */
 export function deleteNote(noteId){
 	console.time('deleteNote');
+
+	// 判断删除的是否是当前笔记
 	let isCurrentNote = noteId === uiData.currentNote.data.id;
+
+	// 写入DB
 	realm.deleteResult('Note', noteId);
-	// renderData.deleteNote(results, uiData, noteId);
-	// switchCurrentNote();
+
+	// 触发事件
+	eventHub.emit(EVENTS.NOTE_DELETED, noteId);
+
+	// 如果删除的是当前笔记的话需要切换当前笔记
 	if(isCurrentNote){
 		logger('currentNote deleted, switching to new currentNote');
 		switchCurrentNote(uiData.currentNotebook.data.notes[0].id);
@@ -385,6 +392,8 @@ export const newNote = function(data = {}){
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	}, data);
+
+	// 写DB
 	const newNoteId = realm.createResult('Note', data, [{
 		name: 'Category',
 		field: 'notes',
@@ -395,6 +404,13 @@ export const newNote = function(data = {}){
 		id: currentNote.notebook.id,
 	}]);
 	logger('newNoteId:' + newNoteId);
+
+	// 触发事件
+	eventHub.emit(EVENTS.NOTE_CREATED, Object.assign({
+		id: newNoteId
+	}, data));
+
+	// 更新UI
 	renderData.update(results, uiData);
 	switchCurrentNote(newNoteId);
 	console.timeEnd('newNote');
@@ -565,7 +581,7 @@ export const categoryRename = function(categoryId, title){
 /**
  * 插入附件
  * @param {Object} data 配置文件
- * @param {string} [data.from] 附件来源 clipboard | file
+ * @param {string} [data.from] 附件来源 clipboard | file
  * @param {string} [data.path] 附件地址
  * @param {string} [data.ext] 附件后缀名
  */
