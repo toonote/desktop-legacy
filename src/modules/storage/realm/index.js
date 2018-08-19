@@ -101,7 +101,7 @@ export function createNotebook(title){
 	note.notebook = notebook;
 	category.notebook = notebook;
 
-	createResult('Notebook', notebook);
+	return createResult('Notebook', notebook);
 }
 
 /**

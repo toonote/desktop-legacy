@@ -116,7 +116,9 @@ export function switchCurrentNotebook(notebookId, noteId){
  */
 export function createNotebook(title){
 	console.time('createNotebook');
-	realm.createNotebook(title);
+	const notebookId = realm.createNotebook(title);
+	// 触发事件
+	eventHub.emit(EVENTS.NOTE_CREATED, {id: notebookId});
 	console.timeEnd('createNotebook');
 }
 
@@ -252,6 +254,8 @@ export function deleteCategory(categoryId){
 	});
 	if(ret && confirm('确定要删除该分类吗？')){
 		realm.deleteResult('Category', categoryId);
+		// 触发事件
+		eventHub.emit(EVENTS.CATEGORY_DELETED, categoryId);
 	}
 	console.timeEnd('deleteCategory');
 	return ret;
@@ -376,6 +380,8 @@ export const deleteEmptyCategory = function(categoryId){
 	if(!targetCategory) return;
 	if(targetCategory.notes.length) return;
 	realm.deleteResult('Category', categoryId);
+	// 触发事件
+	eventHub.emit(EVENTS.CATEGORY_DELETED, categoryId);
 	console.timeEnd('deleteEmptyCategory');
 };
 
@@ -576,10 +582,13 @@ export const updateCategoryOrder = function(categoryId, compareCategoryId, compa
 export const categoryRename = function(categoryId, title){
 	if(!title) return;
 	console.time('categoryRename');
-	realm.updateResult('Category', {
+	const categoryData = {
 		id: categoryId,
 		title
-	});
+	};
+	realm.updateResult('Category', categoryData);
+	// 触发事件
+	eventHub.emit(EVENTS.CATEGORY_CHANGED, categoryData);
 	console.timeEnd('categoryRename');
 };
 

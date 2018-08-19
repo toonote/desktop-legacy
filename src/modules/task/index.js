@@ -143,7 +143,7 @@ function noteDeleted(noteId){
 
 }
 
-// 新建笔记时触发
+// 新建分类时触发
 function categoryCreated(data){
 	logger('categoryCreated', data);
 	if(!data.id) return;
@@ -168,6 +168,108 @@ function categoryCreated(data){
 
 }
 
+// 分类（除内容以外）被修改时触发
+function categoryChanged(data){
+	logger('categoryChanged', data);
+	if(!data.id) return;
+
+	let existTask = getTask({
+		type: 'VERSION_COMMIT'
+	});
+
+	if(existTask){
+		logger('existTask, ready to push');
+		const existChanges = existTask.data.changes || [];
+		const noteExist = existChanges.some((change) => {
+			return change.targetType === 'Category' &&
+				change.targetId === data.id;
+		});
+
+		if(noteExist){
+			logger('category exist in task');
+		}else{
+			existChanges.push({
+				action:'edit',
+				targetType:'Category',
+				targetId:data.id
+			});
+			operate.updateTask({
+				id: existTask.id,
+				data: {changes:existChanges}
+			});
+		}
+	}else{
+		logger('no existTask, ready to create');
+		operate.addTask({
+			type: 'VERSION_COMMIT',
+			priority: 3,
+			// targetId: data.id,
+			data: {
+				changes: [{
+					action: 'edit',
+					targetType: 'Category',
+					targetId: data.id,
+				}]
+			},
+			status: 0,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			log: [''],
+		});
+	}
+
+}
+
+// 删除分类时触发
+function categoryDeleted(categoryId){
+	logger('categoryDeleted', categoryId);
+	if(!categoryId) return;
+
+	logger('ready to delete');
+	operate.addTask({
+		type: 'VERSION_COMMIT',
+		priority: 3,
+		// targetId: data.id,
+		data: {
+			changes: [{
+				action: 'delete',
+				targetType: 'Category',
+				targetId: categoryId,
+			}]
+		},
+		status: 0,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		log: [''],
+	});
+
+}
+
+// 新建笔记本时触发
+function notebookCreated(data){
+	logger('notebookCreated', data);
+	if(!data.id) return;
+
+	logger('ready to create notebook');
+	operate.addTask({
+		type: 'VERSION_COMMIT',
+		priority: 3,
+		// targetId: data.id,
+		data: {
+			changes: [{
+				action: 'create',
+				targetType: 'Notebook',
+				targetId: data.id,
+			}]
+		},
+		status: 0,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		log: [''],
+	});
+
+}
+
 function init(){
 	operate.connectRenderData(taskRenderData);
 
@@ -177,6 +279,10 @@ function init(){
 	eventHub.on(EVENTS.NOTE_DELETED, noteDeleted);
 
 	eventHub.on(EVENTS.CATEGORY_CREATED, categoryCreated);
+	eventHub.on(EVENTS.CATEGORY_CHANGED, categoryChanged);
+	eventHub.on(EVENTS.CATEGORY_DELETED, categoryDeleted);
+
+	eventHub.on(EVENTS.NOTEBOOK_CREATED, notebookCreated);
 }
 
 export default init;
