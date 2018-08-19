@@ -63,7 +63,14 @@ const writeVersion = function(version, changes){
 		createdAt: version.createdAt,
 		updatedAt: version.updatedAt,
 		parentVersion,
-		changes: JSON.stringify(changes),
+		changes: JSON.stringify(changes.map((change) => {
+			return {
+				targetType: change.targetType,
+				targetId: change.targetType,
+				action: change.action,
+				data: change.data,
+			};
+		})),
 		notes: [],
 		categories: [],
 		notebooks: []
