@@ -118,11 +118,37 @@ function noteCreated(data){
 
 }
 
+// 删除笔记时触发
+function noteDeleted(noteId){
+	logger('noteDeleted', noteId);
+	if(!noteId) return;
+
+	logger('ready to delete');
+	operate.addTask({
+		type: 'VERSION_COMMIT',
+		priority: 3,
+		// targetId: data.id,
+		data: {
+			changes: [{
+				action: 'delete',
+				targetType: 'Note',
+				targetId: noteId,
+			}]
+		},
+		status: 0,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		log: [''],
+	});
+
+}
+
 function init(){
 	operate.connectRenderData(taskRenderData);
 	eventHub.on(EVENTS.NOTE_CONTENT_CHANGED, noteContentChanged);
 	eventHub.on(EVENTS.NOTE_CHANGED, noteChanged);
 	eventHub.on(EVENTS.NOTE_CREATED, noteCreated);
+	eventHub.on(EVENTS.NOTE_DELETED, noteDeleted);
 }
 
 export default init;

@@ -4,6 +4,7 @@ import debug from '../util/debug';
 
 const logger = debug('controller:version');
 const createVersion = function(task){
+
 	if(task.type !== 'VERSION_COMMIT') return;
 	const allChanges = task.data.changes;
 	if(!allChanges){
@@ -24,7 +25,7 @@ const createVersion = function(task){
 	}).join(' OR '));
 
 	// todo:还有分类和笔记本
-	if(!allNotes.length) return;
+	// if(!allNotes.length) return;
 
 	logger('ready to create version for ' + allNotes.length + ' notes.');
 
@@ -41,16 +42,23 @@ const createVersion = function(task){
 	// 新建版本
 	const versionId = realm.createResult('Version', {
 		message: allNoteChanges.map((change) => {
-			const note = allNotes.filter((note) => {
-				return note.id === change.targetId;
-			})[0];
-			if(!note) return '';
 			const actionMap = {
 				create: '新建',
 				edit: '修改',
 				delete: '删除',
 			};
-			return `【${actionMap[change.action]}】${note.title}`;
+			let messageItem = '';
+			if(change.action === 'delete'){
+				messageItem = `【${actionMap[change.action]}】${change.targetId}`;
+			}else{
+				const note = allNotes.filter((note) => {
+					return note.id === change.targetId;
+				})[0];
+				if(note){
+					messageItem = `【${actionMap[change.action]}】${note.title}`;
+				}
+			}
+			return messageItem;
 		}).filter((line)=>line).join('\n'),
 		notes: allNotes,
 		parentVersion: lastVersion,
@@ -58,6 +66,16 @@ const createVersion = function(task){
 			const note = allNotes.filter((note) => {
 				return note.id === change.targetId;
 			})[0];
+
+			if(change.action === 'delete'){
+				return {
+					action: change.action,
+					targetType: 'Note',
+					targetId: change.targetId,
+					data: {}
+				};
+			}
+
 			if(!note) return null;
 
 			return {
