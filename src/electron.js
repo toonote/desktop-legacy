@@ -5,6 +5,12 @@ var BrowserWindow = electron.BrowserWindow;
 
 // require('crash-reporter').start();
 
+// 非正式环境重写LocalStorage路径
+if(process.env.NODE_ENV !== 'production'){
+	var env = process.env.NODE_ENV || '-dev-0.3.1';
+	app.setPath('userData', app.getPath('userData') + '-' + env);
+}
+
 var mainWindow = null;
 
 app.on('window-all-closed', function() {

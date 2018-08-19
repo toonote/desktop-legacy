@@ -59,8 +59,8 @@ let app = new Vue({
 			}
 		},
 		// 编辑器内容改变
-		contentChange: function(content){
-			this.$store.dispatch('changeCurrentNoteContent', content);
+		contentChange: function(data){
+			this.$store.dispatch('changeCurrentNoteContent', data.content);
 		},
 		// 编辑器滚动
 		lineScroll: function(row){
