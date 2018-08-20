@@ -8,11 +8,16 @@
 	line-height: 28px;
 	background:#fff;
 }
+.mermaidContainer{
+	height: 0;
+	overflow: hidden;
+}
 @import "../style/htmlbody.css";
 </style>
 
 <template>
 <section class="preview">
+	<div id="mermaidContainer" class="mermaidContainer"></div>
 	<div class="htmlBody" v-html="html" v-on:click="handleContent"></div>
 </section>
 </template>
