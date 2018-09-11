@@ -351,20 +351,29 @@ export const updateNoteCategory = function(noteId, categoryId){
 	const targetNoteResult = results.Note.filtered(`id="${noteId}"`)[0];
 	const oldCategoryId = targetNoteResult.category[0].id;
 
+	// 创建新分类的反向链接
 	realm.createReverseLink(targetNoteResult, [{
 		name: 'Category',
 		field: 'notes',
 		id: categoryId
 	}]);
 
+	// 移除旧分类的反向链接
 	realm.removeReverseLink(targetNoteResult, [{
 		name: 'Category',
 		field: 'notes',
 		id: oldCategoryId
 	}]);
 
+	// 检查旧分类是否为空，如果为空，删除它
 	deleteEmptyCategory(oldCategoryId);
 
+	// 触发事件
+	eventHub.emit(EVENTS.NOTE_CHANGED, {
+		categoryId
+	});
+
+	// 更新UI
 	renderData.updateCurrentNoteCategory(results, uiData, categoryId);
 	console.timeEnd('updateNoteCategory');
 

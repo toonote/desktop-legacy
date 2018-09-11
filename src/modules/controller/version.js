@@ -126,19 +126,24 @@ const createVersion = function(task){
 
 			if(!target) return null;
 
+			let targetData = {
+				id: target.id,
+				title: target.title,
+				order: target.order,
+				createdAt: target.createdAt,
+				updatedAt: target.updatedAt,
+			};
+			if(schema === 'Note'){
+				targetData.categoryId = target.category[0] && target.category[0].id || '';
+			}
+
 			return {
 				action: change.action,
 				targetType: schema,
 				targetId: change.targetId,
 				// 内容变更不写在这里
 				// todo:关联关系
-				data: {
-					id: target.id,
-					title: target.title,
-					order: target.order,
-					createdAt: target.createdAt,
-					updatedAt: target.updatedAt,
-				},
+				data: targetData,
 			};
 		}).filter((change)=>change))
 	});
