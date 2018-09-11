@@ -490,7 +490,7 @@ export const normalizeAllNoteOrder = function(){
 
 export const updateOrder = function(targetType, id, compareId, compareDirection){
 
-	let doUpdateNoteOrder = function(id, compareId, compareDirection){
+	let doUpdateOrder = function(id, compareId, compareDirection){
 		let compareObject, targetObject;
 		logger('moving order:', targetType, id);
 		let targetList;
@@ -556,12 +556,20 @@ export const updateOrder = function(targetType, id, compareId, compareDirection)
 				order: newOrder,
 				id: id
 			};
+			// 写入DB
 			realm.updateResult(targetType, updateData);
+			// 触发事件
+			if(targetType === 'Note'){
+				eventHub.emit(EVENTS.NOTE_CHANGED, updateData);
+			}else if(targetType === 'Category'){
+				eventHub.emit(EVENTS.CATEGORY_CHANGED, updateData);
+			}
+			// 更新UI
 			renderData.updateNote(uiData, updateData);
 		}
 	};
 
-	doUpdateNoteOrder(id, compareId, compareDirection);
+	doUpdateOrder(id, compareId, compareDirection);
 
 };
 
