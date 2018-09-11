@@ -313,19 +313,126 @@ const downloadAllAfterVersion = async function(commonVersionId){
 	}
 };
 
+const uploadAllAfterVersion = async function(versionId){
+	let tmpVersion = getResults('Version').filtered(`id="${versionId}"`)[0];
+	if(!tmpVersion){
+		console.log('uploadAllAfterVersion error: no version of %s', versionId);
+		return;
+	}
+	let childVersion = tmpVersion.childVersion[0];
+	if(!childVersion){
+		console.log('uploadAllAfterVersion success: no version after %s', versionId);
+		return;
+	}
+	let versionList = [];
+	let noteList = [];
+	let categoryList = [];
+	let notebookList = [];
+	while(childVersion){
+		versionList.push(childVersion);
+		noteList = noteList.concat(childVersion.notes);
+		categoryList = categoryList.concat(childVersion.categories);
+		notebookList = notebookList.concat(childVersion.notebooks);
+		childVersion = childVersion.childVersion[0];
+	}
+	// 依次同步笔记本、分类、笔记
+	let response;
+
+	response = await agent.put('/api/v2/batchUploadNotebook', {
+		data: notebookList.map((notebook) => {
+			return {
+				id: notebook.id,
+				title: notebook.title,
+				order: notebook.order,
+				createdAt: notebook.createdAt,
+				updatedAt: notebook.updatedAt,
+			};
+		})
+	});
+	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+		logger('error upload notebook list', response);
+		return;
+	}
+
+	response = await agent.put('/api/v2/batchUploadCategory', {
+		data: categoryList.map((category) => {
+			return {
+				id: category.id,
+				title: category.title,
+				order: category.order,
+				notebookId: category.noteobok[0].id,
+				createdAt: category.createdAt,
+				updatedAt: category.updatedAt,
+			};
+		})
+	});
+	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+		logger('error upload category list', response);
+		return;
+	}
+
+	response = await agent.put('/api/v2/batchUploadNote', {
+		data: noteList.map((note) => {
+			return {
+				id: note.id,
+				title: note.title,
+				content: note.content,
+				order: note.order,
+				// 旧版版本标识
+				version: note.localVersion,
+				categoryId: note.category[0].id,
+				notebookId: note.noteobok[0].id,
+				createdAt: note.createdAt,
+				updatedAt: note.updatedAt,
+			};
+		})
+	});
+	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+		logger('error upload note list', response);
+		return;
+	}
+
+	// 同步版本
+	response = await agent.put('/api/v2/batchUploadVersion', {
+		data: versionList.map((version) => {
+			return {
+				id: version.id,
+				message: version.message,
+				parentId: version.parentVersion.id,
+				changes: version.changes,
+				createdAt: version.createdAt,
+				updatedAt: version.updatedAt,
+			};
+		})
+	});
+	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+		logger('error upload version list', response);
+		return;
+	}
+
+	// 设置共识版本
+	setConfig('commonVersion', versionList[versionList.length - 1].id);
+
+};
+
 /**
  * 执行同步
  */
 export async function doSync(){
+	// todo:同步历史版本对应的笔记内容
 	if(!isLogin) return;
 	const commonVersion = getConfig('commonVersion');
 	if(!commonVersion){
+		// 没有共识版本，拉取所有数据
 		logger('no commonVersion, ready to get all data');
 		await downloadAllNotebook();
 		await downloadAllCategory();
 		await downloadAllNote();
 		await downloadAllVersion();
 	}else{
+		// 拉取共识版本之后的数据
 		await downloadAllAfterVersion(commonVersion);
 	}
+	// 上传本地共识版本之后的数据
+	await uploadAllAfterVersion(commonVersion);
 }
