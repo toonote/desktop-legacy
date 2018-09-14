@@ -121,7 +121,7 @@ const downloadAllNotebook = async function(notebookIds){
 	const response = await agent.get('/api/v2/notebook', {
 		params
 	});
-	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
 		logger('error getting notebook list', response);
 		return;
 	}
@@ -148,7 +148,7 @@ const downloadAllCategory = async function(categoryIds){
 	const response = await agent.get('/api/v2/category', {
 		params
 	});
-	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
 		logger('error getting category list', response);
 		return;
 	}
@@ -187,7 +187,7 @@ const downloadAllNote = async function(noteIds){
 	const response = await agent.get('/api/v2/note', {
 		params
 	});
-	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
 		logger('error getting note list', response);
 		return;
 	}
@@ -239,7 +239,7 @@ const downloadAllNote = async function(noteIds){
 
 const downloadAllVersion = async function(){
 	const response = await agent.get('/api/v2/version');
-	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
 		logger('error getting version list', response);
 		return;
 	}
@@ -259,7 +259,7 @@ const downloadAllAfterVersion = async function(commonVersionId){
 			commonVersionId
 		}
 	});
-	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
 		logger('error getting version data after commonVersion', response);
 		return;
 	}
@@ -330,15 +330,36 @@ const uploadAllAfterVersion = async function(versionId){
 	let notebookList = [];
 	while(childVersion){
 		versionList.push(childVersion);
-		noteList = noteList.concat(childVersion.notes);
-		categoryList = categoryList.concat(childVersion.categories);
-		notebookList = notebookList.concat(childVersion.notebooks);
+		if(childVersion.notes.length){
+			noteList = noteList.concat(childVersion.notes
+				.map((note) => note)
+				.filter((note) => !noteList.some((noteInList) => {
+					return noteInList.id === note.id;
+				}))
+			);
+		}
+		if(childVersion.categories.length){
+			categoryList = categoryList.concat(childVersion.categories
+				.map((category) => category)
+				.filter((category) => !categoryList.some((categoryInList) => {
+					return categoryInList.id === category.id;
+				}))
+			);
+		}
+		if(childVersion.notebooks.length){
+			notebookList = notebookList.concat(childVersion.notebooks
+				.map((notebook) => notebook)
+				.filter((notebook) => !notebookList.some((notebookInList) => {
+					return notebookInList.id === notebook.id;
+				}))
+			);
+		}
 		childVersion = childVersion.childVersion[0];
 	}
 	// 依次同步笔记本、分类、笔记
 	let response;
 
-	response = await agent.put('/api/v2/batchUploadNotebook', {
+	response = await agent.post('/api/v2/batchUploadNotebook', {
 		data: notebookList.map((notebook) => {
 			return {
 				id: notebook.id,
@@ -349,29 +370,29 @@ const uploadAllAfterVersion = async function(versionId){
 			};
 		})
 	});
-	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
 		logger('error upload notebook list', response);
 		return;
 	}
 
-	response = await agent.put('/api/v2/batchUploadCategory', {
+	response = await agent.post('/api/v2/batchUploadCategory', {
 		data: categoryList.map((category) => {
 			return {
 				id: category.id,
 				title: category.title,
 				order: category.order,
-				notebookId: category.noteobok[0].id,
+				notebookId: category.notebook[0].id,
 				createdAt: category.createdAt,
 				updatedAt: category.updatedAt,
 			};
 		})
 	});
-	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
 		logger('error upload category list', response);
 		return;
 	}
 
-	response = await agent.put('/api/v2/batchUploadNote', {
+	response = await agent.post('/api/v2/batchUploadNote', {
 		data: noteList.map((note) => {
 			return {
 				id: note.id,
@@ -381,19 +402,19 @@ const uploadAllAfterVersion = async function(versionId){
 				// 旧版版本标识
 				version: note.localVersion,
 				categoryId: note.category[0].id,
-				notebookId: note.noteobok[0].id,
+				notebookId: note.notebook[0].id,
 				createdAt: note.createdAt,
 				updatedAt: note.updatedAt,
 			};
 		})
 	});
-	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
 		logger('error upload note list', response);
 		return;
 	}
 
 	// 同步版本
-	response = await agent.put('/api/v2/batchUploadVersion', {
+	response = await agent.post('/api/v2/batchUploadVersion', {
 		data: versionList.map((version) => {
 			return {
 				id: version.id,
@@ -405,7 +426,7 @@ const uploadAllAfterVersion = async function(versionId){
 			};
 		})
 	});
-	if(response.status !== 200 || !response.data.data || response.data.code !== 0){
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
 		logger('error upload version list', response);
 		return;
 	}
