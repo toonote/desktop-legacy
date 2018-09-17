@@ -63,9 +63,9 @@ const writeVersion = function(version, changes, noteContentList = []){
 		changes: JSON.stringify(changes.map((change) => {
 			return {
 				targetType: change.targetType,
-				targetId: change.targetType,
+				targetId: change.targetId,
 				action: change.action,
-				data: change.data,
+				data: JSON.parse(change.data),
 			};
 		})),
 		notes: [],
@@ -413,6 +413,28 @@ const uploadAllAfterVersion = async function(versionId){
 		return;
 	}
 
+	// 同步历史版本笔记内容
+	debugger;
+	const versionIds = versionList.map((version) => version.id);
+	const versionNoteContentList = getResults('VersionNoteContent')
+		.filtered(versionIds.map((id) => `id="${id}"`).join(' or '));
+	response = await agent.post('/api/v2/batchUploadVersionNoteContent', {
+		data: versionNoteContentList.map((versionNoteContent) => {
+			return {
+				id: versionNoteContent.id,
+				noteId: versionNoteContent.noteId,
+				versionId: versionNoteContent.versionId,
+				content: versionNoteContent.content,
+				createdAt: versionNoteContent.createdAt,
+				updatedAt: versionNoteContent.updatedAt,
+			};
+		})
+	});
+	if(response.status !== 200 || !response.data || response.data.code !== 0){
+		logger('error upload version list', response);
+		return;
+	}
+
 	// 设置共识版本
 	setConfig('commonVersion', versionList[versionList.length - 1].id);
 
@@ -424,7 +446,7 @@ const uploadAllAfterVersion = async function(versionId){
 export async function doSync(){
 	// todo:同步历史版本对应的笔记内容
 	if(!isLogin) return;
-	const commonVersion = getConfig('commonVersion');
+	let commonVersion = getConfig('commonVersion');
 	if(!commonVersion){
 		// 没有共识版本，拉取所有数据
 		logger('no commonVersion, ready to get all data');
@@ -432,6 +454,7 @@ export async function doSync(){
 		await downloadAllCategory();
 		await downloadAllNote();
 		await downloadAllVersion();
+		commonVersion = getConfig('commonVersion');
 	}else{
 		// 拉取共识版本之后的数据
 		await downloadAllAfterVersion(commonVersion);
