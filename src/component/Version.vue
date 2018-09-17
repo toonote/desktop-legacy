@@ -15,7 +15,7 @@
 .wrapper{
 	-webkit-user-select: none;
 	user-select: none;
-	width: 200px;
+	width: 300px;
 	background:#F6F6F6;
 	border-right:1px solid #E0E0E0;
 	line-height: 24px;
@@ -94,7 +94,7 @@
 						:key="version.id"
 						@click="switchCurrentVersion(version.id)"
 						@contextmenu="showContextMenu(version.id)"
-					>{{formatDate(version.createdAt)}}</li>
+					>[{{formatDate(version.createdAt)}}]{{version.message}}</li>
 				</ul>
 			</li>
 		</ul>

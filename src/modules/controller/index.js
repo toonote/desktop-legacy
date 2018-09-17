@@ -10,7 +10,7 @@ import {init as versionInit} from './version';
 import eventHub, {EVENTS} from '../util/eventHub';
 import taskInit from '../task';
 import upgrade from '../upgrade';
-import {throttle} from 'lodash';
+import {throttle, uniqBy} from 'lodash';
 
 upgrade();
 
@@ -664,13 +664,13 @@ export const showVersions = function(noteId){
 	if(!targetNote.length){
 		uiData.versions.data.list = [];
 	}else{
-		uiData.versions.data.list = targetNote[0].versions.sorted('createdAt', true).map((version) => {
+		uiData.versions.data.list = uniqBy(targetNote[0].versions.sorted('createdAt', true).map((version) => {
 			return {
 				id: version.id,
 				message: version.message,
 				createdAt: version.createdAt
 			};
-		});
+		}), 'id');
 	}
 	console.timeEnd('showVersions');
 };
@@ -693,6 +693,9 @@ export const showVersionContent = function(versionId, noteId){
 	const content = realm.getResults('VersionNoteContent').filtered(`versionId="${versionId}" AND noteId="${noteId}"`);
 	if(content.length){
 		uiData.versions.data.currentContent = content[0].content;
+	}else{
+		uiData.versions.data.currentContent = '该版本没有内容变更';
+		// console.log('该版本没有内容变更');
 	}
 	console.timeEnd('showVersionContent');
 };
