@@ -414,10 +414,9 @@ const uploadAllAfterVersion = async function(versionId){
 	}
 
 	// 同步历史版本笔记内容
-	debugger;
 	const versionIds = versionList.map((version) => version.id);
 	const versionNoteContentList = getResults('VersionNoteContent')
-		.filtered(versionIds.map((id) => `id="${id}"`).join(' or '));
+		.filtered(versionIds.map((id) => `versionId="${id}"`).join(' or '));
 	response = await agent.post('/api/v2/batchUploadVersionNoteContent', {
 		data: versionNoteContentList.map((versionNoteContent) => {
 			return {
