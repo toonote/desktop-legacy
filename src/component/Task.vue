@@ -1,6 +1,11 @@
 <template>
 <section class="task">
 	<div class="taskWrapper">
+		<!-- <div class="taskItem doing"></div>
+		<div class="taskItem failed"></div>
+		<div class="taskItem"></div>
+		<div class="taskItem"></div>
+		<div class="taskItem failed"></div> -->
 		<div
 			v-for="task in taskList.data"
 			class="taskItem"
@@ -84,6 +89,9 @@ export default {
 }
 .task .taskWrapper .taskItem.doing{
 	animation: doing 1s infinite;
+}
+.task .taskWrapper .taskItem.failed{
+	background: #c00;
 }
 
 </style>
