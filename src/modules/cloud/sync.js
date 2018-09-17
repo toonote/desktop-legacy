@@ -2,12 +2,9 @@ import eventHub, { EVENTS } from '../util/eventHub';
 import debug from '../util/debug';
 import { getResults, createResult, updateResult, deleteResult, createReverseLink } from '../storage/realm/index';
 import { getConfig, setConfig } from '../util/config';
-import { getAgent } from '../util/http';
-
+import * as request from './request';
+const agent = request.agent;
 const logger = new debug('cloud:sync');
-
-const URL_BASE = DEBUG ? 'https://test-api.xiaotu.io' : 'https://api.xiaotu.io';
-const agent = getAgent(URL_BASE);
 
 let isLogin = false;
 
@@ -95,18 +92,11 @@ const writeVersion = function(version, changes){
 };
 
 const getVersionChanges = async function(versionId){
-	const versionChangeResponse = await agent.get('/api/v2/versionChange', {
-		params: {
-			where: JSON.stringify({
-				versionId: versionId
-			})
-		}
+	return await request.getAll('versionChange', {
+		where: JSON.stringify({
+			versionId: versionId
+		})
 	});
-	if(versionChangeResponse.status !== 200 || !versionChangeResponse.data.data || versionChangeResponse.data.code !== 0){
-		logger('error getting versionChange item', versionChangeResponse);
-		return;
-	}
-	return versionChangeResponse.data.data;
 };
 
 const downloadAllNotebook = async function(notebookIds){
@@ -118,14 +108,9 @@ const downloadAllNotebook = async function(notebookIds){
 			}
 		};
 	}
-	const response = await agent.get('/api/v2/notebook', {
-		params
-	});
-	if(response.status !== 200 || !response.data || response.data.code !== 0){
-		logger('error getting notebook list', response);
-		return;
-	}
-	updateResult('Notebook', response.data.data.map((notebook) => {
+	const data = await request.getAll('notebook', params);
+
+	updateResult('Notebook', data.map((notebook) => {
 		return {
 			id: notebook.id,
 			title: notebook.title,
@@ -145,14 +130,8 @@ const downloadAllCategory = async function(categoryIds){
 			}
 		};
 	}
-	const response = await agent.get('/api/v2/category', {
-		params
-	});
-	if(response.status !== 200 || !response.data || response.data.code !== 0){
-		logger('error getting category list', response);
-		return;
-	}
-	updateResult('Category', response.data.data.map((category) => {
+	const data = await request.getAll('category', params);
+	updateResult('Category', data.map((category) => {
 		return {
 			id: category.id,
 			title: category.title,
@@ -162,8 +141,8 @@ const downloadAllCategory = async function(categoryIds){
 		};
 	}));
 
-	for(let i = 0; i < response.data.data.length; i++){
-		const remoteCategory = response.data.data[i];
+	for(let i = 0; i < data.length; i++){
+		const remoteCategory = data[i];
 		const category = getResults('Category').filtered(`id="${remoteCategory.id}"`)[0];
 		// todo:删除反向链接
 		createReverseLink(category, [{
@@ -184,23 +163,12 @@ const downloadAllNote = async function(noteIds){
 			}
 		};
 	}
-	const response = await agent.get('/api/v2/note', {
-		params
-	});
-	if(response.status !== 200 || !response.data || response.data.code !== 0){
-		logger('error getting note list', response);
-		return;
-	}
+	const data = await request.getAll('note', params);
 
 	// 获取内容
-	for(let i = 0; i < response.data.data.length; i++){
-		const id = response.data.data[i].id;
-		const noteResponse = await agent.get('/api/v2/note/' + id);
-		if(noteResponse.status !== 200 || !noteResponse.data.data || noteResponse.data.code !== 0){
-			logger('error getting note item', noteResponse);
-			return;
-		}
-		const remoteNote = noteResponse.data.data;
+	for(let i = 0; i < data.length; i++){
+		const id = data[i].id;
+		const remoteNote = await request.get('/api/v2/note/' + id);
 		updateResult('Note', {
 			id: remoteNote.id,
 			title: remoteNote.title,
@@ -238,15 +206,11 @@ const downloadAllNote = async function(noteIds){
 };
 
 const downloadAllVersion = async function(){
-	const response = await agent.get('/api/v2/version');
-	if(response.status !== 200 || !response.data || response.data.code !== 0){
-		logger('error getting version list', response);
-		return;
-	}
+	const data = await request.get('/api/v2/version');
 
 	// 获取内容
-	for(let i = 0; i < response.data.data.length; i++){
-		const version = response.data.data[i];
+	for(let i = 0; i < data.length; i++){
+		const version = data[i];
 		const remoteVersionChanges = await getVersionChanges(version.id);
 
 		writeVersion(version, remoteVersionChanges);
@@ -254,17 +218,9 @@ const downloadAllVersion = async function(){
 };
 
 const downloadAllAfterVersion = async function(commonVersionId){
-	const response = await agent.get('/api/v2/version', {
-		params: {
-			commonVersionId
-		}
+	const newVersions = await request.get('/api/v2/version', {
+		commonVersionId
 	});
-	if(response.status !== 200 || !response.data || response.data.code !== 0){
-		logger('error getting version data after commonVersion', response);
-		return;
-	}
-
-	const newVersions = response.data.data;
 
 	// 稍后需要去拉取的id列表
 	const noteIds = [];
