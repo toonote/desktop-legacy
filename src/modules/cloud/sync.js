@@ -31,7 +31,7 @@ const dealDeleteInChange = function(change){
 	}
 };
 
-const writeVersion = function(version, changes){
+const writeVersion = function(version, changes, noteContentList = []){
 	let parentVersion;
 	const parentId = version.parentId;
 	if(parentId){
@@ -87,6 +87,19 @@ const writeVersion = function(version, changes){
 		}
 	});
 	updateResult('Version', versionData);
+
+	// 写入笔记历史版本内容
+	noteContentList.forEach((noteContent) => {
+		updateResult('VersionNoteContent', {
+			id: noteContent.id,
+			noteId: noteContent.noteId,
+			versionId: noteContent.versionId,
+			content: noteContent.content,
+			createdAt: noteContent.createdAt,
+			updatedAt: noteContent.updatedAt,
+		});
+	});
+
 	// 设置共识版本
 	setConfig('commonVersion', version.id);
 };
@@ -212,8 +225,14 @@ const downloadAllVersion = async function(){
 	for(let i = 0; i < data.length; i++){
 		const version = data[i];
 		const remoteVersionChanges = await getVersionChanges(version.id);
+		const remoteVersionNoteContentList = await request.getAll('versionNoteContent', {
+			where: JSON.stringify({
+				versionId: version.id
+			})
+		});
 
-		writeVersion(version, remoteVersionChanges);
+		writeVersion(version, remoteVersionChanges, remoteVersionNoteContentList);
+
 	}
 };
 
@@ -229,6 +248,8 @@ const downloadAllAfterVersion = async function(commonVersionId){
 
 	// 临时数组，存储与newVersions对应的changes
 	const tmpChanges = [];
+	// 临时数组，存储与newVersions对应的noteContent
+	const tmpNoteContents = [];
 
 	for(let i = 0; i < newVersions.length;i++){
 		const version = newVersions[i];
@@ -252,6 +273,11 @@ const downloadAllAfterVersion = async function(commonVersionId){
 				}
 			}
 		});
+		tmpNoteContents[i] = await request.getAll('versionNoteContent', {
+			where: JSON.stringify({
+				versionId: version.id
+			})
+		});
 	}
 
 	if(notebookIds.length){
@@ -265,7 +291,7 @@ const downloadAllAfterVersion = async function(commonVersionId){
 	}
 
 	for(let i = 0; i < newVersions.length;i++){
-		writeVersion(newVersions[i], tmpChanges[i]);
+		writeVersion(newVersions[i], tmpChanges[i], tmpNoteContents[i]);
 	}
 };
 
