@@ -21,18 +21,36 @@
 	color: #585858;
 	text-decoration: none;
 }
-.login .labelWrapper{
+.login .levelWrapper{
 	position: absolute;
 	top:10px;
 	right:10px;
+	line-height: 14px;
 }
-.login .labelWrapper .label{
-	font-size:12px;
+.login .levelWrapper .label{
+	font-size:10px;
 	padding:2px 4px;
 	border-radius:2px;
     background: #718c00;
     display: inline-block;
     color: white;
+}
+.login .taskIndicator{
+	position: absolute;
+	right:0;
+	top:0;
+	padding: 10px;
+	width: 40px;
+	height: 40px;
+}
+.login .taskIndicator .taskCount{
+	width: 100%;
+	height: 100%;
+	line-height: 40px;
+	text-align: center;
+	border-radius: 50%;
+	background: #718c00;
+	color: white;
 }
 </style>
 
@@ -44,9 +62,9 @@
 		<span v-if="userData.data.name">{{userData.data.name}}</span>
 		<a v-else v-on:click="doLogin" href="#">点击登录</a>
 	</div>
-	<div class="labelWrapper">
-		<div v-for="label in userData.data.labels" :key="label" class="label">{{label}}</div>
-	</div>
+	<!-- <div class="levelWrapper">
+		<div class="label">VIP</div>
+	</div> -->
 </section>
 </template>
 
