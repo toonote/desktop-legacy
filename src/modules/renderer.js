@@ -4,6 +4,7 @@ import mermaid from 'mermaid';
 
 let renderer = new Remarkable({
 	highlight: function(str, lang) {
+		console.log(str);
 		if (lang && hljs.getLanguage(lang)) {
 			try {
 				return hljs.highlight(lang, str).value;
@@ -42,30 +43,6 @@ renderer.use(function(md) {
 	}, {
 		alt: []
 	});
-	md.block.ruler.after('fences', 'mermaid', function(state) {
-		var tokens = state.tokens;
-		var len = tokens.length;
-		var i = -1;
-		while (++i < len) {
-			var token = tokens[i];
-			if (token.type === 'fence' && token.params === 'mermaid') {
-				var flowStr = token.content;
-				// if (mermaid.parse(flowStr)) {
-				try{
-					mermaid.render('mermaid' + i, flowStr, function(svgGraph) {
-						token.content = svgGraph;
-
-					}, document.getElementById('mermaidContainer'));
-					token.type = 'htmlblock';
-				}catch(err){}
-
-				// }
-
-			}
-		}
-	}, {
-		alt: []
-	});
 });
 
 let index = 0;
@@ -92,7 +69,20 @@ for (let token in customerRulesMap) {
 		return `<${tag}>`;
 	};
 }
-
+renderer.renderer.rules.fence_custom = {
+	mermaid:function(tokens, idx, options, env, instance){
+		let token = tokens[idx];
+		let flowStr = token.content;
+		try {
+			let svgStr = mermaid.render('mermaid' + idx, flowStr, function(svgGraph) {
+			}, document.getElementById('mermaidContainer'));
+			return '<div>' + svgStr + '</div>';
+		} catch (err) {
+			token.params = '';
+			return instance.rules.fence(tokens, idx, options, env, instance);
+		}
+	}
+};
 renderer.renderer.rules.list_item_open = function(tokens, idx) {
 	for (let i = idx + 1; i < idx + 3; i++) {
 		if (/[✓☐]/.test(tokens[i].content)) {
