@@ -443,7 +443,6 @@ const uploadAllAfterVersion = async function(versionId){
  * 执行同步
  */
 export async function doSync(){
-	// todo:同步历史版本对应的笔记内容
 	if(!isLogin) return;
 	let commonVersion = getConfig('commonVersion');
 	if(!commonVersion){

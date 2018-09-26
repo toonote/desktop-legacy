@@ -1,29 +1,30 @@
 <template>
 <section class="task">
-	<div class="taskDetail">
-		<div class="title">同步中</div>
+	<div class="taskDetail" v-if="currentTask">
+		<div class="title">{{getName(currentTask.type)}}</div>
 		<div class="detailWrapper">
-			<p><label>状态</label><span>运行中</span></p>
-			<p><label>优先级</label><span>高</span></p>
+			<p><label>状态</label><span>{{getStatus(currentTask.status)}}</span></p>
+			<p><label>优先级</label><span>{{getPriority(currentTask.priority)}}</span></p>
 		</div>
 		<div class="taskLog">
-			<p><span class="date">14:04</span>任务被添加任务被添加任务被添加任务被添加</p>
+			<p v-for="(log, $index) in currentTask.log" :key="$index">{{log}}</p>
+			<!-- <p><span class="date">14:04</span>任务被添加任务被添加任务被添加任务被添加</p>
 			<p><span class="date">14:04</span>任务被添加</p>
-			<p><span class="date">14:04</span>任务被添加</p>
-			<p><span class="date">14:04</span>任务被添加</p>
+			<p><span class="date">14:04</span>任务被添加</p> -->
 		</div>
 	</div>
 	<div class="taskWrapper">
-		<div class="taskItem doing"></div>
+		<!-- <div class="taskItem doing"></div>
 		<div class="taskItem failed"></div>
 		<div class="taskItem"></div>
 		<div class="taskItem"></div>
-		<div class="taskItem failed"></div>
+		<div class="taskItem failed"></div> -->
 		<div
 			v-for="task in taskList.data"
 			class="taskItem"
 			:class="{doing:task.status === 2}"
 			:key="task.id"
+			@click="toggleCurrentTask(task)"
 		></div>
 	</div>
 	<!-- <ul>
@@ -38,6 +39,7 @@
 
 <script>
 import {taskRenderData} from '../modules/task';
+import TASKS from '../modules/task/TASKS';
 
 export default {
 	computed: {
@@ -47,10 +49,45 @@ export default {
 	methods: {
 		doLogin(){
 			user.login();
+		},
+		getName(type){
+			const taskType = TASKS[type];
+			if(!taskType) return '未知任务';
+			return taskType.text;
+		},
+		getStatus(status){
+			const statusMap = {
+				1: '队列中',
+				2: '正在运行',
+				3: '已失败'
+			};
+			return statusMap[status] || '未知';
+		},
+		getPriority(priority){
+			const priorityMap = {
+				0: '紧急(同步)',
+				1: '极高(异步)',
+				2: '高(1分钟)',
+				3: '较高(5分钟)',
+				4: '中(30分钟)',
+				5: '较低(1天)',
+				6: '低(1周)',
+				7: '极低',
+			};
+			return priorityMap[priority] || '未知';
+		},
+		// 切换当前任务显示状态
+		toggleCurrentTask(task){
+			if(this.currentTask === task){
+				this.currentTask = null;
+				return;
+			}
+			this.currentTask = task;
 		}
 	},
 	data(){
 		return {
+			currentTask: null,
 			taskList: taskRenderData
 		};
 	},
@@ -117,8 +154,9 @@ export default {
 	padding: 10px;
 }
 .task .taskDetail .taskLog p{
-	text-indent: -40px;
-	margin-left: 40px;
+	/* 有date时保留 */
+	/* text-indent: -40px; */
+	/* margin-left: 40px; */
 }
 .task .taskDetail .taskLog .date{
 	color:#999;

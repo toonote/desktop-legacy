@@ -22,6 +22,7 @@ const taskPriority = [-1, 0, 60, 300, 1800, 24 * 3600, 7 * 24 * 3600, Infinity];
 export function addTask(taskData){
 	logger('addTask', taskData);
 	console.time('addTask');
+	taskData.log.push('生成任务');
 	taskData.data = JSON.stringify(taskData.data);
 	storage.addTask(taskData);
 	console.timeEnd('addTask');

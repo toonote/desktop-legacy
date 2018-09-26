@@ -87,7 +87,7 @@ function noteChanged(data, isContentChanged = false){
 			status: 0,
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			log: [''],
+			log: [],
 		});
 	}
 
