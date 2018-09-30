@@ -1,6 +1,6 @@
 <template>
 <section class="task">
-	<div class="taskDetail" v-if="currentTask">
+	<div class="taskDetail" v-if="currentTask && isCurrentTaskLive">
 		<div class="title">{{getName(currentTask.type)}}</div>
 		<div class="detailWrapper">
 			<p><label>状态</label><span>{{getStatus(currentTask.status)}}</span></p>
@@ -38,11 +38,16 @@
 
 
 <script>
+// todo:当前任务已完成，隐藏详情窗口
 import {taskRenderData} from '../modules/task';
 import TASKS from '../modules/task/TASKS';
 
 export default {
 	computed: {
+		// 是否显示当前任务的窗口
+		isCurrentTaskLive(){
+			return this.taskList.data.indexOf(this.currentTask) > -1;
+		}
 	},
 	watch: {
 	},

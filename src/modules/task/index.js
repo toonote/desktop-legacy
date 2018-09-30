@@ -163,7 +163,7 @@ function categoryCreated(data){
 		status: 0,
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		log: [''],
+		log: [],
 	});
 
 }
@@ -214,7 +214,7 @@ function categoryChanged(data){
 			status: 0,
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			log: [''],
+			log: [],
 		});
 	}
 
