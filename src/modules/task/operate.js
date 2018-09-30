@@ -1,17 +1,10 @@
 import * as storage from './storage';
 import eventHub, {EVENTS} from '../util/eventHub';
+import {RenderTask} from './TASK';
 import debug from '../util/debug';
 
 const logger = debug('task:operate');
 
-/* const taskMap = {
-	'VERSION_COMMIT': {
-		interval: 5 * 60 * 1000,
-		singleton: true
-	}
-}; */
-
-const taskPriority = [-1, 0, 60, 300, 1800, 24 * 3600, 7 * 24 * 3600, Infinity];
 
 /**
  * 添加一个任务
@@ -71,11 +64,7 @@ export const runTask = function(task){
 		hasListenTask = true;
 	}
 	logger('now ready to schedule task ' + task.id);
-	let timeout = taskPriority[task.priority];
-	if(DEBUG){
-		timeout = 10;
-	}
-	// todo:如果是恢复出来的任务，需要马上运行
+	let timeout = task.runIn;
 	if(timeout >= 0 && timeout < Infinity){
 		timeout *= 1000;
 		logger('timeout:' + timeout);
@@ -87,8 +76,8 @@ export const runTask = function(task){
 			});
 			eventHub.emit(EVENTS.TASK_RUN, task);
 		}, timeout);
-		task.runIn = timeout;
-		task.runAt = new Date(Date.now() + timeout);
+		// task.runIn = timeout;
+		// task.runAt = new Date(Date.now() + timeout);
 	}
 };
 
@@ -98,22 +87,9 @@ export const connectRenderData = function(renderData){
 	const allTasks = storage.getAllTasks();
 	const mapData = function(){
 		renderData.data = allTasks.map((task) => {
-			let taskData = {
-				id: task.id,
-				type: task.type,
-				priority: task.priority,
-				// targetId: task.targetId,
-				data: JSON.parse(task.data),
-				status: task.status,
-				createdAt: task.createdAt,
-				updatedAt: task.updatedAt,
-				log: task.log,
-				runIn: 0,
-				runAt: new Date(),
-				progress: 0
-			};
-			runTask(taskData);
-			return taskData;
+			let renderTask = new RenderTask(task);
+			runTask(renderTask);
+			return renderTask;
 		});
 	};
 

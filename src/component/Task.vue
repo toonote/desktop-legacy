@@ -40,7 +40,7 @@
 
 <script>
 import {taskRenderData} from '../modules/task';
-import TASKS from '../modules/task/TASKS';
+import {MAP as TASK_MAP} from '../modules/task/TASK';
 import { clearTimeout, setInterval, clearInterval } from 'timers';
 
 export default {
@@ -57,7 +57,7 @@ export default {
 			user.login();
 		},
 		getName(type){
-			const taskType = TASKS[type];
+			const taskType = TASK_MAP[type];
 			if(!taskType) return '未知任务';
 			return taskType.text;
 		},
@@ -97,21 +97,24 @@ export default {
 
 		},
 		countDown(date){
+			// console.log(date, date.getTime(), this.now);
 			let timeout = Math.floor((date.getTime() - this.now)/1000);
 			if(timeout < 0) timeout = 0;
 			return timeout;
 		},
 		// 切换当前任务显示状态
 		toggleCurrentTask(task){
-			clearInterval(this.timer);
 			if(this.currentTask === task){
+				clearInterval(this.timer);
 				this.currentTask = null;
 				this.timer = 0;
 				return;
 			}
-			this.timer = setInterval(() => {
-				this.now = Date.now();
-			}, 100);
+			if(!this.timer){
+				this.timer = setInterval(() => {
+					this.now = Date.now();
+				}, 100);
+			}
 			this.currentTask = task;
 		}
 	},

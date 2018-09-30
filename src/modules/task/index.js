@@ -84,7 +84,7 @@ function noteChanged(data, isContentChanged = false){
 					targetId: data.id,
 				}]
 			},
-			status: 0,
+			status: 1,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			log: [],
@@ -110,7 +110,7 @@ function noteCreated(data){
 				targetId: data.id,
 			}]
 		},
-		status: 0,
+		status: 1,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		log: [''],
@@ -135,7 +135,7 @@ function noteDeleted(noteId){
 				targetId: noteId,
 			}]
 		},
-		status: 0,
+		status: 1,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		log: [''],
@@ -160,7 +160,7 @@ function categoryCreated(data){
 				targetId: data.id,
 			}]
 		},
-		status: 0,
+		status: 1,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		log: [],
@@ -211,7 +211,7 @@ function categoryChanged(data){
 					targetId: data.id,
 				}]
 			},
-			status: 0,
+			status: 1,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			log: [],
@@ -237,7 +237,7 @@ function categoryDeleted(categoryId){
 				targetId: categoryId,
 			}]
 		},
-		status: 0,
+		status: 1,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		log: [''],
@@ -262,7 +262,7 @@ function notebookCreated(data){
 				targetId: data.id,
 			}]
 		},
-		status: 0,
+		status: 1,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		log: [''],
