@@ -41,7 +41,6 @@
 <script>
 import {taskRenderData} from '../modules/task';
 import {MAP as TASK_MAP} from '../modules/task/TASK';
-import { clearTimeout, setInterval, clearInterval } from 'timers';
 
 export default {
 	computed: {
@@ -57,6 +56,7 @@ export default {
 			user.login();
 		},
 		getName(type){
+			// console.log(type, TASK_MAP);
 			const taskType = TASK_MAP[type];
 			if(!taskType) return '未知任务';
 			return taskType.text;
@@ -205,6 +205,7 @@ export default {
 .task .taskWrapper .taskItem{
 	width: 8px;
 	height: 8px;
+	margin-right: 8px;
 	border-radius: 100%;
 	background: #718c00;
 	display: inline-block;

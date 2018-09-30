@@ -53,8 +53,18 @@ const listenTask = function(){
 	logger('listenTask');
 	eventHub.on(EVENTS.TASK_FINISH, (task) => {
 		logger('task finished: ' + task.id);
+		clearTimeout(scheduledTaskMap[task.id]);
 		delete scheduledTaskMap[task.id];
 		storage.deleteTask(task.id);
+	});
+	eventHub.on(EVENTS.TASK_LOG, (task, message) => {
+		logger('task log: ' + task.id + ' ' + message);
+		const log = task.log.map(v=>v);
+		log.push(message);
+		storage.updateTask({
+			id: task.id,
+			log: log
+		});
 	});
 };
 export const runTask = function(task){
@@ -69,6 +79,10 @@ export const runTask = function(task){
 		timeout *= 1000;
 		logger('timeout:' + timeout);
 		scheduledTaskMap[task.id] = setTimeout(() => {
+			// 排队任务刚刚完成，但还没从DB删除的情况
+			// 实测多个任务一起跑，前一个任务被删除会触发DB变更
+			// 从而将该任务再次拿出来跑
+			if(!storage.getTaskById(task.id)) return;
 			logger('now run task ' + task.id);
 			storage.updateTask({
 				id: task.id,

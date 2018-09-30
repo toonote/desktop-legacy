@@ -31,5 +31,9 @@ export const MAP = {
 	VERSION_COMMIT: {
 		type: 'VERSION_COMMIT',
 		text: '生成版本记录'
+	},
+	CLOUD_SYNC: {
+		type: 'CLOUD_SYNC',
+		text: '云同步'
 	}
 };

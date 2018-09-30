@@ -163,7 +163,8 @@ export function updateResult(name, arr){
 			if(!obj.updatedAt){
 				obj.updatedAt = new Date();
 			}
-			// 第三个参数会使相当主键覆盖
+			// console.log('updateResult',name,obj);
+			// 第三个参数会使相同主键覆盖
 			realm.create(name, obj, true);
 		});
 	});

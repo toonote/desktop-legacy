@@ -270,9 +270,34 @@ function notebookCreated(data){
 
 }
 
+
+// 各种变更时触发云同步
+function cloudSync(){
+	let existTask = getTask({
+		type: 'CLOUD_SYNC'
+	});
+
+	if(existTask){
+		logger('exist CLOUD_SYNC task, abort.');
+		return;
+	}
+	logger('no CLOUD_SYNC existTask, ready to create');
+	operate.addTask({
+		type: 'CLOUD_SYNC',
+		priority: 2,
+		data: {
+		},
+		status: 1,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		log: [],
+	});
+}
+
 function init(){
 	operate.connectRenderData(taskRenderData);
 
+	// 处理存储
 	eventHub.on(EVENTS.NOTE_CONTENT_CHANGED, noteContentChanged);
 	eventHub.on(EVENTS.NOTE_CHANGED, noteChanged);
 	eventHub.on(EVENTS.NOTE_CREATED, noteCreated);
@@ -283,6 +308,18 @@ function init(){
 	eventHub.on(EVENTS.CATEGORY_DELETED, categoryDeleted);
 
 	eventHub.on(EVENTS.NOTEBOOK_CREATED, notebookCreated);
+
+	// 处理同步
+	eventHub.on(EVENTS.NOTE_CONTENT_CHANGED, cloudSync);
+	eventHub.on(EVENTS.NOTE_CHANGED, cloudSync);
+	eventHub.on(EVENTS.NOTE_CREATED, cloudSync);
+	eventHub.on(EVENTS.NOTE_DELETED, cloudSync);
+
+	eventHub.on(EVENTS.CATEGORY_CREATED, cloudSync);
+	eventHub.on(EVENTS.CATEGORY_CHANGED, cloudSync);
+	eventHub.on(EVENTS.CATEGORY_DELETED, cloudSync);
+
+	eventHub.on(EVENTS.NOTEBOOK_CREATED, cloudSync);
 }
 
 export default init;

@@ -1,4 +1,5 @@
 import eventHub, { EVENTS } from '../util/eventHub';
+import {MAP as TASK_MAP} from '../task/TASK';
 import debug from '../util/debug';
 import { getResults, createResult, updateResult, deleteResult, createReverseLink } from '../storage/realm/index';
 import { getConfig, setConfig } from '../util/config';
@@ -6,21 +7,36 @@ import * as request from './request';
 const agent = request.agent;
 const logger = new debug('cloud:sync');
 
+
 let isLogin = false;
 
 export function init(){
 	logger('init');
+	let syncTask = null;
 	eventHub.on(EVENTS.USER_LOGIN, (userData) => {
 		logger('on USER_LOGIN');
 		isLogin = userData.id;
-		doSync();
+		console.log('USER_LOGIN', isLogin, syncTask);
+		doSync(syncTask).then(()=>{
+			if(syncTask){
+				eventHub.emit(EVENTS.TASK_FINISH, syncTask);
+			}
+		});
 	});
 
 	// 同步任务运行
-	/* eventHub.on(EVENTS.TASK_RUN, (task) => {
-		if(!isLogin) return;
+	eventHub.on(EVENTS.TASK_RUN, (task) => {
+		if(!isLogin) {
+			syncTask = task;
+			return;
+		}
+		console.log('TASK_RUN', task);
 		logger('on TASK_RUN');
-	}); */
+		if(task.type !== TASK_MAP.CLOUD_SYNC.type) return;
+		doSync(task).then(()=>{
+			eventHub.emit(EVENTS.TASK_FINISH, task);
+		});
+	});
 }
 
 const dealDeleteInChange = function(change){
@@ -442,21 +458,41 @@ const uploadAllAfterVersion = async function(versionId){
 /**
  * 执行同步
  */
-export async function doSync(){
+export async function doSync(task = null){
+	let taskLog = () => {};
+	if(task){
+		taskLog = (message) => {
+			console.log(message);
+			eventHub.emit(EVENTS.TASK_LOG, task, message);
+		};
+	}
 	if(!isLogin) return;
 	let commonVersion = getConfig('commonVersion');
 	if(!commonVersion){
 		// 没有共识版本，拉取所有数据
+		taskLog('没有共识版本，下载所有数据');
 		logger('no commonVersion, ready to get all data');
+		taskLog('下载笔记本...开始');
 		await downloadAllNotebook();
+		taskLog('下载笔记本...成功');
+		taskLog('下载分类...开始');
 		await downloadAllCategory();
+		taskLog('下载分类...成功');
+		taskLog('下载笔记...开始');
 		await downloadAllNote();
+		taskLog('下载笔记..成功');
+		taskLog('下载版本记录..开始');
 		await downloadAllVersion();
+		taskLog('下载版本记录..成功');
 		commonVersion = getConfig('commonVersion');
 	}else{
 		// 拉取共识版本之后的数据
+		taskLog('有共识版本，增量下载');
 		await downloadAllAfterVersion(commonVersion);
+		taskLog('增量下载成功');
 	}
 	// 上传本地共识版本之后的数据
+	taskLog('上传数据...开始');
 	await uploadAllAfterVersion(commonVersion);
+	taskLog('上传数据...成功');
 }
