@@ -75,6 +75,7 @@ export const runTask = function(task){
 	if(DEBUG){
 		timeout = 10;
 	}
+	// todo:如果是恢复出来的任务，需要马上运行
 	if(timeout >= 0 && timeout < Infinity){
 		timeout *= 1000;
 		logger('timeout:' + timeout);
@@ -87,6 +88,7 @@ export const runTask = function(task){
 			eventHub.emit(EVENTS.TASK_RUN, task);
 		}, timeout);
 		task.runIn = timeout;
+		task.runAt = new Date(Date.now() + timeout);
 	}
 };
 
@@ -107,6 +109,7 @@ export const connectRenderData = function(renderData){
 				updatedAt: task.updatedAt,
 				log: task.log,
 				runIn: 0,
+				runAt: new Date(),
 				progress: 0
 			};
 			runTask(taskData);

@@ -5,6 +5,7 @@
 		<div class="detailWrapper">
 			<p><label>状态</label><span>{{getStatus(currentTask.status)}}</span></p>
 			<p><label>优先级</label><span>{{getPriority(currentTask.priority)}}</span></p>
+			<p><label>计划时间</label><span>{{formatDate(currentTask.runAt)}}({{countDown(currentTask.runAt)}})</span></p>
 		</div>
 		<div class="taskLog">
 			<p v-for="(log, $index) in currentTask.log" :key="$index">{{log}}</p>
@@ -38,16 +39,16 @@
 
 
 <script>
-// todo:当前任务已完成，隐藏详情窗口
 import {taskRenderData} from '../modules/task';
 import TASKS from '../modules/task/TASKS';
+import { clearTimeout, setInterval, clearInterval } from 'timers';
 
 export default {
 	computed: {
 		// 是否显示当前任务的窗口
 		isCurrentTaskLive(){
 			return this.taskList.data.indexOf(this.currentTask) > -1;
-		}
+		},
 	},
 	watch: {
 	},
@@ -81,19 +82,46 @@ export default {
 			};
 			return priorityMap[priority] || '未知';
 		},
+		formatDate(date){
+			let ts = date.getTime() - date.getTimezoneOffset()*60*1000;
+			let s = new Date(ts).toISOString();
+
+			// s.replace(/T.+$/,'');	// 2015-11-24
+			// s.replace(/\-\d+T.+$/,''); // 2015-11
+			// s.replace(/(^\d+\-|T.+$)/g,''); // 11-24
+			return s.replace(/(^[0-9\-]+T|\.\d+Z$)/g,''); // 14:16:18
+			// s.replace(/(^[0-9\-]+T|:\d+\.\d+Z$)/g,''); // 14:16
+			// s.replace(/T/g,' ').replace(/\.\d+Z$/,''); // 2015-11-24 14:16:18
+			// s.replace(/T/g,' ').replace(/:\d+\.\d+Z$/,''); // 2015-11-24 14:16
+			// return s.replace(/T/g,' ').replace(/^\d+\-/, '').replace(/:\d+\.\d+Z$/,''); // 11-24 14:16
+
+		},
+		countDown(date){
+			let timeout = Math.floor((date.getTime() - this.now)/1000);
+			if(timeout < 0) timeout = 0;
+			return timeout;
+		},
 		// 切换当前任务显示状态
 		toggleCurrentTask(task){
+			clearInterval(this.timer);
 			if(this.currentTask === task){
 				this.currentTask = null;
+				this.timer = 0;
 				return;
 			}
+			this.timer = setInterval(() => {
+				this.now = Date.now();
+			}, 100);
 			this.currentTask = task;
 		}
 	},
 	data(){
 		return {
 			currentTask: null,
-			taskList: taskRenderData
+			taskList: taskRenderData,
+			// 更新任务倒计时的timer
+			timer: null,
+			now: Date.now(),
 		};
 	},
 	mounted(){
