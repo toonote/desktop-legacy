@@ -1,6 +1,7 @@
 import * as operate from './operate';
 import eventHub, {EVENTS} from '../util/eventHub';
 import debug from '../util/debug';
+import { STATUS_MAP } from './TASK';
 
 // 优先级定义
 // 0 立即执行 1 接受延时执行 2 1分钟一次 3 5分钟一次 4 30分钟一次 5 1天一次 6 1周一次 7 随意多久一次
@@ -278,7 +279,16 @@ function cloudSync(){
 	});
 
 	if(existTask){
-		logger('exist CLOUD_SYNC task, abort.');
+		// 重置失败任务
+		if(existTask.status === STATUS_MAP.FAILED){
+			eventHub.emit(EVENTS.TASK_REBOOT, existTask);
+			operate.updateTask({
+				id: existTask.id,
+				status: STATUS_MAP.QUEUE,
+			});
+			eventHub.emit(EVENTS.TASK_LOG, existTask, '重启任务');
+		}
+		logger('exist CLOUD_SYNC task, reboot.');
 		return;
 	}
 	logger('no CLOUD_SYNC existTask, ready to create');
@@ -287,7 +297,7 @@ function cloudSync(){
 		priority: 2,
 		data: {
 		},
-		status: 1,
+		status: STATUS_MAP.QUEUE,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		log: [],
@@ -310,6 +320,8 @@ function init(){
 	eventHub.on(EVENTS.NOTEBOOK_CREATED, notebookCreated);
 
 	// 处理同步
+	eventHub.on(EVENTS.CLOUD_SYNC, cloudSync);
+
 	eventHub.on(EVENTS.NOTE_CONTENT_CHANGED, cloudSync);
 	eventHub.on(EVENTS.NOTE_CHANGED, cloudSync);
 	eventHub.on(EVENTS.NOTE_CREATED, cloudSync);

@@ -8,33 +8,38 @@ const agent = request.agent;
 const logger = new debug('cloud:sync');
 
 
-let isLogin = false;
+let loginResult;
 
 export function init(){
 	logger('init');
-	let syncTask = null;
 	eventHub.on(EVENTS.USER_LOGIN, (userData) => {
 		logger('on USER_LOGIN');
-		isLogin = userData.id;
-		console.log('USER_LOGIN', isLogin, syncTask);
-		doSync(syncTask).then(()=>{
-			if(syncTask){
-				eventHub.emit(EVENTS.TASK_FINISH, syncTask);
-			}
-		});
+		loginResult = !!userData.id;
+		console.log('USER_LOGIN', loginResult);
+		eventHub.emit(EVENTS.CLOUD_SYNC);
+	});
+
+	eventHub.on(EVENTS.USER_LOGIN_ERROR, () => {
+		loginResult = false;
 	});
 
 	// 同步任务运行
 	eventHub.on(EVENTS.TASK_RUN, (task) => {
-		if(!isLogin) {
-			syncTask = task;
+		// 用户未登录，标记同步失败
+		if(!loginResult) {
+			eventHub.emit(EVENTS.TASK_LOG, task, '同步出错：未登录');
+			eventHub.emit(EVENTS.TASK_FAIL, task);
 			return;
 		}
-		console.log('TASK_RUN', task);
 		logger('on TASK_RUN');
 		if(task.type !== TASK_MAP.CLOUD_SYNC.type) return;
 		doSync(task).then(()=>{
 			eventHub.emit(EVENTS.TASK_FINISH, task);
+		}, (e) => {
+			eventHub.emit(EVENTS.TASK_LOG, task, '同步出错：' + e.message);
+			eventHub.emit(EVENTS.TASK_FAIL, task);
+			// 失败后再次触发同步
+			eventHub.emit(EVENTS.CLOUD_SYNC);
 		});
 	});
 }
@@ -466,7 +471,7 @@ export async function doSync(task = null){
 			eventHub.emit(EVENTS.TASK_LOG, task, message);
 		};
 	}
-	if(!isLogin) return;
+	if(!loginResult) return;
 	let commonVersion = getConfig('commonVersion');
 	if(!commonVersion){
 		// 没有共识版本，拉取所有数据

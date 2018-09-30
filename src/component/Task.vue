@@ -23,7 +23,7 @@
 		<div
 			v-for="task in taskList.data"
 			class="taskItem"
-			:class="{doing:task.status === 2}"
+			:class="{doing:task.status === 2, failed:task.status === 3}"
 			:key="task.id"
 			@click="toggleCurrentTask(task)"
 		></div>
@@ -188,6 +188,8 @@ export default {
 	color: white;
 	border-radius: 2px;
 	padding: 10px;
+	max-height: 300px;
+	overflow: auto;
 }
 .task .taskDetail .taskLog p{
 	/* 有date时保留 */

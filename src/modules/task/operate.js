@@ -1,6 +1,6 @@
 import * as storage from './storage';
 import eventHub, {EVENTS} from '../util/eventHub';
-import {RenderTask} from './TASK';
+import {RenderTask, STATUS_MAP} from './TASK';
 import debug from '../util/debug';
 
 const logger = debug('task:operate');
@@ -65,6 +65,18 @@ const listenTask = function(){
 			id: task.id,
 			log: log
 		});
+	});
+	eventHub.on(EVENTS.TASK_FAIL, (task) => {
+		logger('task fail: ' + task.id);
+		storage.updateTask({
+			id: task.id,
+			status: STATUS_MAP.FAILED
+		});
+	});
+	eventHub.on(EVENTS.TASK_REBOOT, (task) => {
+		logger('task reboot: ' + task.id);
+		clearTimeout(scheduledTaskMap[task.id]);
+		delete scheduledTaskMap[task.id];
 	});
 };
 export const runTask = function(task){

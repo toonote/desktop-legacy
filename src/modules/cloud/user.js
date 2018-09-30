@@ -91,6 +91,7 @@ export async function initUserByToken(token){
 		return data.data;
 	}).catch((e) => {
 		logger('get userInfo failed', e);
+		eventHub.emit(EVENTS.USER_LOGIN_ERROR);
 		if(e.response && e.response.status === 403){
 			login(true);
 		}

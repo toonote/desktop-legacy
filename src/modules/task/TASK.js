@@ -1,5 +1,5 @@
 const taskPriority = [-1, 0, 60, 300, 1800, 24 * 3600, 7 * 24 * 3600, Infinity];
-const statusMap = {
+export const STATUS_MAP = {
 	QUEUE: 1,
 	RUNNING: 2,
 	FAILED: 3,
@@ -19,7 +19,7 @@ export class RenderTask{
 		if(DEBUG){
 			this.runIn = 10;
 		}
-		if(+this.status === statusMap.RUNNING){
+		if(+this.status === STATUS_MAP.RUNNING){
 			this.runIn = 0;
 		}
 		this.runAt = new Date(Date.now() + this.runIn * 1000);
