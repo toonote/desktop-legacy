@@ -74,8 +74,17 @@ renderer.renderer.rules.fence_custom = {
 		let token = tokens[idx];
 		let flowStr = token.content;
 		try {
+			let $div = document.getElementById('mermaidContainer');
+			if (!$div) {
+				$div = document.createElement('div');
+				$div.id = 'mermaidContainer';
+				$div.style = 'height:0;overflow:hidden;';
+				// mermaid中的flow类取的容器是文档中的第一个符合条件的容器，所以需要将div容器放在body最前面
+				document.body.insertBefore($div, document.body.firstChild);
+				console.log('添加了新div');
+			}
 			let svgStr = mermaid.render('mermaid' + idx, flowStr, function(svgGraph) {
-			}, document.getElementById('mermaidContainer'));
+			},$div);
 			return '<div>' + svgStr + '</div>';
 		} catch (err) {
 			token.params = '';
